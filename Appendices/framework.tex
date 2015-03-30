@@ -1,0 +1,96 @@
+\chapter{Choosing a Framework}\label{appendix:choosingAFramework}
+
+% BELOW CONTENT IS TAKEN FROM http://ashton.codes/blog/building-shoulders-giants/
+
+There is definitely a trade-off to be considered when using existing software. On the one hand, there is a learning curve: it takes a long time to find your way around the codebase and learn the purpose of each file.
+
+In addition to a big learning curve, it can be difficult to place the blame if you encounter a bug:
+
+\begin{itemize}
+\item Is it a bug in the open source software?
+\item Is it a bug because of the way we're using the open source software (in a manner it was not intended for)?
+\item Is it a bug that we introduced in our code modifications?
+\end{itemize}
+
+In comparison, it is tempting to build software from scratch because of the lower learning curve; the project is developed incrementally and as a developer you gradually introduce yourself to new concepts and files, perhaps arriving at a project of a similar size to existing open source projects but having eased your way into the learning process.
+
+Building from scratch is certainly more time-consuming. If a software system takes 100 hours to build from scratch, it is better to spend 10 hours learning an existing system and modifying it for your own uses. It is also likely to be better engineered, since it is likely to have had more developer hours invested in refining it.
+
+\subsubsection{Building upon existing platforms}
+
+Early on in my investigations I discovered Emcod; "an innovative project which aims to broaden Access to justice through use of Online dispute resolution". It is an open-source tool designed for a LAMP server (Apache, MySQL, PHP).
+
+I had hoped to use it as a basis for my Major Project, but on closer inspection it was very unclear what the code actually does! According to the website, Emcod "allows providers of Online dispute resolution to measure the costs and quality of their services". How it does this is unclear, but it does suggest that the software does not actually provide the online dispute resolution process itself.
+
+The website itself is poor. Though there are some installation instructions and a download to the source code, there are two items of text that look like links (and presumably were intended to become links one day) – these are 'User manual' and 'Watch video'. I thought it would be a worthy investment of time to at least try and get the software up and running (as I have access to my own cloud LAMP server) to see if it would meet my needs.
+
+An alternative open source framework to begin with is HumHub – a "Flexible, Open Source Social Network Kit". ODR platforms aren't social networks, but there are aspects of social activity such as dispute timelines, private communication, "groups" of Agents in the same network (their Law Firm), and so on. Also, additional functionality such as file upload facilities and user authorisation would be useful modules to reuse.
+
+One of the pluses of HumHub, according to its website, is its flexibility. "With a powerful module system you can extend HumHub by using third party tools, writing your own or connect existing software", so it should be possible to plug in all manner of functionality.
+
+Emcod was nice and easy to install, and handled login nicely. However, sure enough, this didn't look like online dispute resolution software.
+
+It is madness that I had to install the software to actually find out what it does. It was a long shot, but unfortunately this was not a suitable framework to build upon.
+
+HumHub, again, was nice and easy to install. It has a concept of "spaces", effectively groups where there is a central board everyone in the space can write to. This could be the basic underpinning of dispute communication, if I could programmatically generate spaces.
+
+HumHub has a modular system such that you can install and uninstall modules freely, and develop your own. I may be able to hook into rendering functions and so on, and add disputes as a function.
+
+There’s no getting around the fact that HumHub was not intended to be an ODR platform. But what it DOES do for us is handle authorisation, authentication, profile management, and so on, so could be worth considering further.
+
+Its repository is very active, and well documented, though there is a large backlog of issues.
+
+I need to balance whether or not it is worth pursuing HumHub.
+
+HumHub – Advantages:
+
+\begin{itemize}
+    \item Actively maintained
+    \item Modular support
+    \item Built-in functionality that we need, including:
+    \begin{itemize}
+        \item Registration
+        \item Login
+        \item Notifications
+        \item Concept of a central “space” for communication
+        \item Attractive UI
+    \end{itemize}
+\end{itemize}
+
+
+HumHub – Disadvantages:
+
+\begin{itemize}
+    \item A lot needs to be changed – e.g. "liking" evidence is not appropriate!
+    \item Although developed modularly, it may not provide enough hooks for all the functionality I'll need to develop
+    \item Large codebase to get to grips with, therefore a large learning curve
+    \item No getting away from the fact that the purpose of this software is fundamentally different to ODR platforms.
+    \item We don't want to be locked into third-party consumerist bubble.
+    \item Release under the AGPL license restricts what we can do with our codebase (i.e. we cannot stay closed-source).
+\end{itemize}
+
+After exploring the options, I thought that perhaps I didn't need a full system to base my project on. Perhaps I could delegate parts of my system to different libraries, taking care to write accessor classes using the Decorator pattern, giving me the freedom to swap out for different modules if necessary.
+
+\subsubsection{Using an abstract framework}
+
+Large frameworks such as Zend and CakePHP are very constraining, requiring you to stick to their idea of what is the best development approach (specific directory structures, MVC design pattern, and so on) or else perform some very heavy, non-standard configuration to make it suit your project. I'm sure either of these heavyweight frameworks would be perfectly well suited to ODR, but generally speaking I try to stay away from non-transferable frameworks. I like to understand exactly how my application works, rather than delegate that understanding to a third-party library. And I like having the freedom to change frameworks painlessly at a later date - something which is NOT suited to heavyweight frameworks!
+
+I considered a few of the lighter options: Huge, Opauth, Laravel and Fat-Free Framework. Huge looked promising to begin with but then appeared to be more of a middleweight framework, strongly encouraging but not requiring you to follow certain directory structures. It would be a base that I would have to build on, rather than a library that I can plug into my system, only calling it as and when I need it.
+
+Opauth looked nice and lightweight, but was aimed at projects which want to use OAuth for authentication, allowing people to sign in using their Twitter, Google, LinkedIn or Facebook account. This was not suitable, given my project requirements. Laravel was the next one I looked at, and looks a little like PHP's answer to Rails as it generates an entire application structure through a proprietary command.
+
+I'm sure that any one of these libraries is a suitable starting point, and I know that there are thousands more in existence. It would be impossible to spend a long enough amount of time evaluating every framework that one could make a truly considered decision.
+
+\subsubsection{Fat-Free Framework}
+
+The most promising framework at first glance was Fat-Free Framework, or F3 as it is commonly known. I found it had a low learning curve and an unconstraining nature. Its modular build means that I can cherrypick the elements of functionality I want, rather than go for an all-or-nothing installation. Interaction with the library is through calls to namespaced classes. F3 is fundamentally different to its competitors because I can slot F3 into my code, rather than slotting my code into F3.
+
+This work was supposed to just be some spike work, but I must confess I've now invested around 5 days in seeing how well I can utilise F3 for my project. At this stage in the project, I've managed to set up user registration (with back-end support for multiple user types) and login/logout functionalities, developed in a relatively test-driven way (though I plan on writing more unit tests to make my current codebase more robust, as well as Cucumber acceptance tests).
+
+It wouldn't be too late to turn back now and opt for a different framework. I daresay I've built many transferable components, such as the SQL database structure. But I'm very happy with how it's going with F3 and I intend to keep going with it, despite not having looked at the other frameworks in a lot of detail.
+
+You could argue that I've stumbled into my framework decision - but let's go back another step and you could also argue that I stumbled into my choice of programming language. These days, most languages can be run on the server-side, so there was nothing stopping me using Ruby (with Ruby on Rails), Node, or Python. What made me go for PHP?
+
+PHP is still the most popular server-side programming language worldwide, and, more importantly, it's the server-side language I have by far the most experience using. I could have spent a few weeks learning the ins and outs of C\# and .NET to deliver my project, but given I have so much to build (remember the 5 incremental deliverables outlined in my Outline Project Specification), I didn't want to find myself desperately trying to debug an obscure error in a new language a week before the deadline.
+
+I think PHP and F3 are the right choices, but I hope in the coming weeks I can justify my decision with something a little stronger than just "it was the easiest way to get started".

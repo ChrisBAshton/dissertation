@@ -1,0 +1,60 @@
+\chapter{Requirements Gathering}\label{appendix:requirements}
+
+I decided to follow a three-stage requirements-gathering process:
+
+\begin{enumerate}
+
+    \item Informal requirements specification, gleaned from my early supervisor meetings. % @TODO see http://ashton.codes/blog/clarifying-requirements/ and reference it
+
+    \item Cucumber features encompassing all of the above requirements, allowing me to code a corresponding regression test and make the requirements executable.
+    
+    \item Agile stories encompassing the above requirements (at times duplicating the Cucumber features), representing units of work that need to be completed in a sprint. I'm hoping to follow the XP-style process of prioritising which stories go into which sprints, by estimating the effort involved for each story and getting the stakeholders to decide on the value presented by each story, and therefore which stories should be tackled first
+
+\end{enumerate}
+
+My plan was always to use behaviour-driven development in my project, and I believe passionately in keeping all documentation as closely in line with the code as possible. I used gherkin syntax to describe the features, and hoped to link these up to an executable test suite.
+
+Here is an example feature:
+
+\begin{lstlisting}
+Feature: Dispute (under Mediation)
+    The rules of the Dispute have now changed. All communication must be done through the Mediator.
+    It is at this point that the business logic specific evidence-gathering can be applied, so that
+    the artifical intelligence in the module can provide a second opinion to the Mediator.
+    The Mediator, being a specialised and trained individual, can choose to ignore or amend the given
+    advice.
+
+  Background:
+    Given I am logged into a Mediator account
+    And the Dispute is in Mediation
+
+  @clear
+  Scenario: Block Agent A and B from communicating with one another
+    Given I am logged into an Agent account
+    And we have not activated round-table communication
+    Then I should not be able to communicate with the other Agent
+
+  Scenario: Communication between Agent and Mediator
+    Given we have not activated round-table communication
+    Then I should be able to communicate with the Agents in individual threads
+    And there should be no way for either Agent to see the messages of the other
+
+  Scenario: Trying to send a message to someone not involved in the dispute
+    Given I try to send a message to someone not involved in the dispute
+    Then I should see the message 'The account you're trying to send a message to is not involved in this dispute!'
+
+  Scenario: Enabling round-table communication
+    Then I should be able to enable round-table communication
+
+  @clear
+  Scenario: Mediation is in round-table communication
+    Given the Dispute is in round-table communication mode
+    Then all parties should be able to communicate freely
+
+  @clear
+  Scenario: Disabling round-table communication mode
+    Given the Dispute is in round-table communication mode
+    Then I should be able to disable round-table communication
+    And free communication should no longer be allowed between all parties
+
+\end{lstlisting}

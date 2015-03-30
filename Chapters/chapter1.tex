@@ -1,0 +1,100 @@
+\chapter{Background \& Objectives}
+
+%This section should discuss your preparation for the project, including background reading, your analysis of the problem and the process or method you have followed to help structure your work.  It is likely that you will reuse part of your outline project specification, but at this point in the project you should have more to talk about. 
+
+\section{Background} % What was your background preparation for the project? What similar systems did you assess? What was your motivation and interest in this project?
+
+Online Dispute Resolution (ODR) is a specialised type of Alternative Dispute Resolution (ADR), which refers to "any means of settling disputes outside of the courtroom" [reference]. ADR can include negotiation, mediation, arbitration and so on. % reference = https://www.law.cornell.edu/wex/alternative_dispute_resolution
+
+There are various motivations for ODR. Since neither party is required to travel to a physical courtroom, disputes can be settled more quickly, conveniently and at lower cost. Modria, "The World’s Leading Online Dispute Resolution Experts" [reference], cite three general reasons to use ODR: % reference = http://modria.com/products/
+
+\begin{itemize}
+    \item Reduced legal risk – resolving disputes quickly decreases the chance of lawsuits because your customers feel like they’re being heard.
+    \item Lower operating costs – managing disputes online lowers travel expenses.
+    \item Increase customer loyalty – fast, fair resolutions = happier customers.
+\end{itemize}
+
+ODR platforms already exist; they allow lawyers to open disputes on behalf of their clients, upload documents as evidence and communicate via online messaging, hopefully reaching an amicable resolution. However, there is no business logic that helps influence the outcome of a dispute. Resolution is a manual process performed by the lawyers.
+
+This project explores the possibility of introducing business logic and artificial intelligence (AI) into ODR platforms, giving lawyers and/or mediators an automated second opinion as to the suggested outcome of a dispute. The "Maritime Collisions" part of the title refers to the area of law which we hoped to automate in this project.
+
+The idea was for \emph{Online Dispute Resolution for Maritime Collisions} to deliver an abstract ODR platform whereby a module containing maritime law business logic can be plugged into the system. The module would ask relevant, structured questions, interpret the answers by both parties and play out a "court simulation" indicating the outcome of the case should the dispute be taken to court. It may also retrieve similar historic cases which can be fed into the simulation.
+
+Although it is the maritime collision AI that has not been attempted in ODR before and thus breaks new ground, the most valuable deliverable in this project would be the core ODR platform itself, for being something abstract and extensible enough to support such a module. As such, the greatest development emphasis has been put on the ODR platform, rather than the module.
+
+\section{Objectives}
+
+These were the objectives I clarified early on in the project, to be tackled incrementally:
+
+\begin{enumerate}
+
+    \item \textbf{To build an Online Dispute Resolution platform}. This is the minimum viable product, and as has been pointed out, is potentially substantial enough to be a Major Project on its own, encompassing front-end development, back-end business logic and database integration. Having said that, I have been given permission to investigate open source platforms as a starting point, in which case this stage may not require very much work.
+    
+    \item For this Online Dispute Resolution to be \textbf{tailored to Maritime Collisions}, providing some sort of conclusion (I’m using the term "court simulation") given the details of the dispute. As a worst-case scenario, this may mean hard-coding business logic, rules, database schemas, and so on, to fit with maritime collision properties.
+
+    \item For this Online Dispute Resolution to be \textbf{an abstraction, able to take a module of business logic} (perhaps Maritime Collisions, perhaps something else – hence the abstraction). Georgios stressed the importance of keeping this system abstract, so I will aim to develop straight to this stage, skipping stage 2. An advantage of an abstract system is that we can feed very simple business logic modules to the system, making it easy to test.
+
+    \item As an additional feature, the system should be able to \textbf{retrieve the most similar historical cases}, which should be of use to the lawyers involved. This will likely involve a large degree of setup work, including sourcing the cases and representing them in a consistent data structure.
+
+    \item Following on from the ability to retrieve similar cases is the ability to \textbf{feed the details of the similar cases \emph{into the current dispute}}, thereby influencing the “court simulation” and making this feature even more accurate and valuable.
+
+\end{enumerate}
+
+\section{Analysis} % Taking into account the problem and what you learned from the background work, what was your analysis of the problem? How did your analysis help to decompose the problem into the main tasks that you would undertake? Were there alternative approaches? Why did you choose one approach compared to the alternatives? There should be a clear statement of the objectives of the work, which you will evaluate at the end of the work. In most cases, the agreed objectives or requirements will be the result of a compromise between what would ideally have been produced and what was felt to be possible in the time available. A discussion of the process of arriving at the final list is usually appropriate.
+
+@TODO - discuss all the maritime collision background reading, clarifying requirements, etc.
+
+\subsection{Reusing open-source software}
+
+I hoped to find an open-source ODR platform to base my project upon. I would have been able to make the necessary modifications and extensions to support the maritime collision module, without having to build the entire platform from scratch, thereby being able to spend more time on the maritime law module.
+
+Unfortunately, through my extensive research (see appendix ~\ref{appendix:choosingAFramework}), I found that all of the existing ODR platforms are proprietary. Most ODR providers charge a subscription or one-off fee, be they service or platform providers. Given that they charge a fee, they'd be at a commercial disadvantage if they were to go open source.
+
+Without an existing ODR platform to base my project upon, I was forced to develop my own platform from scratch. Developing this core platform was a major project in itself, and took around eight weeks to design and build all of the required functionality. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so have treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a "plausible promise" of what the system is capable of.
+
+That said, I did not reinvent the wheel,
+
+\section{Process} % You need to describe briefly the life cycle model or research method that you used. You do not need to write about all of the different process models that you are aware of. Focus on the process model that you have used. It is possible that you needed to adapt an existing process model to suit your project; clearly identify what you used and how you adapted it for your needs.
+
+Last semester we learned a lot about agile practices. It stressed the importance of being able to embrace change, deferring the design decisions until the last possible moment so that they can be made in light of the experience gained through spike work, talking to the on-site customer, and so on.
+
+The idea of agile is that the cost-of-change curve is made shallower. Customers are happy because it's never too late to tweak a feature, and developers are happy because they're not expending lots of effort into writing up requirements specifications, designing UML diagrams, and the like.
+
+Numerous examples were cited of high-profile, multi-million pound software systems going exponentially over budget or failing to deliver at all, as a result of following the antiquated Waterfall model. We laughed at the suggestion of using a BDUF (big design upfront) methodology in our major projects: we were now agile developers and could nimbly build incredible systems without being held up by dull and costly processes such as documentation.
+
+However, we should be able to adapt our choice of methodology to the project at hand, not the project at hand to our choice of methodology. And, looking at my project impartially, I think it really is best suited to a more plan-driven approach.
+
+\begin{itemize}
+
+    \item I'm building an Online Dispute Resolution system. Other systems like this already exist. Until it comes to the maritime collision logic, my codebase won't be breaking new ground or reinventing the wheel. There's already a bunch of fairly straightforward features that can be formalised in advance to be taken into account in the design.
+    
+    \item There's a heavy emphasis on law and following processes correctly: my system cannot be seen to be favouring one party over another. It is absolutely essential that my system does not violate any of the rules of ODR - and therefore it is essential to document these rules in the requirements specification, for traceability and accountability.
+    
+    \item I have a law contact (Konstantina) who I am able to meet perhaps once every two to three weeks. This is not nearly often enough to constitute as an "on-site customer". It's not even often enough to meet and prioritise user stories, since even when we do meet our time is limited and there are other items on the agenda to discuss.
+    
+    \item Finally, the process of gathering requirements, creating a design, and implementing and testing a substantial software system is still somewhat new to me. I have experience through freelance work I've done through my company, and through various projects at the BBC - but having a design and a plan is a comforting safety net.
+
+\end{itemize}
+
+The above points don't disqualify agile practices from my project completely. I'm very keen on the agile principles of TDD, continuous integration, regular releases and merciless refactoring, and am actively applying these principles (with the exception of regular releases, which I've not had time to investigate at this stage in the project).
+
+Thus, my approach is a hybrid one of Waterfall and Agile: I have a requirements specification through Cucumber features, use-case diagrams, etc, and some up front design such as the database schema; for the implementation I'm switching to a business-driven, test-driven approach that utilises the best of the agile processes (but are not mutually exclusive from the Waterfall model).
+
+\subsection{Development Methodology versus Project Management}
+
+So far I've been speaking about my choice of development methodology, each of which has a traditionally associated project management approach. Waterfall projects tend to use gantt charts to plan progress, whereas agile approaches tend to use sprints to plan individual iterations. As I'm using a hybrid development methodology, should I be using a hybrid project management methodology?
+
+My project management approach so far has been somewhat ad-hoc. I've been using my own installation of JIRA to plan collections of features to be completed by arbitrary deadlines, and GitHub issues to document other things that need to be added but are not of an immediate concern (essentially my product backlog).
+
+Apart from a goal to have the core ODR platform ready in time for the mid-project demonstration (after which I can concentrate solely on the maritime collision business logic module), I have no specific milestones. Then again, if "Have features X, Y and Z ready be the 5th March" is not a "proper" milestone, what is? How does translating a JIRA ticket to a sprint or a gantt chart make the milestone more "real"?
+
+Admittedly, it's been difficult to monitor progress using JIRA alone. Without looking carefully at my git commit history, I couldn't be much more specific than "I started coding roughly three weeks ago, and now here's where I'm at." Dividing my work into sprints would let me easily say "I'm at version 0.7, and last week I added the following features." It's difficult to measure my velocity using my current approach as it means I have nothing to feed back into future ticket deadlines other than my own estimates.
+
+I'd have a ticket saying "Finish feature X, Y and Z", but the deadline would arrive and I'd only have completed feature X and half of Y. I've now improved my JIRA approach slightly be setting more self-contained, achievable goals: "Feature X" by one deadline, "Feature Y" by another. These are single units of work that can be encapsulated in their own branches and merged with the master.
+
+A higher level overview of my project timeline, in the form of a gantt chart or sprint plan, could prove useful and give me an early warning if I'm going off track in terms of hitting my project milestone. I recently bought a whiteboard, so may end up using that before making a digital copy for the purposes of my final report.
+
+
+\section{Requirements}
+
+See appendix ~\ref{appendix:requirements} for my Cucumber features.

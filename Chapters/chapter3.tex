@@ -1,0 +1,31 @@
+\chapter{Implementation}
+
+The implementation should look at any issues you encountered as you tried to implement your design. During the work, you might have found that elements of your design were unnecessary or overly complex; perhaps third party libraries were available that simplified some of the functions that you intended to implement. If things were easier in some areas, then how did you adapt your project to take account of your findings?It is more likely that things were more complex than you first thought. In particular, were there any problems or difficulties that you found during implementation that you had to address? Did such problems simply delay you or were they more significant? You can conclude this section by reviewing the end of the implementation stage against the planned requirements. 
+
+\section{Comments}
+
+
+
+Tom Maslen, technical lead at BBC Visual Journalism, once told me his views on writing code comments. I may be paraphrasing somewhat, but his philosophy was something like this:
+
+\say{There are three stages to a developer's commenting ideology: the first stage is where the developer comments every line of code, thinking they're being a good programmer. They soon learn that their comments are muddling the code and make it harder to read.}
+
+\say{They then turn to Javadoc-style API commenting, writing parameter and return-type descriptions above function definitions, marking up their comments in a way that lets them run a tool that can generate documentation from their comments. However, they'll learn that even this isn't sustainable: all comments eventually become misaligned with the code that they originally referred to. All comments are extra effort for the developer, requiring them to duplicate the intentions of their code in multiple places, violating the DRY principle. Comments can lead to sloppy code, since you don't need to be able to explain yourself fully through your code alone: you can augment it with textual descriptions.}
+
+\say{The best programmers write no comments because their code is self-documenting. The reader should be able to read their code top-to-bottom, like a book, and should be able to easily understand what the code is doing. There's no risk of having outdated documentation, since there's no documentation in the first place. Let the code speak for itself. If you feel the need to explain your code, then your code should probably be rewritten.}
+
+He wasn't as averse to comments as I've just made out: I know he used to put the odd comment in his code to clarify things for the reader. But he and I agree that a comment in your code is a code smell [REF]; an indication that the code needs to be refactored to become more readable and remove the need for that comment.
+
+It is difficult, then, to return to university after my industrial year and find that many of my lecturers are pro-comments and will mark you down for the absence of them. On the one hand, industry is telling me to avoid them, and on the other, academics are telling me to apply them. I had, toward the end of my industrial year, leaned heavily towards that third stage of comments ideology, only writing comments where I felt my code was not self-documenting enough and making a mental note to refactor later.
+
+In this major project, I've decided to provide Javadoc-style API comments throughout my code. This was not a decision I took lightly. On the one hand, it would appease my lecturers and provide an additional appendix of documentation explaining the low-level workings of my code. However, I wrote these comments out of choice, not out of necessity.
+
+At the BBC, we worked on somewhat small, self-contained special features: items of work that could be started and finished in around 4-6 weeks. We'd often be the sole developer on such features. As a result, creating documentation felt a bit fruitless: we already know our own code (and have tried our best to make it self-documenting), so why go to the effort of providing and then maintaining comments throughout the codebase?
+
+The SmartResolution project is different in scope. It encompasses various front-end and back-end components, as well as rigorous unit and integration tests throughout. Unlike BBC special features, it is designed to be free and open-source software, and designed to encourage the open-source community to contribute towards it.
+
+A collaborative project of this scale would fall apart without comments. I found myself forgetting where components were and how I could use them. Far from being a hindrance, I found API-style comments an aid to refactoring, as it allowed me to more clearly see whether my API for a particular class was consistent throughout. This is particularly important in a dynamically typed language such as PHP, where types cannot always be inferred from looking at the function definition alone.
+
+The most important component of the project to be thoroughly commented is the module hook API: developers need to know how they can develop a module to interact with the core platform at set points. As such, this part of the project contains the most detailed comments.
+
+If I were to tackle a small, in-house project in future, I'd still lean towards that third stage of comments ideology. But for bigger projects, and especially projects that are likely to be developed collaboratively, API comments definitely have their place.
