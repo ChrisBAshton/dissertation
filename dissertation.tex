@@ -1,29 +1,13 @@
-\documentclass[11pt,a4paper]{report}
-
-% Aberstwyth dissertation LaTeX Template
-% Authors: Dr. Hannah Dee (hmd1@aber.ac.uk), Neil Taylor (nst@aber.ac.uk)
-% This has been adapted from the Leeds Thesis template and the
-% Group Project template for Computer Science in Aberystywth University.
-%
-% All comments and suggestions welcome.
-%
-% Template designed to be used with pdflatex: it may need alteration to
-% run with a different LaTeX engine
-
-% To build document on the unix command line, run four commands:
-
-% pdflatex dissertation
-% bibtex dissertation
-% pdflatex dissertation
-% pdflatex dissertation
-
-
-% set a boolean here to turn images on or off. When the dissertation has lots of images,
-% it takes a while to compile and re-download on sharelatex.com.
-\newif\ifimages
-%%% COMMENT OUT AS APPROPRIATE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%% CONFIGURATION OPTIONS %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% When the dissertation has lots of images, it takes a while to compile and re-download on sharelatex.com.
+% We set a boolean here to turn images on or off. 
+\newif\ifimages % declare the boolean. Below, set the boolean by uncommenting one of the lines:
 \imagestrue
 %\imagesfalse
+
+\documentclass[11pt,a4paper]{report}
 
 % you will end up with dissertation.pdf
 \usepackage{mmp}
@@ -148,3 +132,20 @@
 
 
 \end{document}
+
+% Aberstwyth dissertation LaTeX Template
+% Authors: Dr. Hannah Dee (hmd1@aber.ac.uk), Neil Taylor (nst@aber.ac.uk)
+% This has been adapted from the Leeds Thesis template and the
+% Group Project template for Computer Science in Aberystywth University.
+%
+% All comments and suggestions welcome.
+%
+% Template designed to be used with pdflatex: it may need alteration to
+% run with a different LaTeX engine
+
+% To build document on the unix command line, run four commands:
+
+% pdflatex dissertation
+% bibtex dissertation
+% pdflatex dissertation
+% pdflatex dissertation
