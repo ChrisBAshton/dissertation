@@ -23,3 +23,23 @@ Over time, my initial requirements were no longer accurate. New requirements:
 * SmartResolution.org
 * SmartResolution Marketplace
 * Talk about the 4 components of the project. (site, marketplace, core, module)
+
+\section{Speed of progression}
+
+I had hoped to complete the core ODR platform a couple of weeks before I actually managed it. In general, I did find that progress was slower than anticipated.
+
+The core ODR platform, as of Sunday 29th March, was more or less complete. I had hoped to get to this point quite a while ago, initially by Friday 13th, before mid-project-demo week. I then postponed this to Tuesday 17th, which was the day of my demo. At this point I still needed to add mediation - and hoped to have that done by the end of the week (Friday 20th), then Sunday 22nd (which I still classed as "end of the week"), then middle of the week (Wednesday 25th), then end of the week. And here I am.
+
+I'm surprised that it took so long to get to this point, and I'd like to briefly examine the reasons why, especially as I actually managed to negotiate some simpler requirements (removing formal resolution "offers", etc) to help reach my deadlines.
+
+It is partly down to my busy schedule: company work, company administration, family, friends. However, there must be more to it than that.
+
+I believe that coding in a test-driven way has slowed me down - not cripplingly, but by a pretty significant margin. Having to write integration and unit tests, fix them when they break, wait several minutes for Travis to build my project and inform me when things have broken, having to refactor my unit tests when I refactor my codebase - these have all factored into a more drawn-out development process. As an estimate, I think I probably would have been at this same stage a week ago (22nd) had I not disciplined myself to write tests throughout.
+
+Of course, there's no way of knowing how much time I would have spent manually testing, and fixing complicated bugs that start at one point and proliferate throughout the system. It is very possible that, without tests, I'd be even further behind than I'd like to be! Regardless of time, I'm very, very happy to have this collection of tests that cover every aspect of my codebase. I can refactor hundreds of lines of code and automatically validate that everything still works. The development overhead on writing tests is easily worth it for the ability to code with no anxiety.
+
+That aside, TDD isn't the only culprit for a bloating deadline. The stakeholders added things to my initial requirements, such as a file upload facility, the ability to view user profiles, and so on. Occasionally I've also added my own self-imposed requirements, such as automated AWS deployment. Each requirement adds at least a day to the development phase.
+
+Finally, it's worth re-iterating that this is a pretty major project! In the past I've worked on small, self-contained features for the BBC, or personal web projects which are, again, quite small in scope. Developing a fully-functional, BDD-driven, enterprise-level piece of software as a single developer is hard. Perhaps I underestimated the difficulties of actually implementing the code, even with a pretty well thought-out up-front design.
+
+I should keep in mind that what I have so far is an achievement to be proud of (this is echoed by the 91\% I achieved in the mid-project demo). I didn't meet my arbitrary deadline, but what I've built so far is a worthy major project in itself, even before introducing the other exciting components I hope to introduce. I must be code-complete by 25th April; it's the only way I'll have time to write a thorough enough final report. This gives me just under four weeks to accomplish as much as possible.

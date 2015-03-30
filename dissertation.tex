@@ -7,6 +7,10 @@
 \imagestrue
 %\imagesfalse
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% ...end of configuration %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass[11pt,a4paper]{report}
 
 % you will end up with dissertation.pdf
@@ -18,6 +22,7 @@
 \lstset{breaklines=true} % word-wrap source code
 \lstset{basicstyle=\small\ttfamily}
 \lstset{framesep=4pt}
+\newcommand{\inlineCode}{\lstinline[basicstyle=\normalsize\ttfamily]}
 % uncomment if you want line numbers:
 %\lstset{numbers=left, numberstyle=\scriptsize\ttfamily, numbersep=10pt, captionpos=b}
 
@@ -106,6 +111,7 @@
 \include{Appendices/requirements}
 \include{Appendices/third-party}
 \include{Appendices/framework}
+\include{Appendices/bdd}
 \include{Appendices/code}
 \include{Appendices/commercial-viability}
 
