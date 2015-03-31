@@ -17,6 +17,44 @@ I felt that certain design documentation, such as a database schema, would be wo
 
 \section{Overall Architecture}
 
+My project can be broken down into three main components:
+
+\begin{enumerate}
+    \item \textbf{Core platform}, AKA SmartResolution. This is the ODR software that I spent the majority of my time developing.
+    
+    \item \textbf{Maritime collision module}. This is a plugin for the SmartResolution software that defines a "Maritime Collision" dispute type and offers custom actions and business logic for these specialised cases.
+    
+    \item \textbf{SmartResolution Marketplace}, AKA smartresolution.org. 
+\end{enumerate}
+
+When I considered the commercial viability of the software (see appendix~\ref{appendix:commercialViability}), I drew a parallel with the blogging software WordPress. My overall architecture follows the same principle as theirs:
+
+\begin{enumerate}
+    \item \textbf{WordPress platform}: blogging software that can be downloaded, installed and hosted on your own server.
+    
+    \item \textbf{WordPress plugin}: a self-contained package that can be installed to a WordPress installation and augment the core installation with additional functionality.
+    
+    \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website, accessible directly through your own WordPress installation, allowing the painless and automatic installation of plugins. % https://wordpress.org/plugins/
+\end{enumerate}
+
+\subsection{Core platform}
+
+SmartResolution [REF] is the ODR platform offering the core online dispute resolution requirements, such as organisation and user registration, dispute creation, messaging, file uploads, and so on. It offers the minimum facilities necessary to successfully negotiate a dispute online.
+
+As it is the basis of all the other components, it is also the most thoroughly engineered and is backed up with integration and unit tests, continuous integration, automated code quality checks and dependency status checks.
+
+\subsection{Maritime collision module}
+
+This module is separate from the core platform and lives in its own repository [REF]. It can be installed to any SmartResolution installation by being deployed to the top-level "modules" directory; no further configuration is required.
+
+As discussed in the background and initial requirements, it was intended for this to be a feature-rich module that could find similar historic cases, cross-check agents' answers with maritime law, and approximate the likelihood of an agent's success in court. This is still theoretically possible. However, given the lack of time and resources, I've had to create this as more of a prototype; a teasing glimpse as to what might be possible given a few more development hours.
+
+\subsection{SmartResolution Marketplace}
+
+This is the vendor site for SmartResolution, explaining what SmartResolution is and offering a download link to a production-ready version. Its subdomain, demo.smartresolution.org, has a live demo of the SmartResolution software installed so that users can try out the software before they download. However, the main purpose for smartresolution.org is the \emph{Marketplace} facility.
+
+This facility, like WordPress' "Plugin Directory", is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install SmartResolution modules from smartresolution.org, from within the SmartResolution installation itself.
+
 \section{Some detailed design}
 
 \subsection{Even more detail}
