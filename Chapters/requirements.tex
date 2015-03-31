@@ -28,6 +28,8 @@ Figure ~\ref{uml:useCase:registration} shows this in terms of the law firms and 
   \label{uml:useCase:disputes}
 \end{figure}
 
+Figure~\ref{uml:useCase:disputes} shows the roles and actions involved in the creation, mediation and closing of a dispute.
+
 Only law firms can create new disputes. There is then some back-and-forth assignment between law firms and agents until both sides of a dispute are represented by different agents. I identified this as being a "dispute creation" stage.
 
 Inside a dispute, agents should be able to negotiate the dispute lifespan, exchange messages and evidence, and should have the freedom to close a dispute. In a best-case scenario, this is all that is required to successfully resolve a dispute. I've identified this as the "dispute" stage.
@@ -36,7 +38,13 @@ Should it be required, an agent can propose mediation, and there is a defined pr
 
 \subsection{Miscellaneous}
 
-Other elements of functionality are implied in the feature files. For example, agents should be able to peruse a mediator's CV before making a decision as to which mediator to opt for. This suggests a "view profile" facility, with custom fields for the CV, which could be as simple as a HTML textarea or as complicated as an integrated PDF uploader and viewer.
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=\textwidth]{use_case--miscellaneous}
+  \caption{Use case diagram demonstrating other miscellaneous requirements}
+  \label{uml:useCase:miscellaneous}
+\end{figure}
+
+Other elements of functionality are implied in the feature files, shown by the miscellaneous UML diagram in figure~\ref{uml:useCase:miscellaneous}. For example, agents should be able to peruse a mediator's CV before making a decision as to which mediator to opt for. This suggests a "view profile" facility, with custom fields for the CV, which could be as simple as a HTML textarea or as complicated as an integrated PDF uploader and viewer.
 
 Given the tight deadline of the project, the scale of the system I'll be building, and the priority having to be on the maritime collision logic, I was told to keep these miscellaneous features as simple as possible.
-
