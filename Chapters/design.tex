@@ -55,9 +55,66 @@ This is the vendor site for SmartResolution, explaining what SmartResolution is 
 
 This facility, like WordPress' "Plugin Directory", is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install SmartResolution modules from smartresolution.org, from within the SmartResolution installation itself.
 
-\section{Some detailed design}
+\section{SmartResolution design}
 
-\subsection{Even more detail}
+As the basis of all of the other components, SmartResolution itself required the most design preparation.
+
+\subsection{SmartResolution directory structure}
+
+\dirtree{%
+.1 data.
+.1 deploy.
+.1 features.
+.1 modules.
+.1 test.
+.1 vendor.
+.1 webapp.
+.2 controller.
+.2 model.
+.2 view.
+.2 index.php.
+.2 routes.php.
+.1 .travis.yml.
+.1 composer.json.
+.1 Gemfile.
+}
+
+\lstinline{data} contains fixture data for tests. This is also where the test and production SQLite3 databases reside.
+
+\lstinline{deploy} contains an installation script to ease setup for new SmartResolution installations, as well as a bundled server to make it easier for developers to verify that the software is installed correctly.
+
+\lstinline{features} contains my Cucumber features and Ruby step definitions.
+
+\lstinline{modules} contains any installed SmartResolution modules. This is where the maritime collision module resides.
+
+\lstinline{test} contains my PHP unit tests.
+
+\lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's dependencies.
+
+\lstinline{webapp} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{routes.php} defines the routing component).
+
+Finally, at the top level we have a few interesting files:
+
+\lstinline{.travis.yml} - an instructions file for Travis Continuous Integration, describing how to set up the project and run its tests. The same commands are required in the one-step installation script (\lstinline{deploy/install.php}), so I use PHP to parse the YAML in this Travis configuration file to avoid duplication.
+
+\lstinline{composer.json} - describes SmartResolution's dependencies. Developers can install all dependencies simply by running \lstinline{\$ composer install}.
+
+\lstinline{Gemfile} - describes SmartResolution's Ruby dependencies. Required for the Cucumber and Ruby integration tests.
+
+\subsection{Database schema}
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=\textwidth]{database}
+  \caption{Database schema for the SmartResolution core platform}
+  \label{uml:databaseSchema}
+\end{figure}
+
+Figure~\ref{uml:databaseSchema} shows the database schema for the SmartResolution core platform, generated directly from \lstinline{data/db.sql} using SQLEditor, for the purposes of this report.
+
+\lstinline{P} symbols refer to primary keys, \lstinline{F} symbols refer to foreign keys, and \lstinline{U} symbols refer to unique integrity constraints. Lines generally denote where one table key references another, i.e. a foreign key visualisation.
+
+For a full explanation and justification of the database design, please refer to appendix~\ref{appendix:database}.
 
 \section{User Interface}
 
