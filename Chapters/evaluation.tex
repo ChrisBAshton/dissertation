@@ -43,3 +43,19 @@ That aside, TDD isn't the only culprit for a bloating deadline. The stakeholders
 Finally, it's worth re-iterating that this is a pretty major project! In the past I've worked on small, self-contained features for the BBC, or personal web projects which are, again, quite small in scope. Developing a fully-functional, BDD-driven, enterprise-level piece of software as a single developer is hard. Perhaps I underestimated the difficulties of actually implementing the code, even with a pretty well thought-out up-front design.
 
 I should keep in mind that what I have so far is an achievement to be proud of (this is echoed by the 91\% I achieved in the mid-project demo). I didn't meet my arbitrary deadline, but what I've built so far is a worthy major project in itself, even before introducing the other exciting components I hope to introduce. I must be code-complete by 25th April; it's the only way I'll have time to write a thorough enough final report. This gives me just under four weeks to accomplish as much as possible.
+
+\section{Prioritising the components}
+
+Explain why I spent time on the SmartResolution software, and then the marketplace, leaving not much time for the maritime collision module.
+
+(The reason is:
+
+This was always going to be a very ambitious project to complete in the 15 weeks we had available to us. I wanted to create something that could be physically used in the real world at the end of my project, not just referenced in an academic paper and then forgotten about. I tried to see the big picture at all times.
+
+The big picture is a robust and fully extensible core ODR platform, with an infinite number of available modules that can be installed to fulfil an infinite number of uses. It was important that the core platform offered enough hooks and an expansive-enough API to allow for the requirements we haven't considered yet (i.e. not just requirements to do with maritime collision).
+
+It was equally important that there should be a straightforward way to install said modules into one's installation of the SmartResolution software. At this stage I took further inspiration from WordPress and decided to create an embedded marketplace, accessible from within the software but referencing an external site. This allows for me to update the list of modules and so on without requiring SmartResolution administrators to update the core software every time.
+
+If I had foregone the SmartResolution marketplace component entirely, I could have invested around a fortnight of extra development time in the maritime collision module, and perhaps accomplished something more exciting and groundbreaking than I actually have. However, the future of SmartResolution would have been severely compromised. Without a centralised means of browsing and installing modules, and indeed a centralised means of downloading the core platform itself and reading installation instructions, etc, then this would have died off as a forgotten university project. I like to think that, with the platform built and the documentation plentiful, developers are empowered to develop their own modules for this sector which has recently been gaining popularity and public awareness.
+
+)
