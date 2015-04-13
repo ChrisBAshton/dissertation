@@ -57,21 +57,27 @@ This facility, like WordPress' "Plugin Directory", is tightly coupled to the adm
 
 \section{SmartResolution design}
 
-As the basis of all of the other components, SmartResolution itself required the most design preparation.
+As the basis of all of the other components, SmartResolution itself required the most design preparation. I've outlined most (but not all) of the key directories and folders below:
 
 \subsection{SmartResolution directory structure}
 
 \dirtree{%
-.1 data.
-.1 deploy.
-.1 features.
-.1 modules.
-.1 test.
-.1 vendor.
-.1 webapp.
-.2 controller.
-.2 model.
-.2 view.
+.1 data/.
+.1 deploy/.
+.1 features/.
+.1 test/.
+.1 vendor/.
+.1 webapp/.
+.2 core/.
+.3 api/.
+.3 controller/.
+.3 db/.
+.3 model/.
+.3 view/.
+.2 modules/.
+.3 other/.
+.3 config.json.
+.2 uploads/.
 .2 index.php.
 .2 routes.php.
 .1 .travis.yml.
@@ -85,13 +91,17 @@ As the basis of all of the other components, SmartResolution itself required the
 
 \lstinline{features} contains my Cucumber features and Ruby step definitions.
 
-\lstinline{modules} contains any installed SmartResolution modules. This is where the maritime collision module resides.
-
 \lstinline{test} contains my PHP unit tests.
 
 \lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's dependencies.
 
-\lstinline{webapp} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{routes.php} defines the routing component).
+\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{webapp/routes.php} defines the routing component). The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory.
+
+Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing, rather than being responsible for the relational database to object mapping.
+
+Finally, this folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
+
+Going back up a level, we have \lstinline{webapp/modules}, which contains any installed SmartResolution modules. This is where the maritime collision module resides once it has been installed. A \lstinline{config.json} file (edited in a user-friendly way through the admin dashboard) denotes which modules are installed and whether or not they are active.
 
 Finally, at the top level we have a few interesting files:
 
@@ -115,6 +125,117 @@ Figure~\ref{uml:databaseSchema} shows the database schema for the SmartResolutio
 \lstinline{P} symbols refer to primary keys, \lstinline{F} symbols refer to foreign keys, and \lstinline{U} symbols refer to unique integrity constraints. Lines generally denote where one table key references another, i.e. a foreign key visualisation.
 
 For a full explanation and justification of the database design, please refer to appendix~\ref{appendix:database}.
+
+\subsection{Module support}
+
+This section of work is separate from the maritime collision module work, and is concerned with how the core platform should support modules at an abstract level. There should be no maritime-collision-specific code in the core SmartResolution platform, but the platform must support all functionality required by the module.
+
+I took inspiration from WordPress' Plugin API, which uses the concept of 'hooks'. WordPress fires events at various points throughout the normal running of a WordPress installation; these events can be subscribed to and a custom function executed to achieve some arbitrary purpose.
+
+Let us look at the \lstinline{add_filter} function as an example [REF]: %http://codex.wordpress.org/Function_Reference/add_filter
+
+\begin{lstlisting}
+add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
+\end{lstlisting}
+
+The first argument is the event to listen for, the second argument is the custom function to execute, and the third argument is an integer denoting the priority of our subscription (where a higher integer means our custom function is executed before the functions of lower-priority subscribed plugins).
+
+I also wanted to take inspiration from F3's routing API [REF]:
+
+\begin{lstlisting}
+$f3->route('GET /some-route' => 'MyClass->handler');
+\end{lstlisting}
+
+What I liked about F3's routing is the ability to assign handling to a public method of a class, rather than a global function, keeping the codebase namespaced and tidy.
+
+I used this as a basis for my design:
+
+\begin{lstlisting}
+on('event', 'function_to_call', 'priority');
+\end{lstlisting}
+
+\subsection{Exposing other methods}
+
+An event-subscription mechanism can only get you so far: I knew I'd need to manipulate the rendered output of SmartResolution, for example adding an item to the dashboard of a dispute.
+
+This could be accomplished by interacting with the core platform, e.g.
+
+\begin{lstlisting}
+// @TODO - example code.
+\end{lstlisting}
+
+However, this encourages tight coupling between the module and the underlying platform, locking me into a specific design and risking breaking backwards compatibility should I refactor SmartResolution in the future.
+
+Again, I took inspiration from WordPress. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post. [REF] %https://codex.wordpress.org/Function_Reference/get_the_ID
+
+So, I created a number of global functions. [REF] I could now manipulate the rendering of the dashboard like this: % http://smartresolution.org/module-docs/index.html
+
+\begin{lstlisting}
+dashboard_add_item(array(
+    'title' => 'Some Action',
+    'image' => get_module_url() . '/images/icon.png',
+    'href'  => get_dispute_url() . '/custom-route'
+));
+\end{lstlisting}
+
+This is much cleaner and easier from the module developer's perspective. It was always important to me that there should be as few barriers as possible when it comes to module development, if developers are to get excited about SmartResolution.
+
+\subsection{Module persistence}
+
+This was the most difficult area to tackle, as it raises important security issues. Whereas hooking into events and changing the rendering could break aspects of the SmartResolution functionality if the developer is not careful, interacting with the database can do even more damage.
+
+If I allowed arbitrary SQL queries, and a thoughtless developer accidentally executed a \lstinline{DROP TABLE} statement, all manner of data could be lost. This isn't so important on a small demo site with three or four registered users, but if SmartResolution were ever used on a large-scale website, the result could be catastrophic.
+
+Don't get me wrong - you have to trust developers. Regardless of the database access I specifically expose, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function [REF] and executing any command they wish. And in terms of the database interaction, there's nothing stopping developers from accessing the global \lstinline{DB} object used by the core platform.
+
+My concern was not trusting developers to write perfect code. By allowing module developers to run arbitrary SQL queries, I'm sure most developers would use the ability only for querying the database for a legitimate person. However, if their SQL query takes a user input - for example, if they're writing a search engine module - and they don't sanitise the query, then they're letting the \emph{end user} run arbitrary SQL. And the end user doesn't necessarily have the best interests of SmartResolution at its heart.
+
+I decided to continue with the global function definitions, defining functions supporting specific SQL interactions, e.g. creating tables, selecting rows, updating records, and so on. I toyed with the idea of allowing table schema updates on the fly, creating columns as and when they were needed, but this felt dangerous and was tricky to implement. So I started off proceeding with a \lstinline{declare_table} function:
+
+\begin{lstlisting}
+declare_table('my_table', array(
+    'a_text_field' => 'TEXT NOT NULL',
+    'an_int_field' => 'INTEGER DEFAULT 0',
+    'initiated'    => 'BOOLEAN'
+));
+\end{lstlisting}
+
+This could then be inserted into and queried using specific, named functions. This does somewhat restrict what the developer can do - for example, there is no method for doing SQL table joins - but more often than not, the developer can still achieve what they need to achieve using pure application code.
+
+In the above example, \lstinline{my_table} is not the name of the created table. Instead, it is namespaced as \lstinline{module__[module_name]__my_table}. The module developer doesn't need to know this, and can continue to refer to \lstinline{my_table} in all of their queries as if that is the name of the table.
+
+\section{SmartResolution Marketplace design}
+
+Before I discuss the maritime collision module design, this seems a good place to start, as it follows on from the design for module support rather well.
+
+Early versions of SmartResolution used a PHP array to describe which modules were installed and which were active. [REF] % https://github.com/ChrisBAshton/smartresolution/blob/6287211d49006e87a8d2035906eb58da22217906/webapp/modules/config.php 
+
+What I wanted was an admin dashboard: the ability to sign into an administrator account on your SmartResolution instance, view the installed modules, and activate/deactivate them through a user interface. I also wanted the ability to view modules on SmartResolution.org and download and install them directly through SmartResolution, like WordPress does with plugins.
+
+To accomplish this, I have a JSON feed of featured modules on smartresolution.org. [REF] %http://smartresolution.org/marketplace/feed
+
+This feed is pulled in and converted to HTML, both directly on the marketplace itself [REF] and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its modules (which are viewable both through your own installation of WordPress and on WordPress itself [REF]). %http://smartresolution.org/marketplace
+%https://wordpress.org/plugins/
+
+Defining featured and "other" modules externally on smartresolution.org gives me the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution instances, regardless of when the instance was installed. This presents a commercial opportunity, as hinted by the "Coming soon" modules for Divorce and Breach of Contract, which I would not offer for free.
+
+The process for putting a module on the SmartResolution Marketplace is currently manual. This is something I would want to automate in the future, for example by taking a GitHub repository URL and zipping up the contents automatically. However, this manual process does at least give me the option to check the code and make sure there is nothing insidious about its contents before making it available on the marketplace.
+
+The admin dashboard feature was one of the last to be added. Figure~\ref{uml:databaseSchema} shows the \lstinline{administrators} table, which requires nothing more than the \lstinline{login_id} associated with an \lstinline{account_details} entry.
+
+Currently, the admin account must be created manually in the database. In future, I would make this a part of the installation process, prompting the user for an admin email and password.
+
+With the admin account created, the admin can log into their account to be presented with three options: Marketplace, Modules and Customise. The latter option is a placeholder and contains no functionality. It is hoped that this might later allow the admin to customise their instance, e.g. by changing the SmartResolution logo, enabling/disabling mediation, and so on.
+
+The other two options are fully functional. The 'Marketplace' converts the modules JSON feed into a HTML page, detects if the module is already installed on the instance, and if not, provides an option to download and install the module in one button press.
+
+The 'Modules' option lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution instance.
+
+There is one more admin feature I'd have liked to have added given more time: the ability to switch themes. WordPress allows bloggers to easily change the look and feel of their site by activating a new theme. This is something that is perfectly possible in SmartResolution too, thanks to its MVC architecture.
+
+\section{Maritime collision module design}
+
+
 
 \section{User Interface}
 
