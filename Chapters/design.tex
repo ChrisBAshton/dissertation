@@ -1,15 +1,4 @@
-%\addcontentsline{toc}{chapter}{Development Process}
-\chapter{Design} % You should concentrate on the more important aspects of the design. It is essential that an overview is presented before going into detail. As well as describing the design adopted it must also explain what other designs were considered and why they were rejected.The design should describe what you expected to do, and might also explain areas that you had to revise after some investigation.Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here.How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. If in doubt about what is appropriate, speak to your supervisor. You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.Some example sub-sections may be as follows, but the specific sections are for you to define.
-
-@TODO - leading up to the Design section of the report, we should already have established:
-
-* background \& objectives
-* requirements
-* the switch to an agile approach, encompassing design, development and testing all at once.
-* CHOICE OF PROGRAMMING LANGUAGE AND FRAMEWORK
-* Choice of ``SmartResolution'', ability of a marketplace, WordPress analogy, and so on.
-
-% ---
+\chapter{Design} % You should concentrate on the more important aspects of the design. It is essential that an overview is presented before going into detail. As well as describing the design adopted it must also explain what other designs were considered and why they were rejected. The design should describe what you expected to do, and might also explain areas that you had to revise after some investigation. Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here. How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.
 
 As has already been discussed, this project used a hybrid approach of a plan-driven methodology followed by an agile implementation. The design stage is where one methodology merges into the other.
 
@@ -17,25 +6,47 @@ A lot of time was invested in clarifying requirements, so that the common classe
 
 Certain design documentation, such as the database schema, was worth spending time creating and could be designed up front, since it was unlikely to change unless there was a change in requirements. Other things, such as class diagrams would not be suitable for upfront design, since the code would be refactored throughout the process and it would ultimately fall out of line with the documentation.
 
-\section{Taking inspiration from WordPress}
+\section{Development choices}
 
-The commercial viability of the software (discussed in appendix~\ref{appendix:commercialViability}) drew some parallels with the blogging software WordPress. They could be said to have a three-tier system:
+\subsection{Programming language}
 
-@TODO represent with a diagram? Pyramid?
+As a web-based solution, the options were somewhat constrained to server-side languages. PHP, Node and Ruby (on Rails) all came to mind. It was decided that PHP would be the most appropriate choice.
 
-\begin{enumerate}
-    \item \textbf{WordPress platform}: blogging software that can be downloaded, installed and hosted on your own server.
-    
-    \item \textbf{WordPress plugin}: a self-contained package that can be installed to a WordPress installation and augment the core installation with additional functionality.
-    
-    \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website, accessible directly through your own WordPress installation, allowing the painless and automatic installation of plugins. % https://wordpress.org/plugins/
-\end{enumerate}
+PHP is currently the most popular server-side programming language worldwide [REF], and, perhaps more importantly, it's the server-side language I have by far the most experience using. % http://w3techs.com/technologies/overview/programming_language/all
 
-@TODO - some discussion about the components of my project and why they're similar to this.
+My philosophy was that, though I could have spent a few weeks learning the ins and outs of ASP.NET to deliver my project, it would be an unwise use of my time given that there was so much to build. I didn't want to find myself desperately trying to debug an obscure error in a new language a week before the deadline. 
 
-\section{Overall Architecture}
+Development experience aside, PHP being the most popular server-side language means that there is extensive support and documentation online: any problems faced during development have likely already been solved by other peoples' experiences. Moreover, if the project were to go open-source, it would be more likely to acquire a sizeable and active developer community than a more obscure language such as Go.
 
-Continuing the WordPress analogy, the project can be broken down into three main components:
+With my suite of Gherkin-syntax features, I needed a set of accompanying step definitions. The PHP de-facto standard implementation of BDD is Behat,  but after much lamenting on which BDD framework to use (see appendix~\ref{appendix:bdd}), it was decided that the project should use Ruby and Cucumber as its BDD framework.
+
+\subsection{Reusing open-source software}
+
+It was hoped that there would be an existing open-source ODR platform to base the project upon, upon which one would have been able to make the necessary modifications and extensions to support the maritime collision module, without having to build the entire platform from scratch, thereby being able to spend more time on the maritime law module.
+
+Unfortunately, through fairly extensive research (see appendix ~\ref{appendix:choosingAFramework}), it was found that all of the existing ODR platforms are proprietary. Most ODR providers charge a subscription or one-off fee, be they service or platform providers. Given that they charge a fee, they'd be at a commercial disadvantage if they were to go open source.
+
+Without an existing ODR platform to base the project upon, there was no option but to develop the core platform from scratch.
+
+\subsection{Framework}
+
+It makes sense to minimise development effort through the use of a framework, letting the combined efforts of thousands of contributing developers do the heavy lifting so that we are free to implement the application-specific code. Dozens of frameworks exist, so deciding on one can be difficult.
+
+Large frameworks such as Zend and CakePHP are very constraining, requiring you to stick to their idea of what is the best development approach (specific directory structures, MVC design pattern, and so on) or else perform some very heavy, non-standard configuration to make it suit your project. Either of these heavyweight frameworks could be perfectly well suited to ODR, but generally speaking I try to stay away from non-transferable frameworks. I like to understand exactly how my application works, rather than delegate that understanding to a third-party library, and I like having the freedom to change frameworks painlessly at a later date - something which is not suited to heavyweight frameworks.
+
+Lighter options exist: these include Huge, Opauth, Laravel and Fat-Free Framework. Huge looked promising to begin with but then appeared to be more of a middleweight framework, strongly encouraging certain directory structures. It would be a base that the ODR software would have to build upon, rather than a library that could be plugged into the system, only called as and when need.
+
+Opauth looked nice and lightweight, but was aimed at projects which want to use OAuth for authentication, allowing people to sign in using their Twitter, Google, LinkedIn or Facebook account. This was not suitable, given our project requirements. Laravel was the next one considered and looked a little like PHP's answer to Rails, as it generates an entire application structure through a proprietary command.
+
+Almost any one of these libraries would have been a suitable starting point. It would be impossible to thoroughly evaluate every framework to make a truly considered decision.
+
+The most promising framework at first glance was Fat-Free Framework, or F3 as it is commonly known, having a low learning curve and an unconstraining nature. Its modular build meant that I could cherrypick the elements of functionality needed for the project, rather than go for an all-or-nothing installation. Interaction with the library is almost entirely through calls to namespaced classes. F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3.
+
+For similar reasons to my justification for my choice of PHP, I chose to use F3 due to the low learning curve and ability to get started quickly. I am more comfortable with native PHP than learning the ins and outs of a framework.
+
+\section{Overall architecture}
+
+The project can be broken down into three main components:
 
 \begin{enumerate}
     \item \textbf{Core platform}, AKA SmartResolution. The majority of the project was spent developing this ODR software.
@@ -61,9 +72,23 @@ As discussed in the background and initial requirements, it was intended for thi
 
 This is the vendor site for SmartResolution, explaining what SmartResolution is and offering a download link to a production-ready version. Its subdomain, demo.smartresolution.org, has a live demo of the SmartResolution software installed so that users can try out the software before they download. However, the main purpose for smartresolution.org is the \emph{Marketplace} facility.
 
-This facility, like WordPress' "Plugin Directory", is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install SmartResolution modules from smartresolution.org, from within the SmartResolution installation itself.
+\section{WordPress: a comparison}
 
-\section{SmartResolution design}
+The commercial viability of the software (discussed in appendix~\ref{appendix:commercialViability}) drew some parallels with the blogging software WordPress. They could be said to have a three-tier system:
+
+@TODO represent with a diagram? Pyramid?
+
+\begin{enumerate}
+    \item \textbf{WordPress platform}: blogging software that can be downloaded, installed and hosted on your own server.
+    
+    \item \textbf{WordPress plugin}: a self-contained package that can be installed to a WordPress installation and augment the core installation with additional functionality.
+    
+    \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website, accessible directly through your own WordPress installation, allowing the painless and automatic installation of plugins. This facility is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install plugins from wordpress.org, from within the WordPress installation itself. % https://wordpress.org/plugins/
+\end{enumerate}
+
+@TODO - some discussion about the components of my project and why they're similar to this.
+
+\section{Design: SmartResolution}
 
 \subsection{Database schema}
 
@@ -164,7 +189,7 @@ In the above example, \lstinline{my_table} is not the name of the created table.
 
 Most modules will require some sort of persistence layer to be useful, but developers are not necessarily locked into this database setup. They can use PHP's \lstinline{shell_exec} command to create a new SQLite database in their module's directory, giving them complete freedom (and the responsibility it comes with). Or, they can use PHP's \lstinline{file_put_contents} to save to a file, perhaps in conjunction with \lstinline{json_encode} to save a PHP array as a JSON file. The database functions I offer cut out some of the complexity of doing this from scratch.
 
-\section{SmartResolution Marketplace design}
+\section{Design: SmartResolution Marketplace}
 
 Early versions of SmartResolution used a PHP array to describe which modules were installed and which were active. [REF] % https://github.com/ChrisBAshton/smartresolution/blob/6287211d49006e87a8d2035906eb58da22217906/webapp/modules/config.php 
 
@@ -193,13 +218,9 @@ The `Modules' option lists all of the installed modules and whether or not they 
 
 There is one more admin feature I'd have liked to have added given more time: the ability to switch themes. WordPress allows bloggers to easily change the look and feel of their site by activating a new theme. This is something that is perfectly possible in SmartResolution too, thanks to its MVC architecture.
 
-\section{Maritime collision module design}
+\section{Design: Maritime collision module}
 
-The Convention for the Unification of Certain Rules of Law with respect to Collisions between Vessels [REF] describes relatively straightforward, condensed maritime law which can be translated to code. On Dr Constantina Sampani's advice, this was used as the basis for the business logic in the module. %http://www.austlii.edu.au/cgi-bin/sinodisp/au/other/dfat/treaties/1930/14.html
-
-@TODO move to requirements/background?
-
-In terms of codifying that business logic, I began by reading the Convention and extracting the relevant questions and conclusions from that. I drew up a flowchart to help visualise this: see figure~\ref{uml:maritimeLogic}.
+As discussed in the requirements section, the basis for the business logic in this module would be the Convention for the Unification of Certain Rules of Law with respect to Collisions between Vessels. Everything that is required to apply the Convention can be gathered from a few simple questions, visualised in the flowchart in figure~\ref{uml:maritimeLogic}.
 
 \begin{figure}[h!]
   \centering
@@ -251,8 +272,6 @@ When the agents have answered all of the relevant questions, the following happe
 
 Due to the lack of time the resulting module is a little simplistic, but the point is that the core platform supports any arbitrary module. Modules can be as big and complex as time allows.
 
-\section{User Interface}
+\section{User interface}
 
 Bootstrap was used to set up much of the initial design defaults and as a basis for the layout, wanting a clean and attractive look but not wanting to spend too much time on the user interface. Another advantage of using Bootstrap as a UI framework is that the theme is fully responsive by default.
-
-\section{Other relevant sections}
