@@ -235,8 +235,68 @@ There is one more admin feature I'd have liked to have added given more time: th
 
 \section{Maritime collision module design}
 
+The Convention for the Unification of Certain Rules of Law with respect to Collisions between Vessels [REF] describes relatively straightforward, condensed maritime law which can be translated to code. On Dr Constantina Sampani's advice, I used this as the basis for the business logic in my module. %http://www.austlii.edu.au/cgi-bin/sinodisp/au/other/dfat/treaties/1930/14.html
 
+In terms of codifying that business logic, I began by reading the Convention and extracting the relevant questions and conclusions from that. I drew up a data flow diagram to help visualise this: see figure X.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=\textwidth]{maritime_collision_logic}
+  \caption{Logic for Maritime Law results}
+  \label{uml:maritimeLogic}
+\end{figure}
+
+Figure~\ref{uml:maritimeLogic}
+
+Certain questions should only be displayed if certain prerequisites are satisfied. I represented the questions as JSON in the following format:
+
+\begin{lstlisting}
+    {
+        "prerequisites": [
+            {
+                "question_id":     "article_11",
+                "required_answer": "no"
+            }
+        ],
+        "id":   "article_1",
+        "text": "Which vessels were damaged?",
+        "type": "select",
+        "options": [
+            {
+                "text" : "The vessel of my client",
+                "value": "mine"
+            },
+            {
+                "text" : "The vessel of the other party",
+                "value": "other"
+            },
+            {
+                "text" : "Both vessels",
+                "value": "both"
+            }
+        ]
+    }
+\end{lstlisting}
+
+In the above example, the question whose id is \lstinline{article_1} (corresponding to Article 1 of the Convention) is only displayed if the agent answers the question whose id is \lstinline{article_11} with the answer "no".
+
+This module was developed in tandem with the module support in the core platform. As such, it uses most of the events and hooks exposed by the platform.
+
+When the agents have answered all of the relevant questions, the following happens:
+
+\begin{itemize}
+    \item The answers are compared to make sure they tally. If one agent says both vessels were damaged and the other agent says only their vessel was damaged, the answers do not correspond and a conclusion cannot be reached. The module cannot be expected to cope with conflicting information. The module would inform the agents of this.
+    \item Provided both answers correlate, the module's ResultsCalculator class calls the deduceSummary() method [REF], which contains the hard-coded maritime law logic. A resolution is then presented to the agents.
+\end{itemize}
+
+Due to the lack of time the resulting module is a little simplistic, but the point is that the core platform supports any arbitrary module. Modules can be as big and complex as time allows.
 
 \section{User Interface}
+
+I used Bootstrap to set up much of the initial design defaults and as a basis for the layout, wanting a clean and attractive look but not wanting to spend too much time on the user interface. 
+
+SmartResolution should evolve to support the plugging in of different themes. If time allowed, I'd have spent my time implementing that rather than improving the user interface.
+
+That said, I'm pleased with the design and, as I'm using Bootstrap, the theme is fully responsive by default.
 
 \section{Other relevant sections}
