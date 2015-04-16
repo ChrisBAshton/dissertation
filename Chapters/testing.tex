@@ -1,19 +1,41 @@
-\chapter{Testing}
+\chapter{Testing} % Detailed descriptions of every test case are definitely not what is required here. What is important is to show that you adopted a sensible strategy that was, in principle, capable of testing the system adequately even if you did not have the time to test the system fully.Have you tested your system on �real users�? For example, if your system is supposed to solve a problem for a business, then it would be appropriate to present your approach to involve the users in the testing process and to record the results that you obtained. Depending on the level of detail, it is likely that you would put any detailed results in an appendix.The following sections indicate some areas you might include. Other sections may be more appropriate to your project. 
 
-Detailed descriptions of every test case are definitely not what is required here. What is important is to show that you adopted a sensible strategy that was, in principle, capable of testing the system adequately even if you did not have the time to test the system fully.Have you tested your system on �real users�? For example, if your system is supposed to solve a problem for a business, then it would be appropriate to present your approach to involve the users in the testing process and to record the results that you obtained. Depending on the level of detail, it is likely that you would put any detailed results in an appendix.The following sections indicate some areas you might include. Other sections may be more appropriate to your project. 
+SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests.
 
-\section{Overall Approach to Testing}
+In an ideal world, the same principles would be applied to the Maritime Collision module and to the SmartResolution Marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the `Evaluation' section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
 
-\section{Automated Testing}
+As previously mentioned, the project was developed in an agile way from the implementation onwards. As such, the principles of business-driven development (BDD), test-driven development (TDD) and continuous integration (CI) were applied throughout the implementation.
 
-\subsection{Unit Tests}
+\section{Unit Testing}
 
-\subsection{User Interface Testing}
+PHP unit tests
 
-\subsection{Stress Testing}
+@TODO - explain the need to clear the database between each test class.
 
-\subsection{Other types of testing}
+\section{Functional Testing}
 
-\section{Integration Testing}
+Every feature of the SmartResolution core software is defined as a Cucumber feature, associated with step definitions, to make each feature executable and automatically verify that the system is working as expected.
+
+As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}, and the justification for the choice of Ruby and Cucumber as the BDD framework is in appendix~\ref{appendix:bdd}.
+
+Unit tests are tightly coupled to the specific implementation of the code, making refactoring difficult if you wish to move methods, rename classes and the like. Cucumber features, on the other hand, can be defined completely separately from the software itself and are highly valuable since they still test the expected end-to-end functionality of the system as a whole. This makes refactoring the codebase a much less painful process. A necessary principle of unit tests is that the tests will break if the code changes its external API.
+
+@TODO - describe how headers are sent to switch to test environment, and that this is how it was done at the BBC
+
+Also
+
+@TODO - explain the common/helper classes in step definitions.
+
+Also
+
+@TODO - explain and discuss the tradeoff between descriptive and overly-bogged-down cucumber features. (maybe copy from Ruby assignment)
+
+\section{Continuous Integration}
+
+Travis Continuous Integration [REF] ran my tests on every pushed commit or pull request, automatically running all unit and functional tests and notifying me via email if anything broke.
+
+@TODO - discuss how difficult it was to get PHP server running
 
 \section{User Testing}
+
+Demo with Konstantina

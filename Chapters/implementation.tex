@@ -6,6 +6,8 @@
 
 The codebase is liberally commented throughout, using API-style markup. This was a difficult decision, discussed and justified in appendix~\ref{appendix:comments}.
 
+@TODO - style guide
+
 \section{SmartResolution directory structure}
 
 As the implementation followed an agile methodology, the design evolved over time and thus, the directory structure could not be determined up-front. Most (but not all) of the key directories and folders are outlined below:
@@ -58,3 +60,17 @@ Finally, at the top level we have a few interesting files:
 \lstinline{composer.json} - describes SmartResolution's dependencies. Developers can install all dependencies simply by running \lstinline{\$ composer install}.
 
 \lstinline{Gemfile} - describes SmartResolution's Ruby dependencies. Required for the Cucumber and Ruby integration tests.
+
+\section{Class diagrams}
+
+The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute.
+
+@TODO - a visual representation of the disputes in different states, and the actions required to get to those states.
+
+Also
+
+@TODO - a class diagram showing all classes
+
+Also
+
+@TODO - describe in detail the models, data mappers and controller objects.

@@ -56,6 +56,10 @@ The project can be broken down into three main components:
     \item \textbf{SmartResolution Marketplace}, AKA smartresolution.org. 
 \end{enumerate}
 
+@TODO - highlight how different these are by describing the choice of licence for the core platform and for the maritime collision module, and why. e.g. maritime collision mod I wanted people to be able to download and modify as a basis for their own modules, if this were GPL they'd be obliged to release the source etc.
+
+Chose GPL for SmartResolution because (compared to Wordpress' GPLv2) nobody should be able to download, modify and then redistribute the core software under another brand (or at least a closed source brand). (@TODO - double-check OS license terms).
+
 \subsection{Core platform}
 
 SmartResolution [REF] is the ODR platform offering the core online dispute resolution requirements, such as organisation and user registration, dispute creation, messaging, file uploads, and so on. It offers the minimum facilities necessary to successfully negotiate a dispute online.
@@ -94,7 +98,9 @@ The commercial viability of the software (discussed in appendix~\ref{appendix:co
 
 \begin{figure}[h!]
   \centering
+    \ifimages
     \includegraphics[width=\textwidth]{database}
+    \fi
   \caption{Database schema for the SmartResolution core platform}
   \label{uml:databaseSchema}
 \end{figure}
@@ -224,7 +230,9 @@ As discussed in the requirements section, the basis for the business logic in th
 
 \begin{figure}[h!]
   \centering
+    \ifimages
     \includegraphics[width=\textwidth]{maritime_collision_logic}
+    \fi
   \caption{Logic for Maritime Law results}
   \label{uml:maritimeLogic}
 \end{figure}

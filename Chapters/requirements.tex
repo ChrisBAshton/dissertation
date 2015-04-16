@@ -8,7 +8,9 @@ As with all requirements specifications, a good place to begin was to create var
 
 \begin{figure}[h!]
   \centering
+    \ifimages
     \includegraphics[width=\textwidth]{use_case--registration}
+    \fi
   \caption{Use case diagram showing registration feature}
   \label{uml:useCase:registration}
 \end{figure}
@@ -21,7 +23,9 @@ Figure~\ref{uml:useCase:registration} shows this in terms of the law firms and m
 
 \begin{figure}[h!]
   \centering
+    \ifimages
     \includegraphics[width=\textwidth]{use_case--disputes}
+    \fi
   \caption{Use case diagram showing actions available in a dispute}
   \label{uml:useCase:disputes}
 \end{figure}
@@ -38,7 +42,9 @@ Should it be required, an agent can propose mediation, and there is a defined pr
 
 \begin{figure}[h!]
   \centering
+    \ifimages
     \includegraphics[width=\textwidth]{use_case--miscellaneous}
+    \fi
   \caption{Use case diagram demonstrating other miscellaneous requirements}
   \label{uml:useCase:miscellaneous}
 \end{figure}
@@ -46,6 +52,23 @@ Should it be required, an agent can propose mediation, and there is a defined pr
 Other, lesser elements of functionality are shown by the miscellaneous UML diagram in figure~\ref{uml:useCase:miscellaneous}. For example, agents should be able to peruse a mediator's CV before making a decision as to which mediator to opt for. This suggests a ``view profile" facility, with custom fields for the CV, which could be as simple as a HTML textarea or as complicated as an integrated PDF uploader and viewer.
 
 Given the tight deadline of the project and the scale of the system, coupled with the high priority of demonstrating some maritime collision logic, it was decided that these miscellaneous features should be kept as simple as possible.
+
+\section{Dispute process}
+
+Although the use case diagrams describe the features required by the system, they do not clarify when those features should or should not be available. An early meeting with the client, Dr Constantina Sampani, made it clear that there was a very specific workflow that a dispute should follow.
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{dispute_process}
+    \fi
+  \caption{Activity diagram showing the workflow required in creating a dispute}
+  \label{uml:activity:dispute}
+\end{figure}
+
+Figure~\ref{uml:activity:dispute} shows the creation of a dispute and the features that become available to the agents when the dispute has been initialised.
+
+The red boxes indicate the current state of the dispute. These helped later on when designing the classes involved in the state pattern.
 
 \section{Features}
 
