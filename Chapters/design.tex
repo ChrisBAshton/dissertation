@@ -195,6 +195,19 @@ In the above example, \lstinline{my_table} is not the name of the created table.
 
 Most modules will require some sort of persistence layer to be useful, but developers are not necessarily locked into this database setup. They can use PHP's \lstinline{shell_exec} command to create a new SQLite database in their module's directory, giving them complete freedom (and the responsibility it comes with). Or, they can use PHP's \lstinline{file_put_contents} to save to a file, perhaps in conjunction with \lstinline{json_encode} to save a PHP array as a JSON file. The database functions I offer cut out some of the complexity of doing this from scratch.
 
+\subsection{Routing}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{routing}
+    \fi
+  \caption{How SmartResolution processes HTTP requests}
+  \label{uml:routing}
+\end{figure}
+
+Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and renders data-driven pages. As described in the image, the HTTP request is processed by \lstinline{routes.php} and forwarded to the appropriate controller, which then instantiates the models and renders the view.
+
 \section{Design: SmartResolution Marketplace}
 
 Early versions of SmartResolution used a PHP array to describe which modules were installed and which were active. [REF] % https://github.com/ChrisBAshton/smartresolution/blob/6287211d49006e87a8d2035906eb58da22217906/webapp/modules/config.php 
