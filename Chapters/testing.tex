@@ -87,6 +87,27 @@ As a reminder, the full list of tested features is outlined in appendix~\ref{app
 
 Unit tests are tightly coupled to the specific implementation of the code, making refactoring difficult if you wish to move methods, rename classes and the like. Cucumber features, on the other hand, can be defined completely separately from the software itself and are highly valuable since they still test the expected end-to-end functionality of the system as a whole. This makes refactoring the codebase a much less painful process. A necessary principle of unit tests is that the tests will break if the code changes its external API.
 
+\subsection{Functional tests structure}
+
+Every Cucumber feature has a corresponding step definition. It's worth noting that, though it is not required to give the step definition file the same name as the corresponding feature file, this is the Cucumber convention and is regarded as being best practice.
+
+A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework [REF]. % https://github.com/jnicklas/capybara
+
+Capybara requires a browser driver, such as Poltergeist [REF], to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. %https://github.com/teampoltergeist/poltergeist
+
+As I began filling out my step definitions, I found that more and more steps were relying on methods and variables defined in other step definition files. In cases such as this, it was clear that a common helper class should be created. For example, step definitions have access to a `Session' helper class which provides methods to log in with specific credentials, or log into account types (e.g. \lstinline{Session.login_as_agent}). Figure~\ref{uml:cucumber} demonstrates the relationship between a Cucumber feature, its step definition, and the helper classes.
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{cucumber}
+    \fi
+  \caption{Visualisation of which files are involved in defining a Cucumber feature}
+  \label{uml:cucumber}
+\end{figure}
+
+Finally, there are also numerous steps which are repeated across different features, such as ``Given I am logged into an Agent account". In cases such as these, it became difficult to maintain those step definitions when it could have been buried in any of the step definition files whose features depend on it, so these were extracted to a `\_common.rb' step definition file. This is now the first place one should look when trying to find and maintain a step definition.
+
 \subsection{Using the test database for Cucumber tests}
 
 Cucumber regression tests are end-to-end and use a headless browser to emulate the browser environment, clicking buttons and filling in forms, then querying the state of the HTML to validate that an element of functionality worked as expected.
@@ -108,19 +129,39 @@ Poltergeist allows you to override the HTTP headers sent with each request, so m
 
 There's nothing stopping the end-user changing the headers that they send, so they too could access SmartResolution and interact with the test environment rather than the production environment. Ultimately, this is completely harmless. The test database is cleaned every time the test suite is run, so they would not even be able to sabotage the tests. This is a tried and tested technique, and has been adopted by companies including the BBC [REF].
 
-\subsection{Integration tests structure}
+\subsection{A note on feature style}
 
-@TODO - explain the common/helper classes in step definitions.
+There is a trade-off between having a verbose Cucumber feature and a verbose step-definition. The former bogs the feature down in detail and risks devaluing the feature, whereas the latter can make maintenance more difficult.
 
-Also
+I argued this same internal battle in the \emph{Developing Internet-Based Applications} assignment, and discussed the pros and cons of each in some detail. That section of the report is included here in appendix~\ref{appendix:cucumber}.
 
-@TODO - explain and discuss the tradeoff between descriptive and overly-bogged-down cucumber features. (maybe copy from Ruby assignment)
+My conclusion was that, though the two need to be balanced, it isn't detrimental to specify specific fields and error messages in the Cucumber feature itself. On the other hand, abstracting that information away in the step definition can make it difficult to maintain state throughout the scenario. Following this conclusion, some of the Cucumber features decided upon in the initial requirements were later reworded to fit in with this philosophy, though their purpose and relevance remained the same.
+
+For example, this was an original `lifespan negotiation' scenario [REF]: %https://github.com/ChrisBAshton/smartresolution/blob/bac098fc049ab0654e242bc43040d7e11cf6c2c4/features/dispute_lifespan_negotitation.feature#L11-L14
+
+\begin{lstlisting}
+  Scenario: Accepting a Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to accept the offer
+    And the Dispute should start
+\end{lstlisting}
+
+This is how the scenario looks now that the step definitions have been implemented [REF]: % https://github.com/ChrisBAshton/smartresolution/blob/master/features/lifespan_negotiation.feature#L13-L16
+
+\begin{lstlisting}
+  Scenario: Accepting a Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to Accept the offer
+    And I should see the message 'Dispute starts in'
+\end{lstlisting}
+
+The original and amended scenarios are very similar, but the latter is a little more descriptive, a little more tied to the implementation. The `I should see the message' step definition is reused across many scenarios and means that the step definitions as a whole are simpler and cleaner.
 
 \section{Continuous Integration}
 
-Travis Continuous Integration [REF] ran my tests on every pushed commit or pull request, automatically running all unit and functional tests and notifying me via email if anything broke.
+Travis Continuous Integration [REF] ran all tests on every pushed commit or pull request, automatically running all unit and functional tests and notifying via email if anything broke. It was an invaluable tool throughout the project and was well worth spending time configuring.
 
-@TODO - discuss how difficult it was to get PHP server running
+The most difficult aspect to setting up Travis was getting the PHP server running, since Travis only supports one terminal window. The PHP server had to be set up as a background process so that Travis could continue to run the other commands required to run the tests.
 
 \section{User Testing}
 

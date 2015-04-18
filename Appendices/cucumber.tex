@@ -1,0 +1,69 @@
+\chapter{Cucumber feature philosophy}
+\label{appendix:cucumber}
+
+During my BBC placement last year, I attended a Ruby \& Cucumber training course that provided an overview of the Ruby language, training in test-driven development, and explained how to define good Cucumber tests.  Chris Parsons, who is a major contributor [REF] to the Cucumber framework, taught the course. %https://github.com/cucumber/cucumber/commits?author=chrismdp
+
+He taught me that Cucumber features should be abstracted away from the implementations. For example, consider the following scenario:
+
+\begin{lstlisting}
+Scenario: Logging in
+  When I go to http://localhost:3000/session/new
+  And I fill in the 'Username' field with 'admin'
+  And I fill in the 'Password' field with 'taliesin'
+  And I click the submit button
+  Then I should be redirected to the home page
+  And the home page should say 'Welcome admin'
+\end{lstlisting}
+
+The scenario is very tightly coupled to the actual implementation of the system, requiring the business analyst to know a lot about low level parts of the system such as the URL of the login page, the presence of a submit button, and so on. If a feature file contained a long list of scenarios like this, the reader would be tempted to skip over lines deemed to be unimportant, defeating the purpose of what should be a `living' form of documentation [REF]. %http://blog.mojotech.com/how-you-can-implement-living-documentation-part-three-in-a-series/
+
+This style of feature is very constraining: what happens if an additional field is required for verification, or if the user should instead be redirected to a special landing page for registered users, or if the site supports internationalisation and the user has set their default language to Welsh (changing the expected welcome message)?
+
+All of these changes would require updating the feature definition, however the feature itself hasn't changed: the feature still encapsulates the functionality of ``logging in". Consider instead this scenario:
+
+\begin{lstlisting}
+Scenario: Logging in
+  When I go to the login page
+  And I fill in the form with valid credentials
+  Then I should be logged in
+ \end{lstlisting}
+
+We now have a scenario that does not tie itself closely to the implementation. The credentials, the composition of the form or the welcome message might change, but the feature file would remain the same. This makes sense as the concept of `logging in' as a feature itself has not changed either. 
+
+The first example is written in an imperative style, whereas the second is written declaratively; the style is ``more aligned with User Stories in the agile sense, having more of the `token for conversation' feel to it" [REF]. Granted, the second example does not provide as much detail. However, in this example, I think Chris Parsons has the right approach.
+My difficulty in following the declarative style came when: % http://benmabey.com/2008/05/19/imperative-vs-declarative-scenarios-in-user-stories.html
+
+\begin{enumerate}
+\item Scenarios required testing multiple inputs.
+\item I had to maintain some sort of state.
+\end{enumerate}
+
+One feature I struggled to test was the user search functionality:
+
+\begin{lstlisting}
+Scenario: Searching the users list on a browser without JavaScript
+  Given I have JavaScript disabled
+  When I attempt to visit the Users list
+  And I search for users
+  Then I should see the results
+ \end{lstlisting}
+
+My step definition contained hashes of search inputs in the ``And I search for users" method that would be mapped to expected results in the ``Then I should see the results" method. I had to maintain state between the two steps, iterating back and forth between them, in order to test all of the inputs and outputs.
+
+I'd tried my best to keep the feature file as abstract as possible but it was making my step definition difficult to read and maintain. I started a refactor branch and tried to simplify my step definitions by, essentially, complicating the feature file:
+
+\begin{lstlisting}
+Scenario Outline: Searching the users list on a browser without JavaScript
+  Given I have JavaScript disabled
+  When I attempt to visit the Users list
+  And the following boxes are checked: <checkboxes>
+  And I search for the following term: <search_term>
+  Then I should see the following results: <expected_results>
+\end{lstlisting}
+
+I put the question to Twitter [REF]: if the choice is a verbose feature file or a verbose step definition, which is the lesser of two evils? A number of fully qualified testers and developers responded and argued the case for and against. I made a decision that moving the assertions to the feature file was probably the best decision, therefore merged my refactor branch [REF]. My reasoning was that the inputs and outputs don’t refer to implementation details: they require knowledge of the model, but not of the view. %https://twitter.com/ChrisBAshton/status/538313194687975424
+%https://github.com/ChrisBAshton/se315-csa/pull/1
+
+Steven Atherton, a Senior Web Developer at the BBC, made a good point about it being ``wrong [to] dip into the definition file to see WHATS being tested [sic]" [16]. He is suggesting that verbose feature definitions provide more useful documentation from the developers' perspective.
+
+A benefit of feature files is that they clarify requirements, at both a high level and, in this case, quite a low level. We can get business analysts to explicitly confirm the expected application behaviour, rather than leaving it open to interpretation.

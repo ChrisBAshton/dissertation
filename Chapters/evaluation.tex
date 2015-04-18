@@ -1,53 +1,55 @@
-\chapter{Evaluation}
+\chapter{Evaluation}% Such material is regarded as an important part of the dissertation; it should demonstrate that you are capable not only of carrying out a piece of work but also of thinking critically about how you did it and how you might have done it better. This is seen as an important part of an honours degree. There will be good things and room for improvement with any project. As you write this section, identify and discuss the parts of the work that went well and also consider ways in which the work could be improved. Review the discussion on the Evaluation section from the lectures. A recording is available on Blackboard.
 
-Examiners expect to find in your dissertation a section addressing such questions as:
+\section{Were the requirements met?}
+
+The scope of this project grew exponentially, partly as a result of research into existing ODR platforms and partly as a result of my own ambition.
+
+Indeed, it could have been a different story had there been an existing ODR platform which I could use as a basis for the project. The fact that the platform had to be designed and developed from scratch was a considerable burden on time and resources, even before applying the original concept requirements, which were to extend the platform and develop a maritime collision module for it.
+
+In terms of branding the project as `SmartResolution', developing and deploying the website and documentation and configuring the server, building an admin dashboard facility and allowing the installation and activation of modules directly through this facility from the remote `marketplace': these were substantial units of work conceived and instigated by myself alone, though I feel they're still in keeping with the original justification for the project.
+
+As a reminder, the original requirements were identified as the following, to be tackled iteratively:
+
+\begin{enumerate}
+
+    \item Find or build an Online Dispute Resolution platform
+    
+    \item Tailor the platform towards maritime collision disputes
+
+    \item Make the platform abstract, able to take a module of business logic
+    
+    \item The maritime collision module should be able to retrieve the most similar historical cases
+
+    \item The details of these historical cases should be fed back into the details of the current dispute, thereby influencing the ``court simulation"
+
+\end{enumerate}
+
+I distinctly remember that the fourth and fifth requirements were my own idea. The idea of making use of historical maritime collision cases excited me at the time and felt like a logical progression for the maritime collision module. Both my supervisor and the client were happy to agree to make this a part of the requirements.
+
+Over the course of the project, my understanding of online dispute resolution became more sophisticated and I was able to look beyond the specialised area of maritime law and look at the big picture. The light bulb moment came when I considered the commercial viability of the project (see appendix~\ref{appendix:commercialViability}), particularly the comparison with WordPress' commercial model. It was then that I knew that the development resources should be put into the extensibility of the core platform itself, and the corresponding documentation for module developers.
+
+I was able to continue down that road with the approval of my supervisor. The two requirements that initially excited me were now a lower priority than the development of the SmartResolution brand and the marketplace functionality.
+
+It could be argued that the first three of the original requirements were correctly identified and delivered, whereas the remaining two were surpassed by more pressing and relevant requirements. These were also delivered, and to a high standard.
+
+The core software and the basic maritime collision module satisfy the needs of the client, as enthusiastically confirmed by her during the demonstration of the final product. In essence, the minimum requirements were a working ODR platform and a teaser as to the possibility of an automated maritime collision module. Anything beyond that was a bonus and was my prerogative, be it a `SmartResolution Marketplace' or a maritime collision module that is influenced by historical cases.
+
+To summarise, the software deliverables evolved from these:
 
 \begin{itemize}
-   \item Were the requirements correctly identified? 
-   \item Were the design decisions correct?
-   \item Could a more suitable set of tools have been chosen?
-   \item How well did the software meet the needs of those who were expecting to use it?
-   \item How well were any other project aims achieved?
-   \item If you were starting again, what would you do differently?
+\item Core ODR Platform
+\item Sophisticated maritime collision module
 \end{itemize}
 
-Such material is regarded as an important part of the dissertation; it should demonstrate that you are capable not only of carrying out a piece of work but also of thinking critically about how you did it and how you might have done it better. This is seen as an important part of an honours degree. There will be good things and room for improvement with any project. As you write this section, identify and discuss the parts of the work that went well and also consider ways in which the work could be improved. Review the discussion on the Evaluation section from the lectures. A recording is available on Blackboard. 
-% ---------------
+...into these:
 
-@TODO find a place for this:
-
-This would be a major project in itself, and took around eight weeks to design and build all of the required functionality. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so have treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of what the system is capable of.
-
-% ---------------
-
-Over time, my initial requirements were no longer accurate. New requirements:
-
-* core platform
-* maritime collision module
-* automated deployment
-* SmartResolution.org
-* SmartResolution Marketplace
-* Talk about the 4 components of the project. (site, marketplace, core, module)
-
-\section{Speed of progression}
-
-I had hoped to complete the core ODR platform a couple of weeks before I actually managed it. In general, I did find that progress was slower than anticipated.
-
-The core ODR platform, as of Sunday 29th March, was more or less complete. I had hoped to get to this point quite a while ago, initially by Friday 13th, before mid-project-demo week. I then postponed this to Tuesday 17th, which was the day of my demo. At this point I still needed to add mediation - and hoped to have that done by the end of the week (Friday 20th), then Sunday 22nd (which I still classed as "end of the week"), then middle of the week (Wednesday 25th), then end of the week. And here I am.
-
-I'm surprised that it took so long to get to this point, and I'd like to briefly examine the reasons why, especially as I actually managed to negotiate some simpler requirements (removing formal resolution "offers", etc) to help reach my deadlines.
-
-It is partly down to my busy schedule: company work, company administration, family, friends. However, there must be more to it than that.
-
-I believe that coding in a test-driven way has slowed me down - not cripplingly, but by a pretty significant margin. Having to write integration and unit tests, fix them when they break, wait several minutes for Travis to build my project and inform me when things have broken, having to refactor my unit tests when I refactor my codebase - these have all factored into a more drawn-out development process. As an estimate, I think I probably would have been at this same stage a week ago (22nd) had I not disciplined myself to write tests throughout.
-
-Of course, there's no way of knowing how much time I would have spent manually testing, and fixing complicated bugs that start at one point and proliferate throughout the system. It is very possible that, without tests, I'd be even further behind than I'd like to be! Regardless of time, I'm very, very happy to have this collection of tests that cover every aspect of my codebase. I can refactor hundreds of lines of code and automatically validate that everything still works. The development overhead on writing tests is easily worth it for the ability to code with no anxiety.
-
-That aside, TDD isn't the only culprit for a bloating deadline. The stakeholders added things to my initial requirements, such as a file upload facility, the ability to view user profiles, and so on. Occasionally I've also added my own self-imposed requirements, such as automated AWS deployment. Each requirement adds at least a day to the development phase.
-
-Finally, it's worth re-iterating that this is a pretty major project! In the past I've worked on small, self-contained features for the BBC, or personal web projects which are, again, quite small in scope. Developing a fully-functional, BDD-driven, enterprise-level piece of software as a single developer is hard. Perhaps I underestimated the difficulties of actually implementing the code, even with a pretty well thought-out up-front design.
-
-I should keep in mind that what I have so far is an achievement to be proud of (this is echoed by the 91\% I achieved in the mid-project demo). I didn't meet my arbitrary deadline, but what I've built so far is a worthy major project in itself, even before introducing the other exciting components I hope to introduce. I must be code-complete by 25th April; it's the only way I'll have time to write a thorough enough final report. This gives me just under four weeks to accomplish as much as possible.
+\begin{itemize}
+\item Core ODR Platform
+\item Simple maritime collision module
+\item SmartResolution website and comprehensive documentation
+\item SmartResolution live demo and automated deployment
+\item SmartResolution `marketplace', allowing the perusal and downloading of all available modules
+\end{itemize}
 
 \section{Prioritising the components}
 
@@ -63,12 +65,64 @@ It was equally important that there should be a straightforward way to install s
 
 If I had foregone the SmartResolution marketplace component entirely, I could have invested around a fortnight of extra development time in the maritime collision module, and perhaps accomplished something more exciting and groundbreaking than I actually have. However, the future of SmartResolution would have been severely compromised. Without a centralised means of browsing and installing modules, and indeed a centralised means of downloading the core platform itself and reading installation instructions, etc, then this would have died off as a forgotten university project. I like to think that, with the platform built and the documentation plentiful, developers are empowered to develop their own modules for this sector which has recently been gaining popularity and public awareness.
 
+\section{Appropriateness of the design}
+
+%Were the design decisions correct? Could a more suitable set of tools have been chosen? If you were starting again, what would you do differently?
+
+I believe that the choice of PHP as the implementation language was correct. SmartResolution is easily deployable as almost all servers support PHP; server support for Ruby, Node and other languages is less common.
+
+In hindsight, perhaps F3 wasn't the most appropriate framework for the project. To recap what I said in the `Design' chapter: ``F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3." I emphasised the need to be agile and the disadvantage of being locked into specific directory structures in large-scale frameworks such as Symphony or Zend.
+
+Now that the project is complete, it actually has implemented quite a rich and deep MVC directory structure, with additional directories for middle-layer database-querying classes, classes that handle the module API, classes representing dispute states, and so on. F3 copes well with this, but perhaps a more heavyweight framework would have enforced additional advantages, such as namespaced classes, or handling autoloading\footnote{Composer generates \lstinline{vendor/autoload.php}, but \lstinline{webapp/autoload.php} is manually created and must explicitly pull in various files and directories Frameworks such as Zend provide ways of hooking into the autoloader. [REF]}. %http://framework.zend.com/manual/1.12/en/zend.loader.autoloader.html
+
+F3 definitely had a lower learning curve, meaning I was able to hit the ground running and start implementing features the day I started developing, rather than spending days or weeks getting to grips with a heavyweight framework. If I were to start the project again, I'd try using a heavyweight framework from the start, but I don't regret my choice.
+
+\section{Speed of progression}
+
+The development of the ODR platform was a major project in itself, taking around eight weeks to design and build all of the required functionality. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of what the system is capable of. [REF]
+
+I had hoped to complete the core ODR platform around 2-3 weeks before I actually managed it. In general, I did find that progress was slower than anticipated, and I'd like to briefly examine the reasons why, especially as I actually managed to negotiate some simpler requirements (removing formal resolution ``offers", etc) to help reach my deadlines.
+
+It is partly down to my busy schedule: company work and administration, travel, visiting family and friends. However, beyond just external commitments, I believe that coding in a test-driven way has slowed me down. Having to write integration and unit tests, fix them when they break, wait several minutes for Travis to build my project and inform me when things have broken, having to refactor my unit tests when I refactor my codebase - these have all factored into a more drawn-out development process. I think I probably would have finished the core platform sooner had I not disciplined myself to write tests throughout.
+
+Of course, there's no way of knowing how much time I would have spent manually testing, and fixing complicated bugs that start at one point and proliferate throughout the system. It is very possible that, without tests, I'd have fallen even further behind! Regardless of time, I'm very, very happy to have this collection of tests that cover every aspect of my codebase. I can refactor hundreds of lines of code and automatically validate that everything still works. The development overhead on writing tests is easily worth it for the ability to code with no anxiety.
+
+TDD aside, the stakeholders added things to my initial requirements, such as a file upload facility, the ability to view user profiles, and so on. These were in addition to my own self-imposed requirements, such as automated AWS deployment. Each requirement adds at least a day to the development phase.
+
+Overall, I think I was just too ambitious in aiming to complete the core platform, in a fully test-driven way, in just a few weeks. My only regret in terms of time management is that I spent too long preparing for the project, spending around 2-3 weeks clarifying requirements (which have since evolved naturally anyway) and reading around the subject of maritime law, which ended up playing much less of a role in my project than the dissertation title might suggest.
+
 \section{Relevance to degree scheme}
 
-Talk about how I've engineered the project (CI, testing etc) rather than hacked it.
+At a first glance of my deliverables to date, this project might seem more appropriate to the Internet Computing and Systems Administration degree scheme, as my project is web-based, using some JavaScript for front-end components and a lot of PHP for back-end components, with SQL and a database for persistence. Indeed, it even expanded to encompass server deployment and configuration too.
 
-\section{Appropriateness of technologies used}
+My degree scheme is Software Engineering, and I do believe I engineered this project to a high standard. JavaScript and PHP is very easy to get started with, and consequently it is very easy to write fully functional code that is messy, dangerous and defies best practices. Though my code is fully functional, I believe I've followed best practice guidelines:
 
-PHP - yup, appropriate. Maybe should have gone for a bigger framework (Symphony/Zend) because my project grew to quite a substantial MVC structure anyway.
+\begin{itemize}
+\item Object-oriented where appropriate (almost everywhere)
+\item Using PDO for database interaction, to protect against injection attacks
+\item Using F3 as a framework, to let the giants do the heavy lifting such as password encryption and HTTP routing
+\item Using Bootstrap at the front-end, to minimise effort and to enable mobile responsiveness by default
+\item Clean, semantic HTML markup, W3C-validated and friendly to screen readers
+\item Separation of concerns through MVCR compound design pattern
+\item Encapsulation of business logic in the right places, thanks to state design pattern
+\item Javadoc-style, documented comments throughout codebase
+\end{itemize}
 
-@TODO - Alexandros - discuss limitations of module
+At a higher level, I've utilised industry-standard tools and best practices to ensure my code stays at the highest quality:
+
+\begin{itemize}
+\item The entire SmartResolution core platform is covered by low-level unit tests and high-level Cucumber tests, testing all aspects of functionality. If any functionality breaks as the result of an ill-thought-out refactor, at least one test should fail.
+\item Travis: a continuous integration platform configured to automatically run all of my project's tests whenever a commit is pushed to the repository. This way, even if I forget to run the test suite, the tests will still be run and I'll be warned. The build status is also automatically pulled into smartresolution.org and the SmartResolution repository README, so anybody can see at a glance whether or not the latest version is stable.
+\item CodeClimate: an automated code review service which analyses the quality, style and security of every line of code, giving a helpful second opinion.
+\item Dependency management through Composer and RubyGems, both monitored remotely through the Gemnasium dependency monitoring service.
+\end{itemize}
+
+At the highest level, I've used services to keep on top of my project management:
+
+\begin{itemize}
+\item GitHub - version control, code issues, milestones
+\item JIRA - project issues
+\item PHPDoc - generate documentation, which has been a useful reference when refactoring
+\end{itemize}
+
+@TODO - as Alexandros says, I need to discuss limitations of maritime collision module
