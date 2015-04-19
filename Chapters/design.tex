@@ -135,7 +135,7 @@ For a SmartResolution installation that is in a production environment and is be
 
 Figure~\ref{uml:databaseSchema} shows the database schema for the SmartResolution core platform, where \lstinline{P} symbols refer to primary keys, \lstinline{F} symbols refer to foreign keys, and \lstinline{U} symbols refer to unique integrity constraints. Lines generally denote where one table key references another, i.e. a foreign key visualisation.
 
-Other integrity constraints exist, such as `organisations.type' only being one of ``law_firm" or ``mediation_centre". These have been omitted from the diagram.
+Other integrity constraints exist, such as `organisations.type' only being one of ``law\_firm" or ``mediation\_centre". These have been omitted from the diagram.
 
 For a full explanation and justification of the database design, please refer to appendix~\ref{appendix:database}.
 
@@ -143,9 +143,9 @@ For a full explanation and justification of the database design, please refer to
 
 This section of work is separate from the maritime collision module work, and is concerned with how the core platform should support modules at an abstract level. There should be no maritime-collision-specific code in the core SmartResolution platform, but the platform must support all functionality required by the module.
 
-Taking inspiration from WordPress' Plugin API, the project uses the concept of 'hooks'. WordPress fires events at various points throughout the normal running of a WordPress installation; these events can be subscribed to and a custom function executed to achieve some arbitrary purpose.
+Taking inspiration from WordPress' Plugin API, the project uses the concept of `hooks'. WordPress fires events at various points throughout the normal running of a WordPress installation; these events can be subscribed to and a custom function executed to achieve some arbitrary purpose.
 
-Below is the \lstinline{add_filter} function as an example [REF]: %http://codex.wordpress.org/Function_Reference/add_filter
+For example, below is the \lstinline{add_filter} function [REF]: %http://codex.wordpress.org/Function_Reference/add_filter
 
 \begin{lstlisting}
 add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
@@ -153,13 +153,15 @@ add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
 
 The first argument is the event to listen for, the second argument is the custom function to execute, and the third argument is an integer denoting the priority of our subscription (where a higher integer means our custom function is executed before the functions of lower-priority subscribed plugins).
 
+SmartResolution fires hooks which can be subscribed to in the same way as the WordPress function above.
+
 F3's routing API [REF] can extend this concept further:
 
 \begin{lstlisting}
 $f3->route('GET /some-route' => 'MyClass->handler');
 \end{lstlisting}
 
-F3's routing allows the developer to assign handling to a public method of a class, rather than a global function, keeping the codebase namespaced and tidy.
+F3's routing allows the developer to assign handling to a public method of a class, rather than a global function, keeping the codebase namespaced and tidy. This is something I've carried over to SmartResolution's parsing of the function name.
 
 These principles formed the basis for the design of the module support:
 
@@ -167,9 +169,11 @@ These principles formed the basis for the design of the module support:
 on('event', 'function_to_call', 'priority');
 \end{lstlisting}
 
+`event' is the name of the event to subscribe to, `function\_to\_call' is the name of the function to call (and can be a global function, a named class function or an anonymous function), and `priority' represents the priority with which the function should be called. It can be an integer or a string such as `high', `medium' and `low'.
+
 \subsection{Exposing other methods}
 
-An event-subscription mechanism can only get you so far. One needs to be able to manipulate the rendered output of SmartResolution, for example adding an item to the dashboard of a dispute.
+An event-subscription mechanism can only get you so far. One needs to be able to manipulate the rendered output of SmartResolution, for example adding a menu item to the dashboard of a dispute.
 
 This could be accomplished by interacting with the core platform, as in the example below.
 
@@ -185,9 +189,8 @@ array_unshift($dashboardActions, $item);
 
 However, this encourages tight coupling between the module and the underlying platform, locking the core platform into a particular design and risking breaking backwards compatibility should SmartResolution be refactored in the future. For example, if the \lstinline{$dashboardActions} global variable was removed from the core platform, or the dashboard actions represented with something other than an array, it could break any existing modules relying on that specific implementation.
 
-Again, WordPress provided inspiration for the design. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post. [REF] %https://codex.wordpress.org/Function_Reference/get_the_ID
-
-So, the core platform was extended to create a number of global functions. [REF] One could now manipulate the rendering of the dashboard like this: % http://smartresolution.org/module-docs/index.html
+Again, WordPress provided inspiration for the design. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post. [REF] In this style, SmartResolution exposes a number of global functions. [REF] One could now manipulate the rendering of the dashboard like this: % %https://codex.wordpress.org/Function_Reference/get_the_ID
+% http://smartresolution.org/module-docs/index.html
 
 \begin{lstlisting}
 dashboard_add_item(array(
@@ -197,7 +200,7 @@ dashboard_add_item(array(
 ));
 \end{lstlisting}
 
-This is much cleaner and easier from the module developer's perspective. It was always important that there should be as few barriers as possible when it comes to module development, if developers are to get excited about SmartResolution.
+This is much cleaner and easier from the module developer's perspective. It is important that there should be as few barriers as possible when it comes to module development, if developers are to get excited about SmartResolution.
 
 \subsection{Module persistence}
 
@@ -205,9 +208,9 @@ This was the most difficult area to tackle, as it raises important security issu
 
 If the system allowed arbitrary SQL queries and an uncareful developer accidentally executed a \lstinline{DROP TABLE} statement, all manner of data could be lost. This isn't so important on a small demo site with three or four registered users, but if SmartResolution were ever used on a large-scale website, the result could be catastrophic.
 
-On the one hand, the system has to trust developers. Regardless of the database access explicitly exposed, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function [REF] and executing any command they wish. Also, in terms of the database interaction, there's nothing stopping developers from accessing the global \lstinline{DB} class used by the core platform, especially since this is open source and the developer can easily find out how to access it.
+On the one hand, the system has to trust developers. Regardless of the database access explicitly exposed, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function [REF] and executing any command they wish. Also, in terms of the database interaction, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since this is open source and the developer can easily find out how to access it.
 
-The system should trust developers, but it should not trust developers to write perfect code. Though most developers would use an arbitrary-SQL-execution ability only for querying the database for a legitimate reason, they may expose a vulnerability if not thoroughly tested. If their SQL query takes a user input - for example, if they're writing a search engine module - and they don't sanitise the query, then they're letting the \emph{end user} run arbitrary SQL. The end user doesn't necessarily have the best interests of SmartResolution at heart.
+The system should trust developers, but it should not trust developers to write perfect code. Though most developers would use an SQL-execution ability only for querying the database for a legitimate reason, they may expose a vulnerability if not thoroughly tested. If their SQL query takes a user input - for example, if they're writing a search engine module - and they don't sanitise the query, then they're letting the \emph{end user} run arbitrary SQL. The end user doesn't necessarily have the best interests of SmartResolution at heart.
 
 With security in mind, it was decided that the global function definitions should be expanded to define functions supporting specific SQL interactions, e.g. creating tables, selecting rows, updating records, and so on. Early on it was tempting to allow table schema updates on the fly, creating columns as and when they were needed, but this felt dangerous and was tricky to implement. So I started off proceedings with a \lstinline{declare_table} function:
 
@@ -221,9 +224,9 @@ declare_table('my_table', array(
 
 This could then be inserted into and queried using specific, named functions. This does somewhat restrict what the developer can do - for example, there is no method for doing SQL table joins - but more often than not, the developer can still achieve what they need to achieve using pure application code.
 
-In the above example, \lstinline{my_table} is not the name of the created table. Instead, it is namespaced as \lstinline{module__[module_name]__my_table}. The module developer doesn't need to know this, and can continue to refer to \lstinline{my_table} in all of their queries as if that is the name of the table. This means we have the advantage of namespacing our tables (preventing duplicate table names between modules for common table names, e.g. "config") but without the technical overhead of having to rememember to prefix table names with that namespace.
+In the above example, \lstinline{my_table} is not the name of the created table. Instead, it is namespaced as \lstinline{module__[module_name]__my_table}. The module developer doesn't need to know this, and can continue to refer to \lstinline{my_table} in all of their queries as if that is the name of the table. This means we have the advantage of namespacing our tables (preventing duplicate table names between modules for common table names, e.g. ``config") but without the technical overhead of having to rememember to prefix table names with that namespace.
 
-Most modules will require some sort of persistence layer to be useful, but developers are not necessarily locked into this database setup. They can use PHP's \lstinline{shell_exec} command to create a new SQLite database in their module's directory, giving them complete freedom (and the responsibility it comes with). Or, they can use PHP's \lstinline{file_put_contents} to save to a file, perhaps in conjunction with \lstinline{json_encode} to save a PHP array as a JSON file. The database functions I offer cut out some of the complexity of doing this from scratch.
+Most modules will require some sort of persistence layer to be useful, but developers are not necessarily locked into this database setup. They can use PHP's \lstinline{shell_exec} command to create a new SQLite database in their module's directory, giving them complete freedom (and the responsibility it comes with). Or, they can use PHP's \lstinline{file_put_contents} to save to a file, perhaps in conjunction with \lstinline{json_encode} to save a PHP array as a JSON file. The database functions I offer cut out some of the complexity of doing this from scratch, but are by no means the only way of storing data persistently.
 
 \section{Design: SmartResolution Marketplace}
 
@@ -231,28 +234,11 @@ Early versions of SmartResolution used a PHP array to describe which modules wer
 
 A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution instance, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
 
-To accomplish this, there is a JSON feed of featured modules on smartresolution.org. [REF] %http://smartresolution.org/marketplace/feed
-
-This feed is pulled in and converted to HTML, both directly on the marketplace itself [REF] and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its modules (which are viewable both through your own installation of WordPress and on WordPress itself [REF]). %http://smartresolution.org/marketplace
+To accomplish this, there is a JSON feed of featured modules on smartresolution.org. [REF] This feed is pulled in and converted to HTML, both directly on the marketplace itself [REF] and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its modules (which are viewable both through your own installation of WordPress and on WordPress itself [REF]). %http://smartresolution.org/marketplace/feed
+%http://smartresolution.org/marketplace
 %https://wordpress.org/plugins/
 
-Defining featured and "other" modules externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution instances, regardless of when the instance was installed. This presents a commercial opportunity, as hinted by the "Coming soon" modules for Divorce and Breach of Contract, which needn't necessarily be downloaded for free.
-
-@TODO move to evaluation? :
-
-The process for putting a module on the SmartResolution Marketplace is currently manual. This is something I would want to automate in the future, for example by taking a GitHub repository URL and zipping up the contents automatically. However, this manual process does at least give me the option to check the code and make sure there is nothing insidious about its contents before making it available on the marketplace.
-
-The admin dashboard feature was one of the last to be added. Figure~\ref{uml:databaseSchema} shows the \lstinline{administrators} table, which requires nothing more than the \lstinline{login_id} associated with an \lstinline{account_details} entry.
-
-Currently, the admin account must be created manually in the database. In future, this would be a part of the installation process, prompting the user for an admin email and password.
-
-With the admin account created, the admin can log into their account to be presented with three options: Marketplace, Modules and Customise. The latter option is a placeholder and contains no functionality. It is hoped that this might later allow the admin to customise their instance, e.g. by changing the SmartResolution logo, enabling/disabling mediation, and so on.
-
-The other two options are fully functional. The `Marketplace' converts the modules JSON feed into a HTML page, detects if the module is already installed on the instance, and if not, provides an option to download and install the module in one button press.
-
-The `Modules' option lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution instance.
-
-There is one more admin feature I'd have liked to have added given more time: the ability to switch themes. WordPress allows bloggers to easily change the look and feel of their site by activating a new theme. This is something that is perfectly possible in SmartResolution too, thanks to its MVC architecture.
+The ability to define which modules to display externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution instances, regardless of when the instance was installed. This presents a commercial opportunity, as hinted by the ``Coming soon" modules for Divorce and Breach of Contract, which needn't necessarily be downloaded for free.
 
 \section{Design: Maritime collision module}
 
@@ -269,6 +255,7 @@ As discussed in the requirements section, the basis for the business logic in th
 
 Some of the business logic could be encapsulated in the JSON representing the questions. For example, some questions should only be displayed if certain prerequisites are satisfied. The questions are represented in the following format:
 
+\begin{minipage}{\textwidth}
 \begin{lstlisting}
     {
         "prerequisites": [
@@ -296,8 +283,9 @@ Some of the business logic could be encapsulated in the JSON representing the qu
         ]
     }
 \end{lstlisting}
+\end{minipage}
 
-In the above example, the question whose id is \lstinline{article_1} (corresponding to Article 1 of the Convention) is only displayed if the agent answers the question whose id is \lstinline{article_11} with the answer "no".
+In the above example, the question whose id is \lstinline{article_1} (corresponding to Article 1 of the Convention) is only displayed if the agent answers the question whose id is \lstinline{article_11} with the answer ``no".
 
 This module was developed in tandem with the module support in the core platform. As such, it uses most of the events and hooks exposed by the platform.
 
@@ -305,11 +293,13 @@ When the agents have answered all of the relevant questions, the following happe
 
 \begin{itemize}
     \item The answers are compared to make sure they tally. If one agent says both vessels were damaged and the other agent says only their vessel was damaged, the answers do not correspond and a conclusion cannot be reached. The module cannot be expected to cope with conflicting information. The module would inform the agents of this.
-    \item Provided both answers correlate, the module's ResultsCalculator class calls the deduceSummary() method [REF], which contains the hard-coded maritime law logic. A resolution is then presented to the agents.
+    \item Provided both answers correlate, the module's ResultsCalculator class calls the \lstinline{deduceSummary} method [REF], which contains the hard-coded maritime law logic. A resolution is then presented to the agents.
 \end{itemize}
 
 Due to the lack of time the resulting module is a little simplistic, but the point is that the core platform supports any arbitrary module. Modules can be as big and complex as time allows.
 
 \section{User interface}
 
-Bootstrap was used to set up much of the initial design defaults and as a basis for the layout, wanting a clean and attractive look but not wanting to spend too much time on the user interface. Another advantage of using Bootstrap as a UI framework is that the theme is fully responsive by default.
+Bootstrap was used to set up much of the initial design defaults and also provides basic UI framework for the layout. Bootstrap has a 12-column layout requiring a specific HTML structure and class-naming convention, but it does mean that the theme is fully responsive by default.
+
+The CSS overrides provide a clean and attractive look, and helper classes such as \lstinline{bg-info} and \lstinline{bg-danger} allowed me to style error messages and other components with minimal effort, meaning I could spend more time on the server-side logic.

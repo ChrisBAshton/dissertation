@@ -128,3 +128,19 @@ At the highest level, I've used services to keep on top of my project management
 \end{itemize}
 
 @TODO - as Alexandros says, I need to discuss limitations of maritime collision module
+
+\section{If I had more time...}
+
+The process for putting a module on the SmartResolution Marketplace is currently manual. This is something I would want to automate in the future, for example by taking a GitHub repository URL and zipping up the contents automatically. However, this manual process does at least give me the option to check the code and make sure there is nothing insidious about its contents before making it available on the marketplace.
+
+The admin dashboard feature was one of the last to be added. Figure~\ref{uml:databaseSchema} shows the \lstinline{administrators} table, which requires nothing more than the \lstinline{login_id} associated with an \lstinline{account_details} entry.
+
+Currently, the admin account must be created manually in the database. In future, this would be a part of the installation process, prompting the user for an admin email and password.
+
+With the admin account created, the admin can log into their account to be presented with three options: Marketplace, Modules and Customise. The latter option is a placeholder and contains no functionality. It is hoped that this might later allow the admin to customise their instance, e.g. by changing the SmartResolution logo, enabling/disabling mediation, and so on.
+
+The other two options are fully functional. The `Marketplace' converts the modules JSON feed into a HTML page, detects if the module is already installed on the instance, and if not, provides an option to download and install the module in one button press.
+
+The `Modules' option lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution instance.
+
+There is one more admin feature I'd have liked to have added given more time: the ability to switch themes. WordPress allows bloggers to easily change the look and feel of their site by activating a new theme. This is something that is perfectly possible in SmartResolution too, thanks to its MVC architecture.
