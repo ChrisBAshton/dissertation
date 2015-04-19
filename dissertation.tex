@@ -115,6 +115,13 @@
 \fancyhead[R]{\textsl{\leftmark}}
 \fancyfoot[C]{{\thepage} of \pageref{LastPage}}
 
+% without this, Table of Contents says 
+% E  Rationale For My Database Design
+%    5.2 Disputes
+% (the 5 because chapter E is 5th letter)
+% we remove that with this command
+\renewcommand\thesection{\arabic{section}}
+
 % include any appendices here
 \include{Appendices/requirements}
 \include{Appendices/third-party}

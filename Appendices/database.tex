@@ -10,11 +10,11 @@ Most websites these days now have some form of email verification process, requi
 
 Given that I've removed duplication by creating the \lstinline{account_details} table, what was stopping me from simply combining all other account-related fields to that table, from name to type to description?
 
-Well, to begin with, the \lstinline{name} property is subtly different between organisations and individuals. Individuals have a first and second name, e.g. Chris Ashton, whereas organisations tends to have just one, e.g. Webdapper Ltd. I could have made one generic \lstinline{name} field and stored individuals' names in the field, i.e. "Chris Ashton" rather than "Chris" and "Ashton", but this would have restricted the software in other ways, e.g. searching for agents by surname. There are ways around this, of course, such as using regular expressions to extract a surname from the end of the string, but this would be in violation of first normal form [REF] as the database table would not be atomic.
+Well, to begin with, the \lstinline{name} property is subtly different between organisations and individuals. Individuals have a first and second name, e.g. Chris Ashton, whereas organisations tends to have just one, e.g. Webdapper Ltd. I could have made one generic \lstinline{name} field and stored individuals' names in the field, i.e. ``Chris Ashton" rather than ``Chris" and ``Ashton", but this would have restricted the software in other ways, e.g. searching for agents by surname. There are ways around this, of course, such as using regular expressions to extract a surname from the end of the string, but this would be in violation of first normal form [REF] as the database table would not be atomic.
 
 Furthermore, there are other differences between individuals and organisations. The former needs to be able to edit their CV, whereas the latter needs to be able to edit their organisation description. Though the implementation of these functions - going to the account settings page and editing a HTML textarea - is identical, it's possible in future that this might not be the case. What happens if CV editing is later changed so that a PDF must be uploaded? What if additional fields are added to the edit screen, such as age and gender? To future-proof the application, it made sense to keep the \lstinline{organisations} and \lstinline{individuals} tables separate.
 
-I could have opted for an even more finely granulated table structure and separated \lstinline{individuals} into \lstinline{agents} and \lstinline{mediators}. However, I could see no differences between the two types in terms of the data required of them, so these tables would only be duplicates of one another, save for the table name. To avoid an overly complicated structure, I kept the higher-level account type as its own table and created a \lstinline{type} field as a modifier with SQLite CHECK constraints limiting the values to either "agent" or "mediator".
+I could have opted for an even more finely granulated table structure and separated \lstinline{individuals} into \lstinline{agents} and \lstinline{mediators}. However, I could see no differences between the two types in terms of the data required of them, so these tables would only be duplicates of one another, save for the table name. To avoid an overly complicated structure, I kept the higher-level account type as its own table and created a \lstinline{type} field as a modifier with SQLite CHECK constraints limiting the values to either ``agent" or ``mediator".
 
 This has the advantage of allowing more account types in future. If I were to add an "admin" account type, it's a simple case of adding "admin" to the list of allowed values. All of my production-code queries, such as \lstinline{"SELECT * FROM individuals WHERE some condition AND account_type = :account_type"}, should still work right out of the box. If I'd gone for separate tables, however, I might have to go through all of my production code and add additional queries, e.g.
 
@@ -38,7 +38,7 @@ This has the advantage of allowing more account types in future. If I were to ad
 
 Every dispute is created by a law firm, assigned to an agent, opened against another law firm and finally assigned to one of that firm's agents. Every dispute, therefore, has four accounts associated with it.
 
-In addition, either "party" (consisting of a law firm and an agent) must be able to create and continue to edit their summary of the dispute, viewable to all parties. Therefore we have a dispute linked to two parties, each of which is linked to a law firm, an agent and a summary.
+In addition, either ``party" (consisting of a law firm and an agent) must be able to create and continue to edit their summary of the dispute, viewable to all parties. Therefore we have a dispute linked to two parties, each of which is linked to a law firm, an agent and a summary.
 
 This relationship is implemented in the \lstinline{dispute_parties} table, which I've kept separate from the main \lstinline{disputes} table. I didn't want to over-complicate the \lstinline{disputes} table with too many fields, but this was not the only reason for my decision. I felt that it was quite possible a future requirement might be for multi-party disputes, where we have three parties representing clients A, B and C. The \lstinline{dispute_parties} table decision taken would be able to support such a requirement.
 
@@ -48,11 +48,11 @@ Each dispute has a primary key, \lstinline{dispute_id}, to uniquely identify it,
 
 Each dispute should also have a type, which is how SmartResolution would allow modules to hook into the core platform. The module of the corresponding type would automatically be loaded for the given dispute. As such, a \lstinline{type} field representing the unique ID of the module was required.
 
-Disputes can be in one of many states, but the two key states can be summarised as either "ongoing" or "closed". These states are mutually exclusive. More importantly, neither state can be inferred from other fields in the database alone, so there is no risk of redundancy (information in the database becoming misaligned). A dispute's state must be captured somewhere, and where better than in the \lstinline{disputes} table?
+Disputes can be in one of many states, but the two key states can be summarised as either ``ongoing" or ``closed". These states are mutually exclusive. More importantly, neither state can be inferred from other fields in the database alone, so there is no risk of redundancy (information in the database becoming misaligned). A dispute's state must be captured somewhere, and where better than in the \lstinline{disputes} table?
 
-For finer granularity, and to allow for data analysis further down the road, I expanded the possible states slightly to indicate whether a dispute was resolved successfully, or closed because it had to be taken to court. Therefore, the three possible states are "ongoing", "resolved", or "failed", and these are enforced with SQLite CHECK constraints.
+For finer granularity, and to allow for data analysis further down the road, I expanded the possible states slightly to indicate whether a dispute was resolved successfully, or closed because it had to be taken to court. Therefore, the three possible states are ``ongoing", ``resolved", or ``failed", and these are enforced with SQLite CHECK constraints.
 
-Finally, there is a \lstinline{round_table_communication} boolean. I'll explain this in the "Mediation" section later on.
+Finally, there is a \lstinline{round_table_communication} boolean. I'll explain this in the ``Mediation" section later on.
 
 \section{Dispute lifespan}
 
@@ -71,3 +71,5 @@ All of these complicated scenarios meant that the best solution was to extract t
 \section{Mediation}
 
 @TODO
+
+Also @TODO the type checks for %law_firm/mediation_centre, etc

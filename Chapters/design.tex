@@ -1,8 +1,6 @@
-\chapter{Design} % You should concentrate on the more important aspects of the design. It is essential that an overview is presented before going into detail. As well as describing the design adopted it must also explain what other designs were considered and why they were rejected. The design should describe what you expected to do, and might also explain areas that you had to revise after some investigation. Typically, for an object-oriented design, the discussion will focus on the choice of objects and classes and the allocation of methods to classes. The use made of reusable components should be described and their source referenced. Particularly important decisions concerning data structures usually affect the architecture of a system and so should be described here. How much material you include on detailed design and implementation will depend very much on the nature of the project. It should not be padded out. Think about the significant aspects of your system. For example, describe the design of the user interface if it is a critical aspect of your system, or provide detail about methods and data structures that are not trivial. Do not spend time on long lists of trivial items and repetitive descriptions. You should also identify any support tools that you used. You should discuss your choice of implementation tools - programming language, compilers, database management system, program development environment, etc.
+\chapter{Design} % 
 
-As has already been discussed, this project used a hybrid approach of a plan-driven methodology followed by an agile implementation. The design stage is where one methodology merges into the other.
-
-A lot of time was invested in clarifying requirements, so that the common classes and methods could be established and fed into the initial design.
+As has already been discussed, this project used a hybrid approach of a plan-driven methodology followed by an agile implementation. The design stage is where the first methodology truly merges into the other. A lot of time was invested in clarifying requirements so that the common classes and methods could be established and fed into parts of the initial design.
 
 Certain design documentation, such as the database schema, was worth spending time creating and could be designed up front, since it was unlikely to change unless there was a change in requirements. Other things, such as class diagrams would not be suitable for upfront design, since the code would be refactored throughout the process and it would ultimately fall out of line with the documentation.
 
@@ -10,19 +8,17 @@ Certain design documentation, such as the database schema, was worth spending ti
 
 \subsection{Programming language}
 
-As a web-based solution, the options were somewhat constrained to server-side languages. PHP, Node and Ruby (on Rails) all came to mind. It was decided that PHP would be the most appropriate choice.
+As a web-based solution, the options were somewhat constrained to server-side languages. PHP, Node and Ruby on Rails all came to mind. It was decided that PHP would be the most appropriate choice.
 
-PHP is currently the most popular server-side programming language worldwide [REF], and, perhaps more importantly, it's the server-side language I have by far the most experience using. % http://w3techs.com/technologies/overview/programming_language/all
+PHP is currently the most popular server-side programming language worldwide [REF], and, perhaps more importantly, it's the server-side language I have by far the most experience using. My philosophy was this: though I could have spent a few weeks learning the ins and outs of ASP.NET to deliver my project, it would be an unwise use of my time given that there was so much to build. I didn't want to find myself desperately trying to debug an obscure error in an unfamiliar language a week before the deadline. % http://w3techs.com/technologies/overview/programming_language/all
 
-My philosophy was that, though I could have spent a few weeks learning the ins and outs of ASP.NET to deliver my project, it would be an unwise use of my time given that there was so much to build. I didn't want to find myself desperately trying to debug an obscure error in a new language a week before the deadline. 
+Development experience aside, PHP being the most popular server-side language means that there is extensive support and documentation online: any problems faced during development have likely already been solved by other peoples' experiences. Moreover, if the project were to go open-source, it would be more likely to acquire a sizeable and active developer community than a lesser-known language such as Go.
 
-Development experience aside, PHP being the most popular server-side language means that there is extensive support and documentation online: any problems faced during development have likely already been solved by other peoples' experiences. Moreover, if the project were to go open-source, it would be more likely to acquire a sizeable and active developer community than a more obscure language such as Go.
-
-With my suite of Gherkin-syntax features, I needed a set of accompanying step definitions. The PHP de-facto standard implementation of BDD is Behat,  but after much lamenting on which BDD framework to use (see appendix~\ref{appendix:bdd}), it was decided that the project should use Ruby and Cucumber as its BDD framework.
+With my suite of Cucumber features, I needed a set of accompanying step definitions. The PHP de-facto standard implementation of BDD is Behat,  but after much lamenting on which BDD framework to use, I decided that the project should use Ruby and Cucumber as its BDD framework, primarily for its cleaner syntax but also to force decoupling between the core system and the end-to-end tests. See appendix~\ref{appendix:bdd} for a full justification.
 
 \subsection{Reusing open-source software}
 
-It was hoped that there would be an existing open-source ODR platform to base the project upon, upon which one would have been able to make the necessary modifications and extensions to support the maritime collision module, without having to build the entire platform from scratch, thereby being able to spend more time on the maritime law module.
+It was hoped that there would be an existing open-source ODR platform to base the project upon. On this, one would have been able to make the necessary modifications and extensions to support the maritime collision module, without having to build the entire platform from scratch and thereby being able to spend more time on the maritime law module.
 
 Unfortunately, through fairly extensive research (see appendix ~\ref{appendix:choosingAFramework}), it was found that all of the existing ODR platforms are proprietary. Most ODR providers charge a subscription or one-off fee, be they service or platform providers. Given that they charge a fee, they'd be at a commercial disadvantage if they were to go open source.
 
@@ -30,19 +26,19 @@ Without an existing ODR platform to base the project upon, there was no option b
 
 \subsection{Framework}
 
-It makes sense to minimise development effort through the use of a framework, letting the combined efforts of thousands of contributing developers do the heavy lifting so that we are free to implement the application-specific code. Dozens of frameworks exist, so deciding on one can be difficult.
+It makes sense to minimise development effort through the use of a framework, letting the combined efforts of thousands of contributing developers do the heavy lifting so that we are free to implement the application-specific code. Dozens of PHP frameworks exist, so deciding on one can be difficult.
 
-Large frameworks such as Zend and CakePHP are very constraining, requiring you to stick to their idea of what is the best development approach (specific directory structures, MVC design pattern, and so on) or else perform some very heavy, non-standard configuration to make it suit your project. Either of these heavyweight frameworks could be perfectly well suited to ODR, but generally speaking I try to stay away from non-transferable frameworks. I like to understand exactly how my application works, rather than delegate that understanding to a third-party library, and I like having the freedom to change frameworks painlessly at a later date - something which is not suited to heavyweight frameworks.
+Large frameworks such as Zend and Symphony are very constraining, requiring you to stick to their idea of what is the best development approach (specific directory structures, MVC design pattern, and so on) or else perform some very heavy, non-standard configuration to make it suit your project. Either of these heavyweight frameworks could be perfectly well suited to ODR, but generally speaking I try to stay away from non-transferable frameworks. I like to understand exactly how my application works, rather than delegate that understanding to a third-party library, and I like having the freedom to change frameworks painlessly at a later date - something which is not suited to heavyweight frameworks.
 
 Lighter options exist: these include Huge, Opauth, Laravel and Fat-Free Framework. Huge looked promising to begin with but then appeared to be more of a middleweight framework, strongly encouraging certain directory structures. It would be a base that the ODR software would have to build upon, rather than a library that could be plugged into the system, only called as and when need.
 
 Opauth looked nice and lightweight, but was aimed at projects which want to use OAuth for authentication, allowing people to sign in using their Twitter, Google, LinkedIn or Facebook account. This was not suitable, given our project requirements. Laravel was the next one considered and looked a little like PHP's answer to Rails, as it generates an entire application structure through a proprietary command.
 
-Almost any one of these libraries would have been a suitable starting point. It would be impossible to thoroughly evaluate every framework to make a truly considered decision.
+Almost any one of the above frameworks would have been a suitable starting point. It would be impossible to thoroughly evaluate every framework to make a truly considered decision.
 
-The most promising framework at first glance was Fat-Free Framework, or F3 as it is commonly known, having a low learning curve and an unconstraining nature. Its modular build meant that I could cherrypick the elements of functionality needed for the project, rather than go for an all-or-nothing installation. Interaction with the library is almost entirely through calls to namespaced classes. F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3.
+For me, the most promising framework at first glance was Fat-Free Framework, or F3 as it is commonly known, as it has a low learning curve and an unconstraining nature. Its modular build meant that I could cherrypick the elements of functionality needed for the project, rather than go for an all-or-nothing installation. Interaction with the library is almost entirely through calls to namespaced classes. F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3. For these reasons, I chose F3 as SmartResolution's framework.
 
-For similar reasons to my justification for my choice of PHP, I chose to use F3 due to the low learning curve and ability to get started quickly. I am more comfortable with native PHP than learning the ins and outs of a framework.
+When I presented this argument in a recent interview with Gavin Love, Chief Technology Officer at MyBuilder.com, he agreed that modularity seems to be the way that PHP frameworks are going now. This suggests that delegating units of functionality to a lightweight framework might be quite a wise, future-proof decision. Developing software on a heavyweight framework which subsequently loses support can be cripplingly difficult to refactor, as Gavin found when upgrading MyBuilder.com from Symphony 2 to Symphony 3.
 
 \section{Overall architecture}
 
@@ -51,24 +47,20 @@ The project can be broken down into three main components:
 \begin{enumerate}
     \item \textbf{Core platform}, AKA SmartResolution. The majority of the project was spent developing this ODR software.
     
-    \item \textbf{Maritime collision module}. This is a plugin for the SmartResolution software that defines a "Maritime Collision" dispute type and offers custom actions and business logic for these specialised cases.
+    \item \textbf{Maritime collision module}. This is a plugin for the SmartResolution software that defines a ``Maritime Collision" dispute type and offers custom actions and business logic for these specialised cases.
     
-    \item \textbf{SmartResolution Marketplace}, AKA smartresolution.org. 
+    \item \textbf{SmartResolution Website}. The website should describe how to download and install the core platform. It should also offer a `marketplace' option to facilitate the download and installation of modules directly through a SmartResolution installation.
 \end{enumerate}
-
-@TODO - highlight how different these are by describing the choice of licence for the core platform and for the maritime collision module, and why. e.g. maritime collision mod I wanted people to be able to download and modify as a basis for their own modules, if this were GPL they'd be obliged to release the source etc.
-
-Chose GPL for SmartResolution because (compared to Wordpress' GPLv2) nobody should be able to download, modify and then redistribute the core software under another brand (or at least a closed source brand). (@TODO - double-check OS license terms).
 
 \subsection{Core platform}
 
-SmartResolution [REF] is the ODR platform offering the core online dispute resolution requirements, such as organisation and user registration, dispute creation, messaging, file uploads, and so on. It offers the minimum facilities necessary to successfully negotiate a dispute online.
+SmartResolution is the ODR platform offering the core online dispute resolution requirements, such as organisation and user registration, dispute creation, messaging, file uploads, and so on. It offers the minimum facilities necessary to successfully negotiate a dispute online.
 
 As this will be the basis of all the other components, it should also be the most thoroughly engineered, backed up with integration and unit tests, continuous integration, automated code quality checks and dependency status checks.
 
 \subsection{Maritime collision module}
 
-This module is separate from the core platform and lives in its own repository [REF]. It can be installed to any SmartResolution installation by being deployed to the top-level "modules" directory; no further configuration is required.
+This module is separate from the core platform and lives in its own repository [REF]. It can be installed to any SmartResolution installation by being deployed to the top-level ``modules" directory; no further configuration is required.
 
 As discussed in the background and initial requirements, it was intended for this to be a feature-rich module that could find similar historic cases, cross-check agents' answers with maritime law, and approximate the likelihood of an agent's success in court. This is still theoretically possible. However, given the lack of time and resources, this is more of a prototype; a teasing glimpse as to what might be possible given a few more development hours.
 
@@ -90,9 +82,45 @@ The commercial viability of the software (discussed in appendix~\ref{appendix:co
     \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website, accessible directly through your own WordPress installation, allowing the painless and automatic installation of plugins. This facility is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install plugins from wordpress.org, from within the WordPress installation itself. % https://wordpress.org/plugins/
 \end{enumerate}
 
-@TODO - some discussion about the components of my project and why they're similar to this.
+These three tiers map to the SmartResolution core platform, the maritime collision module and the SmartResolution Marketplace respectively.
+
+\section{Choice of Licenses}
+
+The choice of license for each component highlights how distinct each component is from one another.
+
+I opted for the GPLv3 license [REF] for the core SmartResolution software. This is almost identical to WordPress' choice of a GPLv2 license, which is presumably still at version 2 for legacy or backwards-compatibility reasons.
+
+The benefits of a restrictive license such as the GPL licenses is that nobody has the ability to download, modify and then sell the software without making the source available to all. Big companies, who should compensate developers for their time, are not able to use SmartResolution as a basis for closed-source software. Any improvements they make to the software must be kept open-source, as it is a derivative work.
+
+On the other hand, legitimate use-cases for SmartResolution are perfectly allowed. For instance, anyone can download the software and install it on their own server and start providing ODR services, perhaps even for a subscription fee. There's no requirement to suddenly make everything on their website open-source, as they are not distributing their website, only the \emph{results} of the server-side logic on their website (i.e. the HTML). The Affero GPL license (AGPL) would be a different story, as it closes this distribution-over-a-network loophole. [REF]
+
+To summarise, the choice of GPLv3 for SmartResolution protects me from other people making money selling \emph{software} derived from this project. It doesn't stop people making money providing ODR as a service, and it doesn't ``infect their website like a cancer", to paraphrase Steve Ballmer, ex-CEO of Microsoft. [REF]
+
+In stark contrast to my choice of license for SmartResolution, I've released the maritime collision module under the MIT license, which is the most permissive license available. I wanted developers to be able to download and modify this module as a basis for their own modules, and I want developers to be excited about the commercial opportunity SmartResolution presents for them. If they were to base their module on the maritime collision module, and if that module were bound to the terms of the GPL, they would be obliged to release the source code of their new module. This would make selling their module for a price implausible.
+
+Modules do not have to be bound to SmartResolution's GPLv3 license because they do not alter the core functionality of the system. They are not derived works of the system. They are simply self-contained applications which, in legal terms, `just happen' to work when copied into a particular directory in SmartResolution.
+
+Finally, I have kept the source-code for smartresolution.org private and all of its contents are under my copyright. I saw no advantage in making the website open source, since I'm not encouraging anybody to download and re-use elements of the website itself. All in all, the three components of my project are covered by three very different licenses.
 
 \section{Design: SmartResolution}
+
+\subsection{Choice of Database Management System}
+
+The first decision to be made was whether to go for a traditional relational database management system (RDBMS) or an object-oriented database management system (OODBMS). The former is the traditional means of application persistence. The latter is still fairly new, and is intended to allow developers to think purely in terms of object-orientation and not worry about mapping object-oriented paradigms to a relational database.
+
+Though I considered using the latter, there is more widespread support for the former, and I wanted SmartResolution to be as accessible as possible for those wanting to provide their own ODR services. My choice of PHP framework, F3, has built-in database support and is geared towards relational databases, though also provides an object-relational mapping layer [REF] as a compromise between the two paradigms. %http://fatfreeframework.com/databases#CRUD(ButWithaLotofStyle)
+
+OODBMSs gives an advantage to those companies that are geared towards multimedia presentation or organizations that utilize computer-aided design. [REF] In contrast, SmartResolution is quite text-heavy and is perfectly well suited to a RDBMS implementation. % O'Brien, J. A., & Marakas, G. M. (2009). Management Information Systems (9th ed.). New York, NY: McGraw-Hill/Irwin
+
+My next decision was which RDBMS to go for. The market leader is MySQL [REF], but many alternatives exist, such as PostgreSQL, MSSQL, Oracle and SQLite. F3 supports all of these and more. [REF] %http://fatfreeframework.com/sql#Constructor
+
+The quickest database to get started with was SQLite, as it meant that I could develop locally and wouldn't have to install other programs, such as MySQL or PHPMyAdmin. It exists simply as a file on the system, and its contents can be viewed and edited through a program such as DB Browser for SQLite [REF]. %http://sqlitebrowser.org/
+
+The fact that SQLite databases exist as files on the system makes having multiple databases trivial, so my system can easily switch between test and production databases depending on the context in which the application is accessed.
+
+For these reasons, I selected SQLite as the RDBMS of choice for the project. It is important to note that this can be swapped out for another RDBMS relatively easily, since all database interactions in SmartResolution go through one `Database' class. This class calls F3's `SQL' class, and as discussed above, F3 has implementations for all of the main RDBMSs. Consequently, my choice of RDBMS isn't a critical decision.
+
+For a SmartResolution installation that is in a production environment and is being used by hundreds or thousands of people, I would consider changing to a RDBMS such as MySQL. Even the SQLite developers suggest that SQLite is well suited as a ``stand-in for an enterprise RDBMS. SQLite is often used as a surrogate for an enterprise RDBMS for demonstration purposes or for testing". [REF] %https://www.sqlite.org/features.html
 
 \subsection{Database schema}
 
@@ -106,6 +134,8 @@ The commercial viability of the software (discussed in appendix~\ref{appendix:co
 \end{figure}
 
 Figure~\ref{uml:databaseSchema} shows the database schema for the SmartResolution core platform, where \lstinline{P} symbols refer to primary keys, \lstinline{F} symbols refer to foreign keys, and \lstinline{U} symbols refer to unique integrity constraints. Lines generally denote where one table key references another, i.e. a foreign key visualisation.
+
+Other integrity constraints exist, such as `organisations.type' only being one of ``law_firm" or ``mediation_centre". These have been omitted from the diagram.
 
 For a full explanation and justification of the database design, please refer to appendix~\ref{appendix:database}.
 
