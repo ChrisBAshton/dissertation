@@ -1,10 +1,16 @@
 \chapter{Implementation} % The implementation should look at any issues you encountered as you tried to implement your design. During the work, you might have found that elements of your design were unnecessary or overly complex; perhaps third party libraries were available that simplified some of the functions that you intended to implement. If things were easier in some areas, then how did you adapt your project to take account of your findings? It is more likely that things were more complex than you first thought. In particular, were there any problems or difficulties that you found during implementation that you had to address? Did such problems simply delay you or were they more significant? You can conclude this section by reviewing the end of the implementation stage against the planned requirements.
 
-@TODO - before this point, I still haven't mentioned use of Composer, AWS, and other tools, leaving my directory structure explanations a little bare. Also want to mention how my deployment script strips out tests etc from the zipped up, production-ready SmartResolution version
 @TODO - describe in detail the models, data mappers and controller objects.
 @TODO - make a SmartResolution style guide in the Wiki, pull in as an appendix
 @TODO - improve SmartResolution developer instructions on Wiki, pull in as an appendix
-@TODO - pull in module how-to guide documentation
+
+\section{Dependency management}
+
+Early on in the project implementation, a few days were spent setting up and utilising third-party services to cut down the labour costs of maintenance further on in the project's lifecycle.
+
+Even in the very early stages, where SmartResolution had just one or two unit tests, time was spent configuring a Travis file so that the tests would automatically be run on Travis' CI platform after every pushed commit.
+
+Dependencies such as F3 and PHPUnit were important for the implementation of the project, but they should not exist in the project repository. They also should not bog down the installation instructions, as developers shouldn't have to manually fulfil each project dependency. For these reasons, I utilised Composer: a dependency manager for PHP which makes it easy for me to specify the project dependencies whilst also making it easy for other developers to install those dependencies. For the same reasons, I utilised RubyGems to specify the Ruby dependencies for the Ruby and Cucumber tests.
 
 \section{SmartResolution directory structure}
 
@@ -42,19 +48,19 @@ As the implementation followed an agile methodology, the design evolved over tim
 
 \lstinline{test} contains all PHP unit tests.
 
-\lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's dependencies.
+\lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's PHP dependencies.
 
-\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{webapp/routes.php} defines the routing component). The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
+\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern. The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory and \lstinline{webapp/routes.php} defines the routing component. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
 
 Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing, rather than being responsible for the relational database to object mapping. This is discussed in detail later on in this section.
 
-Finally, this folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
+This folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
 
 Going back up a level, we have \lstinline{webapp/modules}, which contains any installed SmartResolution modules, such as the maritime collision module. A \lstinline{config.json} file (generated in a user-friendly way through the admin dashboard) denotes which modules are installed and whether or not they are active.
 
 Finally, at the top level we have a few interesting files:
 
-\lstinline{.travis.yml} - an instructions file for Travis Continuous Integration, describing how to set up the project and run its tests.
+\lstinline{.travis.yml} - an instructions file for Travis CI, describing how to set up the project and run its tests.
 
 \lstinline{composer.json} - describes SmartResolution's dependencies. Developers can install all dependencies simply by running \lstinline{composer install}.
 
@@ -75,10 +81,6 @@ Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and rend
 
 \section{Class diagrams}
 
-The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute.
-
-The class diagram in figure~\ref{uml:class} shows the classes in the \lstinline{webapp/core/model} directory, which encapsulate the business logic of the application.
-
 \begin{figure}[h!]
   \centering
     \ifimages
@@ -88,9 +90,11 @@ The class diagram in figure~\ref{uml:class} shows the classes in the \lstinline{
   \label{uml:class}
 \end{figure}
 
+The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute. The class diagram in figure~\ref{uml:class} shows mainly the classes in the \lstinline{webapp/core/model} directory, which encapsulate the business logic of the application.
+
 \subsection{Accounts}
 
-Let's begin at the top of the figure: the \lstinline{AccountInterface}, which defines the core methods which all account types should define, whether the account is a law firm, a mediator or even an administrator. These methods include \lstinline{getEmail()}, \lstinline{getLoginId()}, \lstinline{__toString()} and so on.
+Let's begin at the top of the class diagram. The \lstinline{AccountInterface} defines the core methods which all account types need to implement, whether the account is a law firm, a mediator or even an administrator. These methods include \lstinline{getEmail()}, \lstinline{getLoginId()}, \lstinline{__toString()} and so on.
 
 Many of the methods in the interface will have the same implementation regardless of the account type. In these cases, the abstract class \lstinline{Account} defines the common implementations, but it does not implement the \lstinline{AccountInterface} interface since it cannot implement all of the methods for every account type.
 
@@ -98,11 +102,11 @@ The \lstinline{Organisation} and \lstinline{Individual} account types implement 
 
 \subsection{Disputes}
 
-Every fully instantiated dispute has two dispute parties which comprises of a law firm, an agent and a dispute summary. A dispute can have zero-to-many items of evidence (uploaded by the agents) associated with it and zero-to-many messages sent back and forth between the agents. Every dispute should also have a lifespan, but this is more complicated than it might first appear so is discussed in further detail in the next subsection.
+Every fully instantiated dispute has two dispute parties which is comprised of a law firm, an agent and a dispute summary. A dispute can have zero-to-many items of evidence (uploaded by the agents) associated with it and zero-to-many messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
 
-A dispute's \emph{type} denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', but this is where our maritime collision logic would come into play. With the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
+A dispute's type denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', which adds nothing to the core functionality of the system. However, with the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
 
-Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation. A dispute may also be somewhere in between, e.g. the agents have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the MediationState class.
+Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation. A dispute may also be somewhere in between, e.g. the agents have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the \lstinline{MediationState} class.
 
 \subsection{Lifespans}
 
@@ -119,7 +123,7 @@ With this in mind, every dispute can be said to have two lifespans: the `current
   \label{uml:lifespan}
 \end{figure}
 
-The `current' lifespan is the most recent accepted Lifespan that has been attributed to the given dispute. If no Lifespan has been accepted, this retrieves the most recent \emph{offered} Lifespan. If no Lifespan has even been offered, this returns a mock Lifespan object so that all of the lifespan-related method calls still work, to save us complicating our dispute object.
+The `current' lifespan is the most recent accepted Lifespan that has been attributed to the given dispute. If no Lifespan has been accepted, this retrieves the most recent \emph{offered} Lifespan. If no Lifespan has even been offered, this returns a mock Lifespan object so that all of the lifespan-related method calls still work, saving us from having to complicate our dispute object.
 
 For most purposes, the `current' lifespan is what is required. This is the lifespan that has generally been agreed by both parties and is used for checking if a dispute is still ongoing before allowing an agent to send a message, for example.
 
@@ -154,6 +158,8 @@ if ($dispute->state()->canDoSomething()) {
   \label{uml:states}
 \end{figure}
 
+@TODO - make this a sequence diagram rather than a `visualisation'!!
+
 The list of possible states are as follows:
 
 \begin{itemize}
@@ -166,13 +172,37 @@ The list of possible states are as follows:
     \item \textbf{DisputeClosed} - the dispute is now closed, either because an agent closed it or because the lifespan of the dispute came to an end. It may have been closed successfully (the dispute was resolved) or unsuccessfully (the dispute had to be resolved by other means, e.g. court).
 \end{itemize}
 
-As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions and means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
+As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions. Inheriting from this class means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
 
-\section{Comments}
+\section{Documentation}
 
-@TODO mention this somewhere:
+\subsection{Comments}
 
-The codebase is liberally commented throughout, using API-style markup. This was a difficult decision, discussed and justified in appendix~\ref{appendix:comments}.
+I believe in the agile principles of TDD and user stories as a replacement for documentation, and further believe that any documentation that is not intrinsically linked to the code itself will always eventually become misaligned with it.
+
+For example, SmartResolution uses Cucumber features, which is a form of `executable' documentation. The same can be said of unit tests, though these are less descriptive. Code should be self-documenting, and anything in the code that requires an explanatory comment is a sign that the code itself should be refactored.
+
+All this in mind, I made the difficult decision to write Javadoc-style comments throughout the SmartResolution codebase: this decision is discussed in detail in appendix~\ref{appendix:comments}. Though I'm concerned that even these kind of comments eventually fall out of place with the code that they refer to, they do at least have the advantage of being able to be parsed to generate HTML documentation, which can be deployed to the project website. This ensures that the process of keeping API documentation up-to-date on the website is made as simple as possible, even if the applicability of the comments themselves cannot be fully verified without looking at the code.
+
+SmartResolution API documentation, aimed at contributors to the SmartResolution platform, is available at:
+
+\url{http://smartresolution.org/docs/index.html}
+
+Developers who wish to create SmartResolution \emph{modules} can find module-specific API documentation at the following address:
+
+\url{http://smartresolution.org/module-docs/index.html}
+
+\subsection{Installation \& how-to guides}
+
+The same philosophy cannot be applied to installation instructions or how-to guides, as there is currently no technological implementation that allows these to be generated from the code itself. To maximise the usefulness of SmartResolution and the likelihood of its continued existence, I expended quite some effort in creating high-quality, relevant additional documentation.
+
+Instructions for installing SmartResolution on your own server can be found at the following address:
+
+\url{http://smartresolution.org/installation}
+
+A how-to guide for developing SmartResolution modules can be found at the following address:
+
+\url{http://smartresolution.org/module-how-to}
 
 \section{SmartResolution Marketplace}
 
@@ -180,32 +210,17 @@ The SmartResolution website was developed locally using many of the same technol
 
 \subsection{Choosing a server}
 
-A locally configured, physical server would not be practical for hosting the SmartResolution marketplace. If ever the platform became popular, it would not be able to cope with the numbers of people downloading the software (which weighs in at over 400KB) and browsing the documentation. Moreover, it is an unnecessary maintenance and upfront expense when so many alternatives exist.
+A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and upfront expense when so many alternatives exist.
 
-Cloud computing as a web hosting service is becoming increasingly popular [REF], Amazon Web Services (AWS) chief amongst these in terms of exponential growth, being utilised by companies big and small, including the BBC. [REF] Its popularity is down to its speed and scalability, as well as the low cost to market.
+Cloud computing as a web hosting service is becoming increasingly popular [REF], Amazon Web Services (AWS) chief amongst these in terms of exponential growth. AWS is being utilised by companies including the BBC, [REF] its popularity down to its speed and scalability, as well as the low cost to market.
 
-AWS has server farms in X, Y and Z, making it possible to make optimised regional sites, content delivery networks (CDNs) and so on. It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with surges in demand.
+AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia [REF], making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
 
 Other alternatives exist, of course, such as Unlimited Web Hosting [REF], which is a cloud web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
 
 Unlike Unlimited Web Hosting, AWS provides root access, and though other services also provide this facility (DigitalOcean, for example [REF]), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
 
 \subsection{Configuring the server}
-
-At the point where an EC2 instance is started, a dynamic IP address is generated, making the instance available at that given IP. By default, that IP address is not persistent and every 24 hours or so the IP addresses are reallocated and the instance must be reached through a different IP.
-
-AWS offers an `Elastic IP' facility, which allows you to generate a permanent IP address and allocate it to an EC2 instance. This costs a little extra but is a necessary step to ensure the website is always locatable.
-
-Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address, so that browsers querying that domain name are redirected to the content at the IP address endpoint.
-
-smartresolution.org was purchased through the domain registrar gandi.net [REF] and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own Linux [REF], Apache, MySQL and PHP.
-%http://aws.amazon.com/amazon-linux-ami/
-
-The decision was made to separate the two concepts of the SmartResolution software and the SmartResolution website, so a live demo of the software should be available on a subdomain rather than the main site index.
-
-To accomplish this, a VirtualHost was specified in the Apache configuration to redirect any requests for demo.smartresolution.org to a specific demo folder containing the SmartResolution software, which could be easily updated independent of SmartResolution website updates.
-
-All of this is demonstrated in figure~\ref{uml:serverConfig}.
 
 \begin{figure}[h!]
   \centering
@@ -216,6 +231,17 @@ All of this is demonstrated in figure~\ref{uml:serverConfig}.
   \label{uml:serverConfig}
 \end{figure}
 
+At the point where an EC2 instance is started, a dynamic IP address is generated, making the instance available at that given IP. By default, that IP address is not persistent and every 24 hours or so the IP addresses are reallocated and the instance must be reached through a different IP.
+
+AWS offers an `Elastic IP' facility, which allows you to generate a permanent IP address and allocate it to an EC2 instance. This costs a little extra but is a necessary step to ensure the website is always locatable.
+
+Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address, so that browsers querying that domain name are redirected to the content at the IP address endpoint.
+
+smartresolution.org was purchased through the domain registrar gandi.net [REF] and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux [REF], Apache, MySQL and PHP.
+%http://aws.amazon.com/amazon-linux-ami/
+
+The decision was made to separate the two concepts of the SmartResolution software and the SmartResolution website, so a live demo of the software should be available on a subdomain rather than the main site index. To accomplish this, a VirtualHost was specified in the Apache configuration to redirect any requests for demo.smartresolution.org to a specific demo folder containing the SmartResolution software, which could be easily updated independent of SmartResolution website updates. All of this is demonstrated in figure~\ref{uml:serverConfig}.
+
 \subsection{Continuous deployment}
 
 Though continuous integration is important for ensuring that the codebase remains fully functional, continuous deployment is important for ensuring that the version of SmartResolution available for demo and for download on the SmartResolution website is fully up to date. It needed to be simple to keep both elements at the latest version, and everything ought to be as automated as possible.
@@ -223,5 +249,3 @@ Though continuous integration is important for ensuring that the codebase remain
 I wrote a bash script specific to the SmartResolution vendor site which clears the html and html-demo folders outlined in figure~\ref{uml:serverConfig}, then re-downloads and installs the website and the software from the website repository and the software repository respectively. The script calls PHPDoc to generate the SmartResolution core API documentation and module documentation, and the script also strips out unnecessary files such as tests and Travis configuration before zipping up the file as a production-ready download.
 
 In an ideal world, this script would be triggered via a Git web hook [REF] so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
-
-The script can be found at appendix X @TODO?? (this will be part of the technical hand-in so perhaps isn't needed here)

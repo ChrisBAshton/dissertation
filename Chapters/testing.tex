@@ -2,7 +2,7 @@
 
 SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
 
-In an ideal world, the same principles would be applied to the Maritime Collision module and to the SmartResolution Marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the `Evaluation' section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
+In an ideal world, the same principles would be applied to the Maritime Collision module and to the SmartResolution website and marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the evaluation section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
 
 As previously mentioned, the project was developed in an agile way from mid-way through the design stage onwards. As such, the principles of business-driven development (BDD) and continuous integration (CI) were applied throughout the implementation. This section discusses the testing strategy that was applied during the implementation.
 
@@ -25,13 +25,15 @@ With the test passing, now is the opportunity to take a step back and look at th
 
 The unit-test process outlined above is known as the ``red, green, refactor" workflow and is repeated over and over until we have enough of the feature implemented to make a step of the feature pass, and then another step, and so on, until the feature as a whole is completed and passes the integration test.
 
+Occasionally, features were too cumbersome to implement in a BDD manner, as they required spanning multiple architectures (routing, database layers, models, controllers, and so on). Wherever following BDD wasn't appropriate, I added unit and end-to-end tests post-implementation.
+
 \section{Test database}
 
 Cucumber regression tests are end-to-end and use a headless browser to emulate the browser environment, clicking buttons and filling in forms, then querying the state of the HTML to validate that an element of functionality worked as expected.
 
 To accomplish this, the driver (in our case, Poltergeist [REF]) needs to be able to access the server. However, our tests rely on the database having certain fixture-data. Moreover, our tests will be making persistent changes to the database - so it's essential that the tests use a test database, rather than the production database.
 
-As far as the server is concerned, Poltergeist sends a HTTP request, just like any normal user on a normal browser. Poltergeist needed to be able to send a flag, to explicitly inform the application that the request is coming from a test suite and, thus, should be using a test database.
+As far as the server is concerned, Poltergeist sends a HTTP request, just like any genuine user on a normal browser. Poltergeist needed to be able to send a flag, to explicitly inform the application that the request is coming from a test suite and, thus, should be using a test database.
 
 Poltergeist allows you to override the HTTP headers sent with each request, so my Cucumber tests modify the User-Agent property to be either `Poltergeist' or `Poltergeist--clear'. Both headers inform the application that it should use the test database, but the latter provides an additional instruction that the database should be cleared and re-populated with test data before processing the request. This is demonstrated in figure~\ref{uml:headers}.
 
@@ -50,9 +52,9 @@ There's nothing stopping the end-user changing the headers that they send, so th
 
 \section{Unit Testing}
 
-Almost every class in the system has an associated unit test. This does not apply to library classes, such as those provided by F3, since that responsibility resides with the third party.
+Almost every class in the system has an associated unit test. This does not apply to library classes, such as those provided by F3, since the responsibility for testing those classes resides with the third party.
 
-Unit tests verify that the publicly available methods of a class work as expected, both when accessed correctly and \emph{incorrectly}. The nature of unit tests should be that they are loaded into memory and are very quick to run. ``Unit tests focus just on the class or method at hand. They run entirely in memory, which makes them very fast. Depending on your platform, your testing tool should be able to run at least 100 unit tests per second." [REF] % http://www.jamesshore.com/Agile-Book/test_driven_development.html
+Unit tests verify that the publicly available methods of a class work as expected, both when accessed correctly and incorrectly. The nature of unit tests should be that they are loaded into memory and are very quick to run. ``Unit tests focus just on the class or method at hand. They run entirely in memory, which makes them very fast. Depending on your platform, your testing tool should be able to run at least 100 unit tests per second." [REF] % http://www.jamesshore.com/Agile-Book/test_driven_development.html
 
 Some of the unit tests in SmartResolution are not `true' unit tests, as they rely on a database connection. According to Michael Feathers [REF], ``A test is not a unit test if it talks to the database, it communicates across the network, it touches the file system or it can't run at the same time as any of your other unit tests.'' % http://www.artima.com/weblogs/viewpost.jsp?thread=126923
 
@@ -144,22 +146,19 @@ I still needed to clear the database between each test \emph{suite}, as the test
 
 \subsection{Refactoring to pure unit tests}
 
-Earlier I described how `pure' unit tests should not query a database. An unfortunate consequence of the implementation of my code was that database querying was essential to unit test my classes, as they were populated by an ID representing a row in the database, rather than populated with an array of data which may or may not have come from a database.
+Earlier I described how `pure' unit tests should not query a database. An unfortunate consequence of the implementation of my code was that database querying was essential to unit test my classes, as my models were populated by an ID representing a row in the database, rather than populated with an array of data which may or may not have come from a database.
 
-For example, the classes (such as Message) were passed an ID to the constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving the class-specific data (such as message content, author ID, etc) from the given ID. The returned array was then used to populate the model.
+For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model. This somewhat decoupled the model from the database - all SQL queries were encapsulated in the intermediary database querying objects - however, it made the models quite difficult and slow to test.
 
-This somewhat decoupled the model from the database - all SQL queries were encapsulated in the intermediary database querying objects - however, it made the models quite difficult to test, since I had to pass to the model an ID that corresponded with a record in the database.
-
-\subsubsection{Old solution}
-
-Let us look a little closer at the reason behind this design decision. The decision was made to make life easier for my controllers. Let us examine this with some pseudo-code:
+The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
 
 \begin{lstlisting}
+// inside a controller
 $disputeID = getDisputeIDFromUrl();
 $dispute = new Dispute($disputeID);
 \end{lstlisting}
 
-Inside Dispute, we had something like this:
+Inside the Dispute model, we had something like this:
 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -175,7 +174,17 @@ Though the model was made a little impure due to the database connection object,
 
 \subsubsection{Refactored solution}
 
-I undertook the large refactoring task of changing constructors to take arrays of data rather than IDs. This meant extracting the database querying out of the models and into the controllers:
+Refactoring constructors to take arrays of data rather than IDs took some significant effort and meant extracting the database querying out of the models:
+
+\begin{lstlisting}
+// inside the Dispute model
+function __construct($disputeDetails) {
+    $this->title = $disputeDetails['title'];
+    // and so on
+}
+\end{lstlisting}
+
+The database query instead had to be moved to the controller;
 
 \begin{lstlisting}
 $disputeID = getDisputeIDFromUrl();
@@ -183,18 +192,11 @@ $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
 $dispute = new Dispute($disputeDetails);
 \end{lstlisting}
 
-Inside Dispute, we would now simply have something like this:
-
-\begin{lstlisting}
-function __construct($disputeDetails) {
-    $this->title = $disputeDetails['title'];
-    // and so on
-}
-\end{lstlisting}
-
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. It is worth noting that those are the results on Travis: on my MacBook Pro, unit tests run in under six seconds. %https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839
+I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. %https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839
+
+\subsubsection{Further refactoring}
 
 Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. I took the opportunity to refactor this behaviour too.
 
@@ -215,11 +217,9 @@ $dispute->closeSuccessfully();
 $update->dispute($dispute);
 \end{lstlisting}
 
-Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to the RDBMS table. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record in the database. 
+Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. 
 
-This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to `convert' the object to be in terms of the underlying relational database representation of it. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational complexity to another system rather than the application code.
-
-Choice of database aside, through several days of refactoring effort I managed to significantly cut the test time and remove complexity by deleting entire classes that were previously responsible for updating fields in the database.
+This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party system.
 
 \section{Functional Testing}
 
@@ -227,15 +227,16 @@ Every feature of the SmartResolution core software is defined as a Cucumber feat
 
 As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}, and the justification for the choice of Ruby and Cucumber as the BDD framework is in appendix~\ref{appendix:bdd}.
 
-Unit tests are tightly coupled to the specific implementation of the code, making refactoring difficult if you wish to move methods, rename classes and the like. Cucumber features, on the other hand, can be defined completely separately from the software itself and are highly valuable since they still test the expected end-to-end functionality of the system as a whole. This makes refactoring the codebase a much less painful process. A necessary principle of unit tests is that the tests will break if the code changes its external API.
+Unit tests are tightly coupled to the specific implementation of the code, making refactoring difficult if you wish to move methods, rename classes and the like. A necessary principle of unit tests is that the tests will break if the code changes its external API. These tests are highly valuable but do not offer complete code coverage, since there are no tests to verify that the classes the unit tests are testing are even being used by the core system at all!
+
+Cucumber features test the expected end-to-end functionality of the system as a whole and can be defined completely separately from the software itself. They are slower to run, but fill me with more confidence than unit tests, since they test the behaviour of the application from the point of view of the user, not the compiler.
 
 \subsection{Functional tests structure}
 
 Every Cucumber feature has a corresponding step definition. It's worth noting that, though it is not required to give the step definition file the same name as the corresponding feature file, this is the Cucumber convention and is regarded as best practice.
 
-A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework [REF]. % https://github.com/jnicklas/capybara
-
-Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless. %https://github.com/teampoltergeist/poltergeist
+A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework [REF]. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless. % https://github.com/jnicklas/capybara
+%https://github.com/teampoltergeist/poltergeist
 
 As I began filling out my step definitions, I found that more and more steps were relying on methods and variables defined in other step definition files. In cases such as this, it was clear that a common helper class should be created. For example, step definitions have access to a `Session' helper class which provides methods to log in with specific credentials, or log into account types (e.g. \lstinline{Session.login_as_agent}). Figure~\ref{uml:cucumber} demonstrates the relationship between a Cucumber feature, its step definition, and the helper classes.
 
@@ -258,7 +259,7 @@ I argued this same internal battle in the \emph{Developing Internet-Based Applic
 
 My conclusion was that, though the two need to be balanced, it isn't detrimental to specify specific fields and error messages in the Cucumber feature itself. On the other hand, abstracting that information away in the step definition can make it difficult to maintain state throughout the scenario. Following this conclusion, some of the Cucumber features decided upon in the initial requirements were later reworded to fit in with this philosophy, though their purpose and relevance remained the same.
 
-For example, this was an original `lifespan negotiation' scenario [REF]: %https://github.com/ChrisBAshton/smartresolution/blob/bac098fc049ab0654e242bc43040d7e11cf6c2c4/features/dispute_lifespan_negotitation.feature#L11-L14
+For example, this was an original `lifespan negotiation' scenario:
 
 \begin{lstlisting}
   Scenario: Accepting a Dispute lifespan offer
@@ -267,7 +268,7 @@ For example, this was an original `lifespan negotiation' scenario [REF]: %https:
     And the Dispute should start
 \end{lstlisting}
 
-This is how the scenario looks now that the step definitions have been implemented [REF]: % https://github.com/ChrisBAshton/smartresolution/blob/master/features/lifespan_negotiation.feature#L13-L16
+This is how the scenario looks now that the step definitions have been implemented:
 
 \begin{lstlisting}
   Scenario: Accepting a Dispute lifespan offer
@@ -276,11 +277,11 @@ This is how the scenario looks now that the step definitions have been implement
     And I should see the message 'Dispute starts in'
 \end{lstlisting}
 
-The original and amended scenarios are very similar, but the latter is a little more tied to the implementation. The `I should see the message' step definition is reused across many scenarios and means that the step definitions as a whole are simpler and cleaner, even if the Cucumber features themselves are slightly more bloated than before.
+The original and amended scenarios are very similar, but the latter is a little more tied to the implementation. The `I should see the message' step definition is reused across many scenarios and means that the step definitions as a whole are simpler and cleaner, even if the Cucumber features themselves are slightly more verbose than before.
 
 \section{Continuous Integration}
 
-Travis Continuous Integration [REF] ran all tests on every pushed commit or pull request, automatically running all unit and functional tests and notifying via email if anything broke. It was an invaluable tool throughout the project and was well worth spending time configuring.
+Travis CI ran all unit and functional tests on every pushed commit or pull request, automatically notifying via email if anything broke. It was an invaluable tool throughout the project and was well worth spending time configuring.
 
 The most difficult aspect to setting up Travis was getting the PHP server running, since Travis only supports one terminal window. The PHP server had to be set up as a background process so that Travis could continue to run the other commands required to run the tests.
 
@@ -288,7 +289,7 @@ Travis wasn't the only tool that performed a service on every pushed commit. Jus
 
 Dependency tracking is important, as newer versions of dependencies fix bugs and vulnerabilities discovered in older versions. By not updating SmartResolution's dependencies regularly I would risk crackers being able to exploit unpatched vulnerabilities. This is especially relevant since SmartResolution is open-source and anybody can see which version of which third-party library SmartResolution is using.
 
-Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate. [REF] Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising thid third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable. %https://codeclimate.com/github/ChrisBAshton/smartresolution
+Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate. [REF] Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable. %https://codeclimate.com/github/ChrisBAshton/smartresolution
 
 \section{User Testing}
 
