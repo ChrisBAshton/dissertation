@@ -1,22 +1,629 @@
 \chapter{Requirements Gathering}\label{appendix:requirements}
 
-I decided to follow a three-stage requirements-gathering process:
+My plan was always to use behaviour-driven development in my project, and I believe passionately in keeping all documentation as closely in line with the code as possible. I used gherkin syntax to describe the features, and linked these up to an executable Ruby and Cucumber test suite.
 
-\begin{enumerate}
+\section{Original Requirements}
 
-    \item Informal requirements specification, gleaned from my early supervisor meetings. % @TODO see http://ashton.codes/blog/clarifying-requirements/ and reference it
+These are the original requirements, agreed and signed off by all of the project's stakeholders. % https://github.com/ChrisBAshton/smartresolution/tree/bac098fc049ab0654e242bc43040d7e11cf6c2c4/features
 
-    \item Cucumber features encompassing all of the above requirements, allowing me to code a corresponding regression test and make the requirements executable.
+\subsection{Account Creation}
 
-    \item Agile stories encompassing the above requirements (at times duplicating the Cucumber features), representing units of work that need to be completed in a sprint. I'm hoping to follow the XP-style process of prioritising which stories go into which sprints, by estimating the effort involved for each story and getting the stakeholders to decide on the value presented by each story, and therefore which stories should be tackled first
+\begin{lstlisting}
+Feature: Account Creation
+    I should be able to register an account of a certain type, e.g. Company/Agent
+    And I should be able to log into said account
 
-\end{enumerate}
+  Scenario: Company registration
+    Given I am an authorised representative of the Company
+    When I attempt to create a new Company account
+    Then the account should be created
+    # @TODO - as discussed in the supervisor meeting, we could add an admin verification stage at this stage.
+    # This could be as complicated as we want to make it, so for now, let's add a boolean in the database that
+    # says if the Company is verified or not. Make it verified by default, but carry out isVerified checks at login.
+    # We can add the verification steps later and make Companies unverified by default.
+    # At that stage, we need to add additional features, e.g. Given I am unverified, When I try to log in, Then I shoul
+    # Not be allowed to do anything.
 
-My plan was always to use behaviour-driven development in my project, and I believe passionately in keeping all documentation as closely in line with the code as possible. I used gherkin syntax to describe the features, and hoped to link these up to an executable test suite.
+  Scenario: Agent initiates Case against a Company not registered to the system
+    Given I have not yet registered a Company account
+    And a Dispute has been initiated against my Company
+    When I attempt to create a new Company account
+    Then the account should be created
+    And the my Company should be automatically linked to the dispute
 
-Here is an example feature:
+  Scenario: Company login with valid credentials
+    Given I have registered a Company account
+    When I attempt to log in with valid credentials
+    Then I should be logged into the system
 
-% @TODO - find a way of programmatically generating this from the Cucumber features.
+  Scenario: Company login with invalid credentials
+    Given I have registered a Company account
+    When I attempt to log in with invalid credentials
+    Then an authentication error should be displayed
+    # @TODO - as discussed, correct and incorrect login attempts should be logged so that we can later add
+    # additional security such as locking out accounts after a threshold of unsuccessful attempts is reached.
+
+  Scenario: Agent login
+  Scenario: Mediator login
+  Scenario: Mediation Centre login
+
+  Scenario: Create Agent account
+    Given I have logged into a Company account
+    Then I should be able to create an Agent account
+    And the Agent should be sent an email notifying them they've been registered
+
+  # Exactly the same process as for Company registration. There should be a drop-down list that lets registering users
+  # select whether they're registering as a Company or a Mediation Centre
+  Scenario: Mediation Centre registration
+  Scenario: Create Mediator account
+\end{lstlisting}
+
+\subsection{Dispute Creation}
+
+\begin{lstlisting}
+Feature: Dispute creation
+    Given I am logged into an authorised account
+    Then I should be able to create a Dispute
+    
+  Scenario: Creating a Dispute
+    Given I am logged into a Company account
+    Then I should be able to create a new Dispute
+
+  Scenario: Allocating a Dispute to an Agent
+    Given I have created a Dispute
+    And I have created an Agent
+    Then I should be able to allocate the Agent to the Dispute # this should also be possible AT the Dispute creation stage
+
+  Scenario: Submitting a Dispute
+    Given a Dispute has been assigned to me # by my Company, regardless of who instigated the Dispute
+    When I write a Dispute summary
+    And I choose to submit the Dispute to the system
+    Then the Dispute should be submitted
+
+  Scenario: Initiating a Dispute against a Company
+    Given I have submitted a Dispute
+    Then I should be able to initiate it against another Company
+    # We pick from a drop-down list of Companies in the system
+    # or provide a Company email address inviting them to register.
+
+  Scenario: Being initiated a Dispute
+    Given a Dispute has been initiated against my Company
+    And I have created an Agent
+    Then I should be able to allocate the Agent to the Dispute
+\end{lstlisting}
+
+\subsection{Dispute}
+
+\begin{lstlisting}
+Feature: Dispute (pre-Mediation)
+    The Dispute is underway, both Agents are free to communicate with one another,
+    propose offers, attach evidence, etc.
+  
+  Background:
+    Given the Dispute is fully underway
+    And the Dispute is not in Mediation
+
+  Scenario: Free communication
+    Then I should be able to communicate with the other Agent freely
+
+  # The "Propose Resolution" mechanism outlined below is a separate facility to above.
+  # Think of the free communication as a private messaging system (which gets blocked when
+  # we go into Mediation, then re-opened with the additional Mediator person when entering
+  # round-table communication).
+  # The offer mechanism is a more formalised communication, where you offer a certain amount,
+  # under X conditions - Accept | Deny | Propose Counter Offer
+
+  Scenario: Make an offer
+    Then I should be able to send the other Agent an offer
+
+  Scenario: Accept the offer
+    Given I have been sent an offer
+    Then I should be able to accept the offer
+    And the Dispute should close successfully
+
+  Scenario: Propose counter-offer
+    Given I have been sent an offer
+    Then I should be able to propose a different offer
+
+  # Note:
+  # I can also Decline an offer by taking the Case to Court - see dispute_independent.feature "Take the Dispute to Court".
+  # I can also propose Mediation. See dispute_independent.feature "Start the Mediation Process"
+\end{lstlisting}
+
+\subsection{Dispute-Independent Features}
+
+\begin{lstlisting}
+Feature: Processes relevant to the Dispute but that are not dependent on the current state of the Dispute
+    There are various functionalities that do not depend on the current state of the Dispute
+    And should be accessible at any point in the Dispute
+
+  Scenario: Start the Mediation process
+    Given the Mediation process has not begun
+    Then I should be able to start the Mediation process
+
+  Scenario: Take the Dispute to Court
+    Given the Dispute has not yet been resolved
+    Then I should be able to Take the Dispute to Court
+    And the Dispute should close unsuccessfully
+\end{lstlisting}
+
+\subsection{Dispute Lifespan Negotiation}
+
+\begin{lstlisting}
+Feature: Negotiating a Dispute lifespan
+    When a Dispute is opened and each Company has allocated an Agent
+    The Agents need to negotiate a Dispute lifespan
+    i.e. the maximum length of time the Dispute can continue without resolution 
+    before being automatically taken to Court.
+
+  Scenario: Creating a Dispute lifespan offer
+    Given both Agents have submitted the Dispute
+    Then I should be able to make a lifespan offer # regardless of who submitted the Dispute first
+
+  Scenario: Accepting a Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to accept the offer
+    And the Dispute should start
+
+  Scenario: Create a counter Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to make a lifespan offer
+    And therefore decline their original offer
+
+  Scenario: Renegotiating the Dispute lifespan mid-Dispute
+    Given the Dispute is fully underway
+    Then I should be able to make a lifespan offer
+    And the Dispute should continue normally despite the renegotiation offer
+\end{lstlisting}
+
+\subsection{Putting a Dispute into Mediation}
+
+\begin{lstlisting}
+Feature: Mediation
+    At any point in a confirmed Dispute
+    Either Agent can propose Mediation
+    Whereby a Mediator is introduced to help to resolve the Dispute
+    If complications arise during the Mediation Creation process - e.g. a
+    list of Mediators being provided to the Agents but are not suitable,
+    then either Agent can restart the Mediation process.
+
+  Background:
+    Given the Dispute is underway and a lifespan has been agreed
+
+  Scenario: Choosing a Mediation Centre
+    Given both Agents have agreed to start the Mediation process
+    Then I should be able to select the Mediation Centres I'm happy with
+    # We do this by choosing the Mediation Centres we want AND an order of preference.
+
+  Scenario: No mutually chosen Mediation Centres
+    Given both Agents have selected the Mediation Centres they want
+    And there are no matches in their choices
+    Then both Agents should have the opportunity to choose again
+
+  Scenario: One mutually chosen Mediation Centre
+    Given both Agents have selected the Mediation Centres they want
+    And there is only one match in their choices
+    Then that should be the chosen Mediation Centre
+
+  Scenario: Multiple mutually chosen Mediation Centres
+    Given both Agents have selected the Mediation Centres they want
+    And there are several matching choices
+    Then one Mediation Centre must be chosen upon by both Agents
+    # It's been suggested we could make Agents choose (before this step)
+    # the order of preference for the Mediators, then the system could suggest
+    # a Mediator based on a points system.
+
+  Scenario: Mediation Centre is notified of the Agents' decision
+    Given my Mediation Centre has been chosen by both Agents of a Dispute
+    Then I should be notified that my Mediation Centre has been chosen
+    And I should have the facility to offer a list of Mediators to the Agents
+
+  Scenario: Mediation Centre provides list of Mediators
+    Given a Mediation Centre has provided a list of available Mediators
+    Then I should be able to view the details of each Mediator # including CV, etc
+    And I should be able to select the Mediators I'm happy with
+
+  Scenario: No mutually chosen Mediators
+    Given both Agents have selected the Mediators they want
+    And there are no matches in their choices
+    Then both Agents should have the opportunity to choose again
+
+  Scenario: One mutually chosen Mediator
+    Given both Agents have selected the Mediators they want
+    And there is only one match in their choices
+    Then that should be the chosen Mediator
+
+  Scenario: Multiple mutually chosen Mediators
+    Given both Agents have selected the Mediators they want
+    And there are several matching choices
+    Then one Mediator must be chosen upon by both Agents
+
+  Scenario: Mediator is notified of the Agents' decision
+    Given I am a Mediator
+    And I have been chosen by both Agents of a Dispute
+    Then I should be notified that I have been chosen
+    And I should be made to sign a confidentiality agreement
+
+  Scenario: Mediator signs confidentiality agreement
+    Given I am a mutually-chosen Mediator for a given Dispute
+    And I sign the confidentiality agreement
+    Then the Dispute should now be in Mediation Mode
+\end{lstlisting}
+
+\subsection{Dispute in Mediation}
+
+\begin{lstlisting}
+Feature: Dispute (under Mediation)
+    The rules of the Dispute have now changed. All communication must be done through the Mediator.
+    It is at this point that the business logic specific evidence-gathering can be applied, so that
+    the artifical intelligence in the module can provide a second opinion to the Mediator.
+    The Mediator, being a specialised and trained individual, can choose to ignore or amend the given
+    advice.
+  
+  Background:
+    Given the Dispute is fully underway
+    And the Dispute is in Mediation
+
+  Scenario: Block Agent A and B from communicating with one another
+    Given we have not activated round-table communication
+    Then I should not be able to communicate with the other Agent
+
+  Scenario: Mediator requires further information
+    Given a Dispute type was selected at the beginning of the Dispute # e.g. "maritime collision"
+    Then the type-specific module should offer custom forms to the Agents to fill in
+
+  # business logic specific stuff relating to Maritime Collisions etc MUST be put into a separate feature file
+  # (in the plugin directory). This set of features must be as abstract and generic as possible.
+
+  Scenario: Filling in the type-specific forms
+    Given I am an Agent
+    And I have filled in the forms provided by the type-specific module
+    Then there should be no more forms to fill in
+    And I should see that the system is awaiting a response from the other Agent
+
+  Scenario: Filling in the type-specific forms as the second Agent
+    Given I am an Agent
+    And I have filled in the forms provided by the type-specific module
+    And the other Agent has also filled in the forms
+    Then there should be no more forms to fill in
+    And I should see that the system is awaiting a response from the Mediator
+
+  Scenario: AI logic is applied
+    Given I am a Mediator
+    And both Agents have completed the type-specific module forms
+    Then I should see the results of the AI in the type-specific module
+    #And I should be able to advise each Agent individually
+    # Commented out the above line because it isn't testable. Essentially, the Mediator can send a
+    # private message to either Agent, negotiating a resolution. It is up to the Agents to formally
+    # send an offer through the "Propose Resolution" facility.
+
+  Scenario: Accepting the Mediator's offer
+    Given the Mediator has given me an offer
+    Then I should be able to accept the offer
+    And the Dispute should close successfully
+
+  Scenario: Declining the Mediator's offer
+    Given the Mediator has given me an offer
+    Then I should be able to decline the offer
+    And the Dispute should remain open
+
+  Scenario: Sending an offer for round-table communication
+    Given I am a Mediator
+    Then I should be able to offer round-table communication
+    # The Mediator should (through a dedicated facility) be able to propose round-table negotation,
+    # whereby the free communication of all parties is enabled.
+
+  Scenario: Accepting the offer for round-table communication
+    Given the Mediator has suggested round-table communication
+    Then I should be able to accept the offer
+    And the Dispute should go into Round Table Mediation mode
+
+  Scenario: Declining the offer for round-table communication
+    Given the Mediator has suggested round-table communication
+    Then I should be able to decline the offer
+    And the Dispute should remain open and under Mediation
+\end{lstlisting}
+
+\section{Amended Requirements}
+
+As the project progressed, some of the original requirements were simplified or removed altogether, and other requirements arose. The agile nature of this project meant that the features were able to evolve naturally over time.
+
+\subsection{Account Creation}
+
+\begin{lstlisting}
+Feature: Account Creation
+    I should be able to register an account of a certain type, e.g. Law Firm/Agent
+    And I should be able to log into said account
+
+  Scenario Outline: Not all fields filled in on registration
+    When I fill in the details for a new Organisation account
+    # (which could be Law Firm or Mediation Centre)
+    And I leave the '<field_label>' field blank
+    And I try to register
+    Then I should see the message 'Please fill in all fields.'
+
+    Examples:
+      | field_label       |
+      | Email             |
+      | Password          |
+      | Organisation Name |
+
+  Scenario: Trying to register with an email address that already exists
+    When I fill in the details for a new Organisation account
+    And I provide an email that is already registered to the system
+    And I try to register
+    Then I should see the message 'An account is already registered to that email address.'
+
+  @clear
+  Scenario: Law Firm registration
+    When I fill in the details for a new Organisation account
+    And I try to register
+    Then the account should be created
+    # As discussed in the supervisor meeting, we could add an admin verification stage after account creation.
+    # This could be as complicated as we want to make it, so for now, let's add a boolean in the database that
+    # says if the Law Firm is verified or not. Make it verified by default, but carry out isVerified checks at login.
+    # We can add the verification steps later and make Companies unverified by default.
+    # At that stage, we need to add additional scenarios, e.g.
+    # Given I am unverified, When I log in, Then I should have restricted access
+
+  Scenario: Account login with valid credentials
+    Given I have registered an Organisation account
+    When I attempt to log in with valid credentials
+    Then I should be logged into the system
+
+  Scenario: Account login with invalid credentials
+    Given I have registered an Organisation account
+    When I attempt to log in with invalid credentials
+    Then an authentication error should be displayed
+
+  Scenario: Create Agent account
+    Given I am logged into a Law Firm account
+    Then I should be able to create an Agent account
+    And I should be able to log into that account
+
+  Scenario: Create Mediator account
+    Given I am logged into a Mediation Centre account
+    Then I should be able to create a Mediator account
+    And I should be able to log into that account
+\end{lstlisting}
+
+
+\subsection{Administrator}
+
+\begin{lstlisting}
+Feature: Admin
+    SmartResolution administrators can log into the instance and
+    customise the instance according to the needs of the business.
+
+  Scenario: Logging into an admin account
+    Given I am logged into an Admin account
+    Then I should see admin-only options on the dashboard
+
+  Scenario: Installing a new module
+    Given I am logged into an Admin account
+    When I visit the SmartResolution Marketplace
+    Then I should be able to install new modules
+
+  Scenario: Activating the module
+    Given I am logged into an Admin account
+    And I have installed a new module
+    Then I should be able to activate the module
+
+  Scenario: Deactivating a module
+    Given I am logged into an Admin account
+    And I have activated a module
+    Then I should be able to deactivate the module
+
+  Scenario: Uninstalling a module
+    Given I am logged into an Admin account
+    And I have installed a new module
+    Then I should be able to uninstall the module
+
+  # # This could be added in a later version of SmartResolution, when the theme-customisation feature is created.
+  # Scenario: Customising the SmartResolution instance
+  #   Given I am logged into an Admin account
+  #   Then I should be able to change the instance logo
+\end{lstlisting}
+
+\subsection{Dispute Creation}
+
+\begin{lstlisting}
+Feature: Dispute creation
+    Given I am logged into an authorised account
+    Then I should be able to create a Dispute
+
+  @clear
+  Scenario: Creating a Dispute
+    Given I am logged into a Law Firm account
+    And I have created at least one Agent account
+    Then I should be able to create a new Dispute
+
+  Scenario: Attempting to create a Dispute with no Agent
+    Given I am logged into a Law Firm account
+    And I have created NO Agent accounts
+    Then I should see the message 'You must create an Agent account before you can create a Dispute!'
+
+  Scenario: Trying to view a dispute I shouldn't have access to
+    Given I am logged into a Mediation Centre account
+    When I try to view a Dispute I've not been allocated to yet
+    Then I should see the message 'You do not have permission to view this Dispute!'
+
+  Scenario: Trying to view a dispute that does not exist
+    Given I am logged into a Law Firm account
+    When I try to view a Dispute that does not exist
+    Then I should see the message 'The dispute you are trying to view does not exist.'
+
+  @clear
+  Scenario: Initiating a Dispute against a Law Firm
+    Given I have submitted a Dispute
+    Then I should be able to initiate it against another Law Firm
+    And I shouldn't be able to reinitiate it against a different Law Firm
+
+  @clear
+  Scenario: A Dispute is opened against my Law Firm
+    Given a Dispute has been initiated against my Law Firm
+    And I have created an Agent
+    Then I should be able to allocate the Agent to the Dispute
+
+  Scenario: Editing a summary
+    Given I have submitted a Dispute
+    Then I should be able to edit the summary
+
+  Scenario: Editing a dispute type
+    Given I have submitted a Dispute
+    Then I should be able to edit the dispute type
+\end{lstlisting}
+
+\subsection{Dispute}
+
+\begin{lstlisting}
+Feature: Dispute
+    The Dispute is underway, both Agents are free to communicate with one another,
+    propose offers, attach evidence, etc.
+
+  Background:
+    Given I am logged into an Agent account
+    And the Dispute is fully underway
+    And the Dispute is not in Mediation
+
+  @clear
+  Scenario: Sending a message via an active dispute
+    Then I should be able to send a message via the Dispute
+
+  Scenario: Sending a message via an active dispute, as an unauthorised person
+    Given I am logged into an Agent account that is not associated with the Dispute
+    Then I should NOT be able to send a message via the Dispute
+
+  @clear
+  Scenario: Uploading evidence to a Dispute
+    Then I should be able to upload evidence to the Dispute
+
+  Scenario Outline: Attempting to view pages before you are allowed
+    Given the Dispute is NOT fully underway
+    When I attempt to view the '<page>' page
+    Then I should see the message '<expected_message>'
+
+  Examples:
+    | page      | expected_message                              |
+    | evidence  | You are not allowed to view these documents.  |
+    | mediation | You do not have permission to view this page. |
+
+  Scenario: Start the Mediation process
+    Then I should be able to start the Mediation process
+
+  @clear
+  Scenario: Resolve a Dispute
+    Then I should be able to mark the Dispute as resolved
+    And the Dispute should close successfully
+
+  @clear
+  Scenario: Take the Dispute to Court
+    Then I should be able to take the Dispute to court
+    And the Dispute should close unsuccessfully
+
+\end{lstlisting}
+
+\subsection{Lifespan Negotiation}
+
+\begin{lstlisting}
+Feature: Negotiating a Dispute lifespan
+    When a Dispute is opened and each Law Firm has allocated an Agent
+    The Agents need to negotiate a Dispute lifespan
+    i.e. the maximum length of time the Dispute can continue without resolution
+    before being automatically taken to Court.
+
+  @clear
+  Scenario: Creating a Dispute lifespan offer
+    Given both Agents have submitted the Dispute
+    Then I should be able to make a lifespan offer
+
+  @clear
+  Scenario: Accepting a Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to Accept the offer
+    And I should see the message 'Dispute starts in'
+
+  @clear
+  Scenario: Create a counter Dispute lifespan offer
+    Given the other Agent has sent me a Dispute lifespan offer
+    Then I should be able to Decline the offer
+    And I should be able to make a lifespan offer
+
+  @clear
+  Scenario: Making a lifespan offer mid-Dispute
+    Given I am logged into an Agent account
+    And the Dispute is fully underway
+    Then I should be able to make a lifespan offer
+    And the Dispute should continue normally despite the renegotiation offer
+
+  @clear
+  Scenario: Renegotiating the Dispute lifespan mid-Dispute
+    Given I am logged into an Agent account
+    And the Dispute is fully underway
+    When I make a new lifespan offer
+    And the other Agent accepts the offer
+    Then the new lifespan should take immediate effect
+    And I should see the message 'The dispute is currently on hold until the new lifespan comes into effect.'
+\end{lstlisting}
+
+\subsection{Putting a Dispute into Mediation}
+
+\begin{lstlisting}
+Feature: Mediation
+    At any point in a confirmed Dispute
+    Either Agent can propose Mediation
+    Whereby a Mediator is introduced to help to resolve the Dispute
+    If complications arise during the Mediation Creation process - e.g. a
+    list of Mediators being provided to the Agents but are not suitable,
+    then either Agent can restart the Mediation process.
+
+  Background:
+    Given I am logged into an Agent account
+    And the Dispute is fully underway
+
+  @clear
+  Scenario: Proposing Mediation
+    Then I should be able to propose Mediation
+    And my choice of Mediation Centre should be presented to the other Agent
+
+  @clear
+  Scenario: Declining a Mediation Centre proposal
+    Given the other Agent has proposed a Mediation Centre
+    Then I should be able to decline the proposal
+    And I should see the message 'Make Mediation Proposal'
+
+  @clear
+  Scenario: Accepting a Mediation Centre proposal
+    Given the other Agent has proposed a Mediation Centre
+    Then I should be able to accept the proposal
+    And I should see the message 'You are waiting for the Mediation Centre to provide a list of available Mediators. You will be notified when this happens.'
+
+  @clear
+  Scenario: Providing a list of available Mediators
+    Given the Agents have agreed on a Mediation Centre
+    And I am logged in as the Mediation Centre
+    Then I should be able to provide a list of available Mediators
+
+  @clear
+  Scenario: Choosing a Mediator from the list
+    Given the Mediation Centre we've agreed upon has provided a list of available Mediators
+    And I am logged into an Agent account
+    Then I should be able to propose a Mediator to the other Agent
+
+  @clear
+  Scenario: Declining a Mediator proposal
+    Given the other Agent has proposed a Mediator
+    Then I should be able to decline the proposal
+    And I should see the message 'Propose Mediator'
+
+  @clear
+  Scenario: Accepting a Mediator proposal
+    Given the other Agent has proposed a Mediator
+    Then I should be able to accept the proposal
+    And the Dispute should be in Mediation
+\end{lstlisting}
+
+\subsection{Mediation}
 
 \begin{lstlisting}
 Feature: Dispute (under Mediation)
@@ -58,5 +665,143 @@ Feature: Dispute (under Mediation)
     Given the Dispute is in round-table communication mode
     Then I should be able to disable round-table communication
     And free communication should no longer be allowed between all parties
+
+\end{lstlisting}
+
+\subsection{Module}
+
+\begin{lstlisting}
+Feature: Module
+    To extend SmartResolution with additional functionality,
+    The software should support modules which can be plugged into the system.
+
+    I've developed a Test Module specifically for this feature, so that I can
+    write regression tests to make sure dashboard items are added, custom routing
+    works, etc. This is for the purposes of regression testing only: by no means
+    is a module REQUIRED to define custom routes and dashboard items, etc.
+
+  Background:
+    Given I am logged into an Agent account
+    And the Dispute is fully underway
+    And the Dispute type has been set to 'Test Module'
+
+  @clear
+  Scenario: Clear the database in preparation for this test suite
+
+  Scenario: Dispute dashboard item added
+    Then I should see a custom dashboard item
+
+  Scenario: Custom dispute-level-routing
+    When I click on the custom dashboard item
+    Then I should see the message 'Hello world!'
+    And this message should have been passed as a parameter rather than hardcoded
+    # (this tests parameter passing)
+
+  Scenario: Custom top-level-routing
+    When I try to visit '/module-test'
+    Then I should see the message 'This module is meant to test the SmartResolution module support. It adds nothing useful and should be removed from production.'
+    And the page should have this selector: 'h1#test-module'
+    # (this tests markdown rendering)
+
+  Scenario: Custom module database interaction
+    When I click on the custom dashboard item
+    Then I should see the message 'Entries in database: 0'
+    When I click on the 'Create Database entry' button
+    Then I should see the message 'Entries in database: 1'
+    When I click on the 'Create Database entry' button
+    Then I should see the message 'Entries in database: 2'
+\end{lstlisting}
+
+\subsection{Notification}
+
+\begin{lstlisting}
+Feature: Notifications
+    As a logged in user,
+    When something interesting happens
+    Then I should have some sort of notification so that I know about it
+    And I should be able to mark that notification as read
+
+  @clear
+  Scenario: Being notified of a Dispute
+    Given a Dispute has been assigned to me
+    And I am logged into a one-dispute Agent account
+    Then I should get a notification about the Dispute
+
+  Scenario: Marking the Dispute as read
+    Given I am logged into a one-dispute Agent account
+    And I have a new notification
+    When I click on the associated link
+    Then the notification should be marked as read
+    And the URL should be clean, with no notification parameters
+
+\end{lstlisting}
+
+\subsection{Profile}
+
+\begin{lstlisting}
+Feature: Profile
+    Profiles are key to SmartResolution, allowing Agents to view the CVs of Mediators
+    Which helps them to choose a Mediator when the Dispute requires Mediation.
+    Similarly, Organisations can specify their description, linking to external sites etc.
+    This helps Agents to choose a Mediation Centre in the first place.
+
+  Background:
+    Given I am logged into an Agent account
+
+  Scenario: Viewing the profile of an Organisation
+    Given I am looking at an Organisation's profile
+    Then I should see the Organisation description
+
+  Scenario: Viewing the profile of an Individual
+    Given I am looking at an Individual's profile
+    Then I should see the Individual's CV
+    And I should see which Organisation the Individual works for
+
+  Scenario: Editing an Organisation profile
+    Given I am logged into an Organisation account
+    Then I should be able to edit my Organisation's description
+
+  Scenario: Editing an Individual profile
+    Given I am logged into an Individual account
+    Then I should be able to edit my CV
+
+\end{lstlisting}
+
+\subsection{Routing}
+
+\begin{lstlisting}
+Feature: Routing
+    As this is a RESTful web app,
+    Some users might try to access pages when they shouldn't.
+    So we should ensure that the appropriate error messages and redirects are in place.
+
+  Scenario Outline: Accessing session-only pages
+    Given I am not logged into an account
+    When I try to visit '<forbidden_page>'
+    Then I should see the message 'You do not have permission to see this page. Please log in first.'
+
+    Examples:
+      | forbidden_page       |
+      | /register/individual |
+
+  Scenario Outline: Accessing Organisation-only pages
+    Given I am logged into an Individual account
+    When I try to visit '<organisation_only_page>'
+    Then I should see the message 'You do not have permission to see this page. You must be logged into an Organisation account.'
+
+    Examples:
+      | organisation_only_page |
+      | /register/individual   |
+      | /disputes/new          |
+
+  Scenario Outline: Accessing Individual-only pages
+    Given I am logged into an Organisation account
+    When I try to visit '<individual_only_page>'
+    Then I should see the message 'You do not have permission to see this page. You must be logged into an'
+
+    Examples:
+      | individual_only_page   |
+      | /disputes/8/chat       |
+      | /disputes/8/close      |
 
 \end{lstlisting}
