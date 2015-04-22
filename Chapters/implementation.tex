@@ -1,6 +1,7 @@
 \chapter{Implementation} % The implementation should look at any issues you encountered as you tried to implement your design. During the work, you might have found that elements of your design were unnecessary or overly complex; perhaps third party libraries were available that simplified some of the functions that you intended to implement. If things were easier in some areas, then how did you adapt your project to take account of your findings? It is more likely that things were more complex than you first thought. In particular, were there any problems or difficulties that you found during implementation that you had to address? Did such problems simply delay you or were they more significant? You can conclude this section by reviewing the end of the implementation stage against the planned requirements.
 
 @TODO - before this point, I still haven't mentioned use of Composer, AWS, and other tools, leaving my directory structure explanations a little bare. Also want to mention how my deployment script strips out tests etc from the zipped up, production-ready SmartResolution version
+@TODO - describe in detail the models, data mappers and controller objects.
 @TODO - make a SmartResolution style guide in the Wiki, pull in as an appendix
 @TODO - improve SmartResolution developer instructions on Wiki, pull in as an appendix
 @TODO - pull in module how-to guide documentation
@@ -20,6 +21,7 @@ As the implementation followed an agile methodology, the design evolved over tim
 .3 api/.
 .3 controller/.
 .3 db/.
+.3 helpers/.
 .3 model/.
 .3 view/.
 .2 modules/.
@@ -42,9 +44,9 @@ As the implementation followed an agile methodology, the design evolved over tim
 
 \lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's dependencies.
 
-\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{webapp/routes.php} defines the routing component). The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory.
+\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern (\lstinline{webapp/routes.php} defines the routing component). The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
 
-Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing, rather than being responsible for the relational database to object mapping.
+Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing, rather than being responsible for the relational database to object mapping. This is discussed in detail later on in this section.
 
 Finally, this folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
 
@@ -58,17 +60,74 @@ Finally, at the top level we have a few interesting files:
 
 \lstinline{Gemfile} - describes SmartResolution's Ruby dependencies. Required for the Cucumber and Ruby integration tests.
 
+\section{Routing}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{routing}
+    \fi
+  \caption{How SmartResolution processes HTTP requests}
+  \label{uml:routing}
+\end{figure}
+
+Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and renders data-driven pages. As described in the image, the HTTP request is processed by \lstinline{routes.php} and forwarded to the appropriate controller, which then instantiates the models and renders the view.
+
 \section{Class diagrams}
 
 The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute.
 
-@TODO!
+The class diagram in figure~\ref{uml:class} shows the classes in the \lstinline{webapp/core/model} directory, which encapsulate the business logic of the application.
 
-Also @TODO - describe in detail the models, data mappers and controller objects.
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{class}
+    \fi
+  \caption{Class diagram showing the model classes in SmartResolution}
+  \label{uml:class}
+\end{figure}
 
-\subsection{State pattern}
+\subsection{Accounts}
 
-Please refer to figures~\ref{uml:activity:dispute} and~\ref{uml:activity:mediation} for a reminder of the workflow of a dispute. These diagrams alluded to the fact that disputes can be in different states.
+Let's begin at the top of the figure: the \lstinline{AccountInterface}, which defines the core methods which all account types should define, whether the account is a law firm, a mediator or even an administrator. These methods include \lstinline{getEmail()}, \lstinline{getLoginId()}, \lstinline{__toString()} and so on.
+
+Many of the methods in the interface will have the same implementation regardless of the account type. In these cases, the abstract class \lstinline{Account} defines the common implementations, but it does not implement the \lstinline{AccountInterface} interface since it cannot implement all of the methods for every account type.
+
+The \lstinline{Organisation} and \lstinline{Individual} account types implement the \lstinline{AccountInterface} interface and extend the \lstinline{Account} abstract class to further define any missing function definitions specific to their own account type. Finally, the specialised subclasses inherit from \lstinline{Organisation} or \lstinline{Individual} and override or call parent function definitions where necessary.
+
+\subsection{Disputes}
+
+Every fully instantiated dispute has two dispute parties which comprises of a law firm, an agent and a dispute summary. A dispute can have zero-to-many items of evidence (uploaded by the agents) associated with it and zero-to-many messages sent back and forth between the agents. Every dispute should also have a lifespan, but this is more complicated than it might first appear so is discussed in further detail in the next subsection.
+
+A dispute's \emph{type} denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', but this is where our maritime collision logic would come into play. With the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
+
+Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation. A dispute may also be somewhere in between, e.g. the agents have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the MediationState class.
+
+\subsection{Lifespans}
+
+Every dispute should have a lifespan. This becomes somewhat complicated, since a lifespan can be proposed by either party, must be agreed by both parties, must only be applied between the start and end points of a lifespan, and can be renegotiated at any time.
+
+With this in mind, every dispute can be said to have two lifespans: the `current' and `latest' lifespans. Figure~\ref{uml:lifespan} highlights the difference between the two. 
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{lifespan}
+    \fi
+  \caption{Visualisation showing the difference between the `current' and `latest' lifespans}
+  \label{uml:lifespan}
+\end{figure}
+
+The `current' lifespan is the most recent accepted Lifespan that has been attributed to the given dispute. If no Lifespan has been accepted, this retrieves the most recent \emph{offered} Lifespan. If no Lifespan has even been offered, this returns a mock Lifespan object so that all of the lifespan-related method calls still work, to save us complicating our dispute object.
+
+For most purposes, the `current' lifespan is what is required. This is the lifespan that has generally been agreed by both parties and is used for checking if a dispute is still ongoing before allowing an agent to send a message, for example.
+
+The `latest' lifespan ignores whether or not a lifespan has been accepted and retrieves the very latest lifespan proposal. This is required in special cases, such as in the rendering of the lifespan on the dispute dashboard, to highlight the fact that a new lifespan has been proposed and it needs to be accepted or declined.
+
+\subsection{Dispute State}
+
+Separately from the `mediation state' is the higher level dispute state. A dispute is in a different state depending on whether or not all agents have been assigned, a lifespan has been negotiated, and so on. The state of the dispute dictates what actions are available to the parties involved.
 
 In early versions of the project, the codebase began to get quite messy because classes throughout the system would examine a dispute's state to decide whether or not they could perform some action. This led to complicated \lstinline{if} statements, like the one below:
 
@@ -107,18 +166,7 @@ The list of possible states are as follows:
     \item \textbf{DisputeClosed} - the dispute is now closed, either because an agent closed it or because the lifespan of the dispute came to an end. It may have been closed successfully (the dispute was resolved) or unsuccessfully (the dispute had to be resolved by other means, e.g. court).
 \end{itemize}
 
-\section{Routing}
-
-\begin{figure}[h!]
-  \centering
-    \ifimages
-    \includegraphics[width=\textwidth]{routing}
-    \fi
-  \caption{How SmartResolution processes HTTP requests}
-  \label{uml:routing}
-\end{figure}
-
-Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and renders data-driven pages. As described in the image, the HTTP request is processed by \lstinline{routes.php} and forwarded to the appropriate controller, which then instantiates the models and renders the view.
+As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions and means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
 
 \section{Comments}
 
