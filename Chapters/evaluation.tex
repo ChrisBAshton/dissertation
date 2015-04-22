@@ -78,6 +78,8 @@ If I had foregone the SmartResolution marketplace component entirely, I could ha
 
 %Were the design decisions correct? Could a more suitable set of tools have been chosen? If you were starting again, what would you do differently?
 
+\subsection{Choice of language and framework}
+
 I believe that the choice of PHP as the implementation language was correct. SmartResolution is easily deployable as almost all servers support PHP; server support for Ruby, Node and other languages is less common.
 
 In hindsight, perhaps F3 wasn't the most appropriate framework for the project. To recap what I said in the `Design' chapter: ``F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3." I emphasised the need to be agile and the disadvantage of being locked into specific directory structures in large-scale frameworks such as Symphony or Zend.
@@ -85,6 +87,16 @@ In hindsight, perhaps F3 wasn't the most appropriate framework for the project. 
 Now that the project is complete, it actually has implemented quite a rich and deep MVC directory structure, with additional directories for middle-layer database-querying classes, classes that handle the module API, classes representing dispute states, and so on. F3 copes well with this, but perhaps a more heavyweight framework would have enforced additional advantages, such as namespaced classes, or handling autoloading\footnote{Composer generates \lstinline{vendor/autoload.php}, but \lstinline{webapp/autoload.php} is manually created and must explicitly pull in various files and directories Frameworks such as Zend provide ways of hooking into the autoloader. [REF]}. %http://framework.zend.com/manual/1.12/en/zend.loader.autoloader.html
 
 F3 definitely had a lower learning curve, meaning I was able to start implementing features the day I started developing, rather than spending days or weeks getting to grips with a heavyweight framework. If I were to start the project again, I'd try using a heavyweight framework from the start, but I don't regret my choice.
+
+\subsection{Appropriateness of implementation}
+
+Figure~\ref{uml:class} contains the class diagram showing the object-oriented nature of the system and the interaction between the models. I'm quite happy with the final design, but certain elements could be improved.
+
+For instance, the \lstinline{MediationState} class encapsulates a lot of business logic, representing the mediation state of a dispute right from mediation proposal, to choosing a mediation centre, to the mediation centre offering a list of available mediators, etc. The state pattern worked well for the dispute itself, and should maybe have been extended to incorporate this mediation logic too. At the very least, it would have made state querying more consistent.
+
+I believe that, in hindsight, perhaps more time spent on an up-front design would have benefited the final design. It may also have meant I'd have side-stepped some of the difficult periods of the project, such as when I refactored all of the models to take an array of data instead of a database record ID. More time spent on an up-front design may have meant I'd have spotted the database-model-coupling sooner and never implemented it incorrectly in the first place.
+
+At the higher level, I'm very pleased with the MVCR structure of the application. This compound design pattern made it easy to assign routes to different handlers and to separate the concerns of the model with the wider concerns of the controllers in the application itself.
 
 \section{Speed of progression}
 
