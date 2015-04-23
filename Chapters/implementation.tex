@@ -141,6 +141,15 @@ if ($dispute->state() === 'Open' || $dispute->state() === 'InMediation' || $disp
 }
 \end{lstlisting}
 
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{states_sequence}
+    \fi
+  \caption{Sequence diagram showing the state pattern in SmartResolution}
+  \label{uml:states}
+\end{figure}
+
 Figure~\ref{uml:states} shows how the state pattern was adopted to overcome problems like this. Classes throughout SmartResolution could now query the dispute's state directly, as the responsibility of whether or not an action could be performed was encapsulated inside the state itself. The above example could thus be rewritten as follows:
 
 \begin{lstlisting}
@@ -148,17 +157,6 @@ if ($dispute->state()->canDoSomething()) {
     doSomething();
 }
 \end{lstlisting}
-
-\begin{figure}[h!]
-  \centering
-    \ifimages
-    \includegraphics[width=\textwidth]{states}
-    \fi
-  \caption{Visualisation of how the state pattern works in SmartResolution}
-  \label{uml:states}
-\end{figure}
-
-@TODO - make this a sequence diagram rather than a `visualisation'!!
 
 The list of possible states are as follows:
 
