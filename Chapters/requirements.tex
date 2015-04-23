@@ -96,7 +96,7 @@ Before immortalising the requirements in a textual form, a project development a
 
 \subsection{Project Development Methodology}
 
-The industry is moving towards an agile approach [REF] which stresses the importance of being able to embrace change. As Kent Beck once said, agile is about ``deferring design decisions until the last possible moment so that they can be made in light of experience" gained through spike work, talking to the on-site customer, and so on.
+The industry is moving towards an agile approach which stresses the importance of being able to embrace change. Agile is about ``deferring design decisions until the last possible moment so that they can be made in light of experience" gained through spike work, talking to the on-site customer, and so on.~\cite{learningAgile}
 
 The idea of agile is that the cost-of-change curve is made shallower. Customers are happy because it's never too late to tweak a feature, and developers are happy because they're not expending lots of effort into writing up requirements specifications, designing UML diagrams, and the like.
 
@@ -126,7 +126,7 @@ My approach to textualising requirements is a compromise between plan-driven and
 
 In agile approaches, user stories should be the simplest thing to make everyone in the room agree that there is a placeholder for something that needs to be done. In plan-driven approaches, requirements are specified by way of a fully comprehensive report in the form of a detailed requirements specification. Cucumber features are the middle ground: more detailed than user stories, but executable in a BDD approach that lends itself perfectly to the agile practices of TDD and CI.
 
-BDD, or business-driven development, allows you to write features in a human-readable way so that a business analyst is able to understand the requirements but does not need to know the technical implementation. The features follow a convention known as the Gherkin syntax [REF] so that each feature step can be matched to a corresponding step definition represented in code. This makes the features executable and allows automated end-to-end testing.
+BDD, or business-driven development, allows you to write features in a human-readable way so that a business analyst is able to understand the requirements but does not need to know the technical implementation. The features follow a convention known as the Gherkin syntax~\cite{gherkin} so that each feature step can be matched to a corresponding step definition represented in code. This makes the features executable and allows automated end-to-end testing.
 
 Appendix~\ref{appendix:requirements} contains the full set of Cucumber features, which form the basis of the requirements specification. They're more useful than a traditional specification as they can be `run' to ensure that the requirements have been met. The nature of these being a part of the codebase means that they can evolve over time, which is simultaneously an advantage and a disadvantage. For this reason, appendix~\ref{appendix:requirements} contains the set of original signed-off features plus the final set of features as they now stand at the end of the project.
 
