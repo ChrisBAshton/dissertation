@@ -62,8 +62,6 @@ As this will be the basis of all the other components, it should also be the mos
 
 This module is separate from the core platform and lives in its own repository [REF]. It can be installed to any SmartResolution installation simply by being copied to the \lstinline{modules} directory; no further configuration is required.
 
-@TODO - this is a lie - the config.json file also needs updating. Need to add a graph somewhere to visualise how a module is pulled into the system.
-
 As discussed in the background and initial requirements, it was intended for this to be a feature-rich module that could find similar historic cases, cross-check agents' answers with maritime law, and approximate the likelihood of an agent's success in court.
 
 \subsection{SmartResolution Marketplace}
@@ -231,8 +229,6 @@ Most modules will require some sort of persistence layer to be useful, but devel
 \section{Design: SmartResolution Marketplace}
 
 Early versions of SmartResolution used a PHP array to describe which modules were installed and which were active. [REF] % https://github.com/ChrisBAshton/smartresolution/blob/6287211d49006e87a8d2035906eb58da22217906/webapp/modules/config.php 
-
-@TODO - show how config.json is used.
 
 A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution instance, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
 

@@ -172,35 +172,43 @@ The list of possible states are as follows:
 
 As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions. Inheriting from this class means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
 
-\section{Documentation}
+\section{Module API implementation}
 
-\subsection{Comments}
+The design for the module API was discussed in the design section. This section discusses how the module API was actually implemented, as demonstrated in figure~\ref{uml:moduleRegistration}.
 
-I believe in the agile principles of TDD and user stories as a replacement for documentation, and further believe that any documentation that is not intrinsically linked to the code itself will always eventually become misaligned with it.
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{module_registration}
+    \fi
+  \caption{Visualisation showing how modules are registered to the system}
+  \label{uml:moduleRegistration}
+\end{figure}
 
-For example, SmartResolution uses Cucumber features, which is a form of `executable' documentation. The same can be said of unit tests, though these are less descriptive. Code should be self-documenting, and anything in the code that requires an explanatory comment is a sign that the code itself should be refactored.
+The configuration JSON file is edited through the admin dashboard using a user-friendly GUI: administrators can activate or deactive modules at the press of a button. This file maintains a list of all known modules in the installation and whether or not they are active.
 
-All this in mind, I made the difficult decision to write Javadoc-style comments throughout the SmartResolution codebase: this decision is discussed in detail in appendix~\ref{appendix:comments}. Though I'm concerned that even these kind of comments eventually fall out of place with the code that they refer to, they do at least have the advantage of being able to be parsed to generate HTML documentation, which can be deployed to the project website. This ensures that the process of keeping API documentation up-to-date on the website is made as simple as possible, even if the applicability of the comments themselves cannot be fully verified without looking at the code.
+On every page load, \lstinline{config.php} is called. This iterates through the modules described in \lstinline{config.json} and loads the module's \lstinline{index.php} file, which contains the module declaration. All modules are pulled in regardless of their activity state, since the system still needs to know about them for the purposes of the admin dashboard. The activity state refers to whether or not the module definition function is executed: note that this is different to the module declaration function.
 
-SmartResolution API documentation, aimed at contributors to the SmartResolution platform, is available at:
+The module declaration function is defined in \lstinline{api.php} and in turn calls the \lstinline{registerModule} function in the \lstinline{ModuleController}. That function instantiates a new \lstinline{Module} object representing the module and then queries its activity state. If the module is active, its module definition function is called and the module is now hooked into all of the necessary events and global functions.
 
-\url{http://smartresolution.org/docs/index.html}
+\subsection{Module definition function}
 
-Developers who wish to create SmartResolution \emph{modules} can find module-specific API documentation at the following address:
+The module definition function contains calls to the module API. Some of these are top-level, such as defining custom routes: these are executed immediately.
 
-\url{http://smartresolution.org/module-docs/index.html}
+The most interesting API call is the publish-subscribe function \lstinline{on}. This function calls the \lstinline{ModuleController->subscribe} function, which adds the callback function to an internal array of subscriptions. The position at which the subscription is added to the array is denoted by the priority of the subscription.
 
-\subsection{Installation \& how-to guides}
+If and when an event is emitted by a class in the SmartResolution core platform, any subscriptions to that event are retrieved. They are then iterated through and the following check is performed (demonstrated here in pseudocode):
 
-The same philosophy cannot be applied to installation instructions or how-to guides, as there is currently no technological implementation that allows these to be generated from the code itself. To maximise the usefulness of SmartResolution and the likelihood of its continued existence, I expended quite some effort in creating high-quality, relevant additional documentation.
+\begin{lstlisting}
+	if the event is dispute-agnostic:
+	    call the subscribed function
+	
+	else if the event DOES rely on a dispute:
+	    if the subscribed function module name matches the current dispute's type:
+	        call the subscribed function
+\end{lstlisting}
 
-Instructions for installing SmartResolution on your own server can be found at the following address:
-
-\url{http://smartresolution.org/installation}
-
-A how-to guide for developing SmartResolution modules can be found at the following address:
-
-\url{http://smartresolution.org/module-how-to}
+This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module"). 
 
 \section{SmartResolution Marketplace}
 
@@ -247,3 +255,33 @@ Though continuous integration is important for ensuring that the codebase remain
 I wrote a bash script specific to the SmartResolution vendor site which clears the html and html-demo folders outlined in figure~\ref{uml:serverConfig}, then re-downloads and installs the website and the software from the website repository and the software repository respectively. The script calls PHPDoc to generate the SmartResolution core API documentation and module documentation, and the script also strips out unnecessary files such as tests and Travis configuration before zipping up the file as a production-ready download.
 
 In an ideal world, this script would be triggered via a Git web hook [REF] so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
+
+\section{Documentation}
+
+\subsection{Comments}
+
+I believe in the agile principles of TDD and user stories as a replacement for documentation, and further believe that any documentation that is not intrinsically linked to the code itself will always eventually become misaligned with it.
+
+For example, SmartResolution uses Cucumber features, which is a form of `executable' documentation. The same can be said of unit tests, though these are less descriptive. Code should be self-documenting, and anything in the code that requires an explanatory comment is a sign that the code itself should be refactored.
+
+All this in mind, I made the difficult decision to write Javadoc-style comments throughout the SmartResolution codebase: this decision is discussed in detail in appendix~\ref{appendix:comments}. Though I'm concerned that even these kind of comments eventually fall out of place with the code that they refer to, they do at least have the advantage of being able to be parsed to generate HTML documentation, which can be deployed to the project website. This ensures that the process of keeping API documentation up-to-date on the website is made as simple as possible, even if the applicability of the comments themselves cannot be fully verified without looking at the code.
+
+SmartResolution API documentation, aimed at contributors to the SmartResolution platform, is available at:
+
+\url{http://smartresolution.org/docs/index.html}
+
+Developers who wish to create SmartResolution \emph{modules} can find module-specific API documentation at the following address:
+
+\url{http://smartresolution.org/module-docs/index.html}
+
+\subsection{Installation \& how-to guides}
+
+The same philosophy cannot be applied to installation instructions or how-to guides, as there is currently no technological implementation that allows these to be generated from the code itself. To maximise the usefulness of SmartResolution and the likelihood of its continued existence, I expended quite some effort in creating high-quality, relevant additional documentation.
+
+Instructions for installing SmartResolution on your own server can be found at the following address:
+
+\url{http://smartresolution.org/installation}
+
+A how-to guide for developing SmartResolution modules can be found at the following address:
+
+\url{http://smartresolution.org/module-how-to}

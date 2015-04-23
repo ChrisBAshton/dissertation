@@ -6,7 +6,7 @@ I'll explain the rationale behind my decisions, starting from the most logical b
 
 I recognised that all accounts, be they organisations or individuals, agents or mediators, all require the ability to log in using an email address and a password. Rather than duplicating that information across several tables representing each user type, I encapsulated it into its own table: \lstinline{account_details}.
 
-Most websites these days now have some form of email verification process, requiring new registrants to click on a unique link sent to their email address. I knew that SmartResolution would likely require such a feature in the future, so added a \lstinline{verified} boolean to the table. For now, it defaults to true, but as and when email verification becomes a requirement, SmartResolution will be ready for it. @TODO - use the boolean in the software!!
+Most websites these days now have some form of email verification process, requiring new registrants to click on a unique link sent to their email address. I knew that SmartResolution would likely require such a feature in the future, so added a \lstinline{verified} boolean to the table. For now, it defaults to true, but as and when email verification becomes a requirement, SmartResolution will be ready for it.
 
 Given that I've removed duplication by creating the \lstinline{account_details} table, what was stopping me from simply combining all other account-related fields to that table, from name to type to description?
 
@@ -16,7 +16,7 @@ Furthermore, there are other differences between individuals and organisations. 
 
 I could have opted for an even more finely granulated table structure and separated \lstinline{individuals} into \lstinline{agents} and \lstinline{mediators}. However, I could see no differences between the two types in terms of the data required of them, so these tables would only be duplicates of one another, save for the table name. To avoid an overly complicated structure, I kept the higher-level account type as its own table and created a \lstinline{type} field as a modifier with SQLite CHECK constraints limiting the values to either ``agent" or ``mediator".
 
-This has the advantage of allowing more account types in future. If I were to add an "admin" account type, it's a simple case of adding "admin" to the list of allowed values. All of my production-code queries, such as \lstinline{"SELECT * FROM individuals WHERE some condition AND account_type = :account_type"}, should still work right out of the box. If I'd gone for separate tables, however, I might have to go through all of my production code and add additional queries, e.g.
+This has the advantage of allowing more account types in future, by adding another allowed option to the CHECK constraint. All of my production-code queries, such as \lstinline{"SELECT * FROM individuals WHERE some condition AND account_type = :account_type"}, should still work right out of the box. If I'd gone for separate tables, however, I might have to go through all of my production code and add additional queries, e.g.
 
 \begin{lstlisting}
 
@@ -28,9 +28,9 @@ This has the advantage of allowing more account types in future. If I were to ad
     
         "SELECT * FROM agents WHERE some condition"
     
-    else if type == "admin"
+    else if type == "something_else"
     
-        "SELECT * FROM admins WHERE some condition"
+        "SELECT * FROM somewhere_else WHERE some condition"
 
 \end{lstlisting}
 
@@ -48,7 +48,10 @@ Each dispute has a primary key, \lstinline{dispute_id}, to uniquely identify it,
 
 Each dispute should also have a type, which is how SmartResolution would allow modules to hook into the core platform. The module of the corresponding type would automatically be loaded for the given dispute. As such, a \lstinline{type} field representing the unique ID of the module was required.
 
-Disputes can be in one of many states, but the two key states can be summarised as either ``ongoing" or ``closed". These states are mutually exclusive. More importantly, neither state can be inferred from other fields in the database alone, so there is no risk of redundancy (information in the database becoming misaligned). A dispute's state must be captured somewhere, and where better than in the \lstinline{disputes} table?
+Disputes can be in one of many states, but any of these states can be put into a higher-level category as either ``ongoing" or ``closed". These states are mutually exclusive. More importantly, neither state can be inferred from other fields in the database alone, so
+there is no risk of redundancy. \footnote{Redundancy is where information in the database becomes misaligned. If the same bit of information is captured in multiple places, there's a risk the two might conflict - then which one do you go for?}
+
+To explain further: for a dispute to be closed, it needs to have had an agreed lifespan which subsequently comes to an end, closing the dispute automatically. This is a complicated query, to have to make just to get the status of a dispute, but this is not the only reason I created the status field. A dispute can have an active lifespan but then be manually closed by one of the agents - there needs to be a way of storing that closure.
 
 For finer granularity, and to allow for data analysis further down the road, I expanded the possible states slightly to indicate whether a dispute was resolved successfully, or closed because it had to be taken to court. Therefore, the three possible states are ``ongoing", ``resolved", or ``failed", and these are enforced with SQLite CHECK constraints.
 
@@ -70,6 +73,20 @@ All of these complicated scenarios meant that the best solution was to extract t
 
 \section{Mediation}
 
-@TODO
+Mediation is approached in a similar way to lifespans, as again it is something which one agent proposes and the other accepts. An agent must propose a mediation centre, the other agent must accept, and then an agent must propose a mediator which the other agent must accept.
 
-Also @TODO the type checks for %law_firm/mediation_centre, etc
+The process for selecting a mediation centre and a mediator is the same: the only difference is how the options are populated. Under the current business logic, all mediation centres are available for selection, whereas only the mediators that the chosen mediation centre has marked as available are able to be proposed by the agents.
+
+Given that the process for proposing and accepting both a mediation centre and a mediator is the same, it makes sense to combine the two in one table: \lstinline{mediation_offers}. The \lstinline{proposer} is the ID of the agent who made the proposal, and the \lstinline{proposed_id} is the ID of the mediation centre or mediator that they wish to propose to mediate the dispute.
+
+Whether the proposal is for a mediation centre or a mediator is marked by the \lstinline{type} field, which has a CHECK constraint of either ``mediation\_centre" or ``mediator". This risks introducing redundancy to the database (as, for example, a mediator ID may be provided even if the \lstinline{type} has been set to ``mediation\_centre") but saves the application from having to make a complicated and inefficient table-join to extract that information.
+
+When a mediation centre is chosen, the mediation centre must provide a list of available mediators, after which the agents must select one mediator. This is a many-to-many relationship\footnote{An unlimited number of mediators may be available for a dispute, and any mediator may be available for an unlimited number of disputes. This is known as a many-to-many relationship.} and thus must be represented by its own table: \lstinline{mediators_available}.
+
+It may seem odd to have the `round\_table\_communication' property in the \lstinline{disputes} table, since it is a property that can only be changed by the mediator and when a dispute is in mediation. However, it is an attribute of the dispute itself and can be said to default to `false'. It is not an attribute of mediation, but can be affected by the actions performed whilst in mediation.
+
+\section{Miscellaneous}
+
+Finally, we have miscellaneous tables such as \lstinline{notifications}, \lstinline{messages} and \lstinline{evidence}. These are all very separate concepts to what has been discussed previously, though they are also intrinsically linked to tables we've already discussed.
+
+Notifications are linked to accounts, evidence is linked to disputes, and messages are linked to both. There can be zero of each, or there can be many of each. For these reasons, it's self-explanatory why these should be in their own tables.
