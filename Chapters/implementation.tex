@@ -210,6 +210,50 @@ If and when an event is emitted by a class in the SmartResolution core platform,
 
 This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module"). 
 
+\section{Demonstration of module implementation}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{screenshot--dispute}
+    \fi
+  \caption{Screenshot of a dispute populated with fixture data}
+  \label{screenshot:dispute}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{screenshot--dispute_maritime}
+    \fi
+  \caption{Screenshot of the same dispute changed to the `maritime collision' dispute type}
+  \label{screenshot:disputeMaritime}
+\end{figure}
+
+Figure~\ref{screenshot:dispute} is a screenshot of a dispute populated with fixture data. Contrast this with figure~\ref{screenshot:disputeMaritime}, which shows the same dispute but with the dispute type changed from `Other' to `Maritime Collision'. By doing so, when the dispute-dependent \lstinline{dispute_dashboard} event was fired, the maritime collision subscribed function was executed. Inside that function the \lstinline{dashboard_add_item} function was called, specifying the maritime collision icon, title and link.
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{screenshot--module_maritime}
+    \fi
+  \caption{Screenshot of one of the questions screens of the maritime collision module}
+  \label{screenshot:moduleMaritime}
+\end{figure}
+
+The dashboard item links through to the maritime collision landing page which displays domain-specific questions, after both agents have accepted a disclaimer message. One of the questions pages is depicted in the screenshot in figure~\ref{screenshot:moduleMaritime}.
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{screenshot--maritime_module_results}
+    \fi
+  \caption{Screenshot of a possible results screen of the maritime collision module}
+  \label{screenshot:moduleMaritimeResults}
+\end{figure}
+
+When all of the questions have been answered, the module's AI interprets the answers to the questions according to maritime law and presents each agent with a personalised result, shown in figure~\ref{screenshot:moduleMaritimeResults}. Below the overall result is a summary of all of the questions asked and the answers provided by both agents.
+
 \section{SmartResolution Marketplace}
 
 The SmartResolution website was developed locally using many of the same technologies as the core SmartResolution software, including F3, Bootstrap, Composer and so on. For the SmartResolution Marketplace functionality to be implemented, it was clear that the website would need to be deployed somewhere remotely.
@@ -218,7 +262,7 @@ The SmartResolution website was developed locally using many of the same technol
 
 A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and upfront expense when so many alternatives exist.
 
-Cloud computing as a web hosting service is becoming increasingly popular [REF], Amazon Web Services (AWS) chief amongst these in terms of exponential growth. AWS is being utilised by companies including the BBC, [REF] its popularity down to its speed and scalability, as well as the low cost to market.
+Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth [REF]. AWS is being utilised by companies including the BBC, [REF] its popularity down to its speed and scalability, as well as the low cost to market. %http://www.bbc.co.uk/news/business-32442268
 
 AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia [REF], making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
 
@@ -255,6 +299,17 @@ Though continuous integration is important for ensuring that the codebase remain
 I wrote a bash script specific to the SmartResolution vendor site which clears the html and html-demo folders outlined in figure~\ref{uml:serverConfig}, then re-downloads and installs the website and the software from the website repository and the software repository respectively. The script calls PHPDoc to generate the SmartResolution core API documentation and module documentation, and the script also strips out unnecessary files such as tests and Travis configuration before zipping up the file as a production-ready download.
 
 In an ideal world, this script would be triggered via a Git web hook [REF] so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{screenshot--smartresolution_org}
+    \fi
+  \caption{Screenshot of SmartResolution vendor website}
+  \label{screenshot:smartresolutionOrg}
+\end{figure}
+
+Figure~\ref{screenshot:smartresolutionOrg} shows the landing page of the finished website.
 
 \section{Documentation}
 
