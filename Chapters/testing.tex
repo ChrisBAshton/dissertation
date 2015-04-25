@@ -1,4 +1,4 @@
-\chapter{Testing} % Detailed descriptions of every test case are definitely not what is required here. What is important is to show that you adopted a sensible strategy that was, in principle, capable of testing the system adequately even if you did not have the time to test the system fully.Have you tested your system on *real users*? For example, if your system is supposed to solve a problem for a business, then it would be appropriate to present your approach to involve the users in the testing process and to record the results that you obtained. Depending on the level of detail, it is likely that you would put any detailed results in an appendix.The following sections indicate some areas you might include. Other sections may be more appropriate to your project. 
+\chapter{Testing} 
 
 SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
 
@@ -31,7 +31,7 @@ Occasionally, features were too cumbersome to implement in a BDD manner, as they
 
 Cucumber regression tests are end-to-end and use a headless browser to emulate the browser environment, clicking buttons and filling in forms, then querying the state of the HTML to validate that an element of functionality worked as expected.
 
-To accomplish this, the driver (in our case, Poltergeist [REF]) needs to be able to access the server. However, our tests rely on the database having certain fixture-data. Moreover, our tests will be making persistent changes to the database - so it's essential that the tests use a test database, rather than the production database.
+To accomplish this, the driver (in our case, Poltergeist~\cite{github:poltergeist}) needs to be able to access the server. However, our tests rely on the database having certain fixture-data. Moreover, our tests will be making persistent changes to the database - so it's essential that the tests use a test database, rather than the production database.
 
 As far as the server is concerned, Poltergeist sends a HTTP request, just like any genuine user on a normal browser. Poltergeist needed to be able to send a flag, to explicitly inform the application that the request is coming from a test suite and, thus, should be using a test database.
 
@@ -48,15 +48,15 @@ The process of clearing the database involves removing the SQLite database entir
   \label{uml:headers}
 \end{figure}
 
-There's nothing stopping the end-user changing the headers that they send, so they too could access SmartResolution and interact with the test environment rather than the production environment. Ultimately, this is completely harmless. The test database is cleaned every time the test suite is run, so they would not even be able to sabotage the tests. This is a tried and tested technique, and has been adopted by companies including the BBC [REF].
+There's nothing stopping the end-user changing the headers that they send, so they too could access SmartResolution and interact with the test environment rather than the production environment. Ultimately, this is completely harmless. The test database is cleaned every time the test suite is run, so they would not even be able to sabotage the tests. This is a tried and tested technique, and has been adopted by companies including the BBC~\cite{bbc:cucumber}.
 
 \section{Unit Testing}
 
 Almost every class in the system has an associated unit test. This does not apply to library classes, such as those provided by F3, since the responsibility for testing those classes resides with the third party.
 
-Unit tests verify that the publicly available methods of a class work as expected, both when accessed correctly and incorrectly. The nature of unit tests should be that they are loaded into memory and are very quick to run. ``Unit tests focus just on the class or method at hand. They run entirely in memory, which makes them very fast. Depending on your platform, your testing tool should be able to run at least 100 unit tests per second." [REF] % http://www.jamesshore.com/Agile-Book/test_driven_development.html
+Unit tests verify that the publicly available methods of a class work as expected, both when accessed correctly and incorrectly. The nature of unit tests should be that they are loaded into memory and are very quick to run. ``Unit tests focus just on the class or method at hand. They run entirely in memory, which makes them very fast. Depending on your platform, your testing tool should be able to run at least 100 unit tests per second."~\cite{artOfAgile}
 
-Some of the unit tests in SmartResolution are not `true' unit tests, as they rely on a database connection. According to Michael Feathers [REF], ``A test is not a unit test if it talks to the database, it communicates across the network, it touches the file system or it can't run at the same time as any of your other unit tests.'' % http://www.artima.com/weblogs/viewpost.jsp?thread=126923
+Some of the unit tests in SmartResolution are not `true' unit tests, as they rely on a database connection. According to Michael Feathers, ``A test is not a unit test if it talks to the database, it communicates across the network, it touches the file system or it can't run at the same time as any of your other unit tests.''~\cite{feathers:unitTests}
 
 As with the Cucumber tests, some of my unit tests rely upon fixture data and, additionally, some unit tests might alter, add or remove items from the database, so the unit tests rely on and interact with the test database.
 
@@ -95,7 +95,7 @@ This exception was usually raised after testing a part of my application that sh
 
 Early on, this wasn't too much of an issue: I was able to run the `clear database' command between any unit tests that raised this exception, as removing and re-creating the database would naturally clear any outstanding transactions. This was a bit of a hack, but felt justified as the test and production environments are very different. In the test environment, hundreds of transactions are initiated when running the unit tests and all tests are hooking into the same database connection. In the production environment this would not happen: if an exception is raised, an error page is triggered and the user is faced with an error message relating to the exception. Once PHP delivers the error page to the user's browser, the database connection is no longer open and thus a new transaction can begin.
 
-For several weeks, I was happy with this solution, but it did mean that my tests were quite slow to run. You can see in a Travis build around that time [REF] that it took almost a minute to run 90 unit tests, violating James Shore's principle that unit tests should run almost instantly. % https://travis-ci.org/ChrisBAshton/smartresolution/builds/58603809
+For several weeks, I was happy with this solution, but it did mean that my tests were quite slow to run. You can see in a Travis build around that time that it took almost a minute to run 90 unit tests~\cite{travis:slow}, violating James Shore's principle that unit tests should run almost instantly.
 
 Eventually, I decided to spend some time investigating the issue. I deduced that the transaction was not being committed because an exception was being raised before it could be committed. What I did not realise was that transactions were not being automatically rolled back when an exception was raised - it was something that needed to be handled manually in each exception.
 
@@ -123,7 +123,7 @@ $db->commit();
 \end{lstlisting}
 \end{minipage}
 
-This seemed laborious, error-prone and messy. Instead, I defined a custom exception function [REF] which throws an exception, but also rolls back any existing transactions. % https://github.com/ChrisBAshton/smartresolution/blob/b33f30064048d2dc6c84d72736dcdacb02d293b9/webapp/core/model/Utils.php#L14-L25
+This seemed laborious, error-prone and messy. Instead, I defined a custom exception function which throws an exception, but also rolls back any existing transactions.
 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}
@@ -140,7 +140,7 @@ This seemed laborious, error-prone and messy. Instead, I defined a custom except
 \end{lstlisting}
 \end{minipage}
 
-Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in just 34 seconds [REF]. This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation. % https://travis-ci.org/ChrisBAshton/smartresolution/builds/58932345
+Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in just 34 seconds~\cite{travis:fast}. This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation.
 
 I still needed to clear the database between each test \emph{suite}, as the tests would still alter the state of the database. But now, by and large, most of the tests \emph{within} those suites did not need to run on a new database connection.
 
@@ -194,7 +194,7 @@ $dispute = new Dispute($disputeDetails);
 
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. %https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839
+I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57~\cite{travis:fastest}. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
 
 \subsubsection{Further refactoring}
 
@@ -235,8 +235,7 @@ Cucumber features test the expected end-to-end functionality of the system as a 
 
 Every Cucumber feature has a corresponding step definition. It's worth noting that, though it is not required to give the step definition file the same name as the corresponding feature file, this is the Cucumber convention and is regarded as best practice.
 
-A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework [REF]. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless. % https://github.com/jnicklas/capybara
-%https://github.com/teampoltergeist/poltergeist
+A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework~\cite{github:capybara}. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless.
 
 As I began filling out my step definitions, I found that more and more steps were relying on methods and variables defined in other step definition files. In cases such as this, it was clear that a common helper class should be created. For example, step definitions have access to a `Session' helper class which provides methods to log in with specific credentials, or log into account types (e.g. \lstinline{Session.login_as_agent}). Figure~\ref{uml:cucumber} demonstrates the relationship between a Cucumber feature, its step definition, and the helper classes.
 
@@ -285,11 +284,11 @@ Travis CI ran all unit and functional tests on every pushed commit or pull reque
 
 The most difficult aspect to setting up Travis was getting the PHP server running, since Travis only supports one terminal window. The PHP server had to be set up as a background process so that Travis could continue to run the other commands required to run the tests.
 
-Travis wasn't the only tool that performed a service on every pushed commit. Just as important as ensuring that all tests continue to pass is ensuring that dependencies remain up-to-date. Gemnasium [REF] periodically checks the status of SmartResolution's dependencies and warns via the embedded SVG in the project README whether or not a newer version is available. % https://gemnasium.com/ChrisBAshton/smartresolution
+Travis wasn't the only tool that performed a service on every pushed commit. Just as important as ensuring that all tests continue to pass is ensuring that dependencies remain up-to-date. Gemnasium periodically checks the status of SmartResolution's dependencies and warns via the embedded SVG in the project README whether or not a newer version is available.~\cite{smartresolution:gemnasium}
 
 Dependency tracking is important, as newer versions of dependencies fix bugs and vulnerabilities discovered in older versions. By not updating SmartResolution's dependencies regularly I would risk crackers being able to exploit unpatched vulnerabilities. This is especially relevant since SmartResolution is open-source and anybody can see which version of which third-party library SmartResolution is using.
 
-Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate. [REF] Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable. %https://codeclimate.com/github/ChrisBAshton/smartresolution
+Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate.~\cite{smartresolution:codeclimate} Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable.
 
 \section{User Testing}
 
@@ -306,10 +305,19 @@ Throughout development I adhered to the agile principle of regular releases, pus
 Where feedback was lacking from the customer, I turned to friends, family and the Twitter community to try out the demo and give me constructive comments to work on. These comments were fed back directly into my design, leading to the following improvements:
 
 \begin{itemize}
-\item Smaller icons. My early designs used dashboard icons around 3 times larger than the final design. I was trying to emulate clear and minimalist dashboards such as the one on DigitalOcean [REF and screenshot] but my implementation was something consistently questioned in the feedback I received.
+\item Smaller icons. My early designs used dashboard icons around 3 times larger than the final design. I was trying to emulate clear and minimalist dashboards such as the one on DigitalOcean (see figure~\ref{screenshot:digitalOcean} but my implementation was something consistently questioned in the feedback I received.
 \item Larger font size. Bootstrap's default font was too small given the sparseness of the design as a whole. I increased the base font size - since all of my CSS font sizes are defined in ems, font sizes across the site increased in size proportionally.
 \item Responsive improvements. It was never a requirement to make the website fully responsive: the fact that Bootstrap supports responsiveness by default was just an added bonus. However, some of my design decisions - such as absolutely positioning the lifespan status at the right hand side of the dispute - made for a poor experience on mobile. When this was pointed out in the feedback, I added a media query so that the positioning would only apply on devices of a minimum screen width. @TODO show design of dispute page on desktop and mobile
 \end{itemize}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{digitalocean}
+    \fi
+  \caption{Screenshot of the clean and simple DigitalOcean interface I wanted to emulate in the design for SmartResolution}
+  \label{screenshot:digitalOcean}
+\end{figure}
 
 Feedback regarding the workflow of a dispute had to be treated differently, since the customer was the law expert and the people giving feedback were not law experts. However, their comments were collected and fed back to the law expert for trying to negotiate simpler dispute workflows.
 

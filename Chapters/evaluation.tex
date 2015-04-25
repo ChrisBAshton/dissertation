@@ -80,7 +80,7 @@ The fact that the two Gantt dimensions are so different raises an important ques
 
 \section{Speed of progression}
 
-The design and development of the ODR platform was a major project in itself. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of what the system is capable of. [REF] % The Cathedral and the Bazaar
+The design and development of the ODR platform was a major project in itself. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of what the system is capable of.~\cite{eric:catB}
 
 I had hoped to complete the core ODR platform around 3 weeks before I actually managed it. In general, I did find that progress was slower than anticipated, and I'd like to briefly examine the reasons why, especially as I actually managed to negotiate some simpler requirements (removing formal resolution ``offers", etc) to help reach my deadlines.
 
@@ -104,7 +104,7 @@ I believe that the choice of PHP as the implementation language was correct. Sma
 
 In hindsight, the choice of F3 as a framework was an interesting one. To recap what I said in the design section: ``F3 is fundamentally different to its competitors because I could slot F3 into my code, rather than slotting my code into F3." I emphasised the need to be agile and the disadvantage of being locked into specific directory structures in large-scale frameworks such as Symphony or Zend.
 
-Now that the project is complete, its directory structure has actually become quite complex, encompassing a rich and deep MVC separation with additional directories for database-querying middleware classes, classes that handle the module API, classes representing dispute states, and so on. F3 copes well with this, but perhaps a more heavyweight framework would have enforced additional advantages, such as namespaced classes or handling autoloading\footnote{Composer generates \lstinline{vendor/autoload.php}, but \lstinline{webapp/autoload.php} is manually created and must explicitly pull in various files and directories Frameworks such as Zend provide ways of hooking into the autoloader. [REF]}. %http://framework.zend.com/manual/1.12/en/zend.loader.autoloader.html
+Now that the project is complete, its directory structure has actually become quite complex, encompassing a rich and deep MVC separation with additional directories for database-querying middleware classes, classes that handle the module API, classes representing dispute states, and so on. F3 copes well with this, but perhaps a more heavyweight framework would have enforced additional advantages, such as namespaced classes or handling autoloading\footnote{Composer generates \lstinline{vendor/autoload.php}, but \lstinline{webapp/autoload.php} is manually created and must explicitly pull in various files and directories Frameworks such as Zend provide ways of hooking into the autoloader.~\cite{zend:autoload}}.
 
 Although SmartResolution has developed into a project that would have benefited from the advantages of a larger framework, F3 definitely had a lower learning curve. This meant that I was able to start implementing features the day I started developing, rather than spending days or weeks getting to grips with a heavyweight framework. I don't regret my choice, especially since frameworks tend to be moving towards a modular style anyway, as discussed in the design section.
 
@@ -128,7 +128,7 @@ Currently, there is nothing clever regarding putting modules on the SmartResolut
 
 This is something I would want to automate in the future, perhaps providing an upload interface which takes a GitHub repository URL and zips up the contents automatically. However, the manual process currently in place does at least give me the advantage of being able to check the code and make sure that there is nothing insidious about its contents before making it available on the marketplace.
 
-A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org (or if we're following WordPress' commercial model, smartresolution.com), where corporations pay a subscription for their SmartResolution instance to be accessible at http://corporation-name.smartresolution.org.
+A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org (or if we're following WordPress' commercial model, smartresolution.com), where corporations pay a subscription for their SmartResolution instance to be accessible at their own subdomain of the SmartResolution website.
 
 This would be ideally suited to corporations who want the benefits of a modular ODR platform, but who do not want the headache of having to install and configure the platform onto their own infrastructure.
 

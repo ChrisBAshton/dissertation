@@ -1,4 +1,4 @@
-\chapter{Implementation} % The implementation should look at any issues you encountered as you tried to implement your design. During the work, you might have found that elements of your design were unnecessary or overly complex; perhaps third party libraries were available that simplified some of the functions that you intended to implement. If things were easier in some areas, then how did you adapt your project to take account of your findings? It is more likely that things were more complex than you first thought. In particular, were there any problems or difficulties that you found during implementation that you had to address? Did such problems simply delay you or were they more significant? You can conclude this section by reviewing the end of the implementation stage against the planned requirements.
+\chapter{Implementation}
 
 @TODO - describe in detail the models, data mappers and controller objects.
 @TODO - make a SmartResolution style guide in the Wiki, pull in as an appendix
@@ -262,13 +262,13 @@ The SmartResolution website was developed locally using many of the same technol
 
 A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and upfront expense when so many alternatives exist.
 
-Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth [REF]. AWS is being utilised by companies including the BBC, [REF] its popularity down to its speed and scalability, as well as the low cost to market. %http://www.bbc.co.uk/news/business-32442268
+Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth~\cite{article:AWS}. AWS is being utilised by companies including the BBC~\cite{article:bbcAws}, its popularity down to its speed and scalability, as well as the low cost to market.
 
-AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia [REF], making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
+AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia~\cite{aws:global}, making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
 
-Other alternatives exist, of course, such as Unlimited Web Hosting [REF], which is a cloud web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
+Other alternatives exist, of course, such as Unlimited Web Hosting, which is a cloud web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
 
-Unlike Unlimited Web Hosting, AWS provides root access, and though other services also provide this facility (DigitalOcean, for example [REF]), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
+Unlike Unlimited Web Hosting, AWS provides root access, and though other services also provide this facility (DigitalOcean, for example), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
 
 \subsection{Configuring the server}
 
@@ -287,8 +287,7 @@ AWS offers an `Elastic IP' facility, which allows you to generate a permanent IP
 
 Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address, so that browsers querying that domain name are redirected to the content at the IP address endpoint.
 
-smartresolution.org was purchased through the domain registrar gandi.net [REF] and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux [REF], Apache, MySQL and PHP.
-%http://aws.amazon.com/amazon-linux-ami/
+smartresolution.org was purchased through the domain registrar gandi.net and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux~\cite{aws:linux}, Apache, MySQL and PHP.
 
 The decision was made to separate the two concepts of the SmartResolution software and the SmartResolution website, so a live demo of the software should be available on a subdomain rather than the main site index. To accomplish this, a VirtualHost was specified in the Apache configuration to redirect any requests for demo.smartresolution.org to a specific demo folder containing the SmartResolution software, which could be easily updated independent of SmartResolution website updates. All of this is demonstrated in figure~\ref{uml:serverConfig}.
 
@@ -298,7 +297,7 @@ Though continuous integration is important for ensuring that the codebase remain
 
 I wrote a bash script specific to the SmartResolution vendor site which clears the html and html-demo folders outlined in figure~\ref{uml:serverConfig}, then re-downloads and installs the website and the software from the website repository and the software repository respectively. The script calls PHPDoc to generate the SmartResolution core API documentation and module documentation, and the script also strips out unnecessary files such as tests and Travis configuration before zipping up the file as a production-ready download.
 
-In an ideal world, this script would be triggered via a Git web hook [REF] so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
+In an ideal world, this script would be triggered via a Git web hook~\cite{github:webhooks} so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
 
 \begin{figure}[h!]
   \centering
