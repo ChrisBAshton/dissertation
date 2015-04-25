@@ -20,7 +20,7 @@ With my suite of Cucumber features, I needed a set of accompanying step definiti
 
 It was hoped that there would be an existing open-source ODR platform upon which to base the project. One would have been able to make the necessary modifications and extensions to support the maritime collision module, without having to build the entire platform from scratch, thereby being able to spend more time on the maritime law module.
 
-Unfortunately, even after fairly extensive research (see appendix ~\ref{appendix:choosingAFramework}), I was unable to find an existing ODR platforms that was not proprietary. Most ODR providers, be they service or platform providers, charge a subscription or one-off fee and would be at a commercial disadvantage if they were to go open source.
+Unfortunately, even after fairly extensive research (see appendix ~\ref{appendix:buildingUponExistingSystems}), I was unable to find an existing ODR platforms that was not proprietary. Most ODR providers, be they service or platform providers, charge a subscription or one-off fee and would be at a commercial disadvantage if they were to go open source.
 
 Without an existing ODR platform to base the project upon, there was no option but to develop the core platform from scratch.
 
@@ -86,13 +86,13 @@ Some developers can be quite snooty about WordPress, but it is a platform that p
 
 \section{Choice of Licenses}
 
-The design section may seem an incongruous place to discuss the issue of licensing, but licensing is just a very high-level form of design. Linus Torvalds, chief architect of the Linux kernel, once said he considered his choice of the GPL ``one of the very best design decisions" he made when developing the kernel, since it is designed to protect the author's legal and moral rights to their code. Moreover, the choice of license for each component in this project highlights how distinct each component is from one another, emphasising the need for a separate design, implementation and testing strategy for each of the components. % http://www.linuxjournal.com/article/2736
+The design section may seem an incongruous place to discuss the issue of licensing, but licensing is just a very high-level form of design. Linus Torvalds, chief architect of the Linux kernel, once said he considered his choice of the GPL ``one of the very best design decisions" he made when developing the kernel~\cite{linusLinux}, since it is designed to protect the author's legal and moral rights to their code. Moreover, the choice of license for each component in this project highlights how distinct each component is from one another, emphasising the need for a separate design, implementation and testing strategy for each of the components.
 
-I opted for the GPLv3 license~\cite{license:gplv3} for the core SmartResolution software. This is almost identical to WordPress' choice of a GPLv2 license, which is presumably still at version 2 for legacy or backwards-compatibility reasons.
+I opted for the GPLv3 license for the core SmartResolution software. This is almost identical to WordPress' choice of a GPLv2 license, which is presumably still at version 2 for legacy or backwards-compatibility reasons.
 
 The benefits of a restrictive license such as the GPL licenses is that nobody has the ability to download, modify and then sell the software without making the source available to all. Big companies, who should compensate developers for their time, are not able to use SmartResolution as a basis for closed-source software. Any improvements they make to the software must be kept open-source, as it is a derivative work.
 
-On the other hand, legitimate use-cases for SmartResolution are perfectly allowed. For instance, anyone can download the software and install it on their own server and start providing ODR services, perhaps even for a subscription fee. There's no requirement to suddenly make everything on their website open-source, as they are not distributing their website, only the \emph{results} of the server-side logic on their website (i.e. the HTML). The Affero GPL license (AGPL) would be a different story, as it closes this distribution-over-a-network loophole.~\cite{license:agpl}
+On the other hand, legitimate use-cases for SmartResolution are perfectly allowed. For instance, anyone can download the software and install it on their own server and start providing ODR services, perhaps even for a subscription fee. There's no requirement to suddenly make everything on their website open-source, as they are not distributing their website, only the \emph{results} of the server-side logic on their website (i.e. the HTML). The Affero GPL license (AGPL) would be a different story, as it closes this distribution-over-a-network loophole.
 
 To summarise, the choice of GPLv3 for SmartResolution protects me from other people making money selling \emph{software} derived from this project. It doesn't stop people making money providing ODR as a service, and it doesn't infect their website ``like a cancer", to quote Steve Ballmer, ex-CEO of Microsoft.~\cite{linuxCancer}
 
@@ -110,9 +110,9 @@ The first decision to be made was whether to go for a traditional relational dat
 
 Though I considered using the latter, there is more widespread support for the former, and I wanted SmartResolution to be as accessible as possible for those wanting to provide their own ODR services. My choice of PHP framework, F3, has built-in database support and is geared towards relational databases, though also provides an object-relational mapping layer as a compromise between the two paradigms.~\cite{f3:objectRelationalMapping}
 
-OODBMSs gives an advantage to those companies that are geared towards multimedia presentation or organizations that utilize computer-aided design. [REF] In contrast, SmartResolution is quite text-heavy and is perfectly well suited to a RDBMS implementation.~\cite{oodbms}
+OODBMSs gives an advantage to those companies that are geared towards multimedia presentation or organizations that utilize computer-aided design. In contrast, SmartResolution is quite text-heavy and is perfectly well suited to a RDBMS implementation.~\cite{oodbms}
 
-My next decision was which RDBMS to go for. The market leader is MySQL [REF], but many alternatives exist, such as PostgreSQL, MSSQL, Oracle and SQLite. F3 supports all of these and more.~\cite{f3:sqlConstructor}
+My next decision was which RDBMS to go for. The market leader is MySQL, but many alternatives exist, such as PostgreSQL, MSSQL, Oracle and SQLite. F3 supports all of these and more.~\cite{f3:sqlConstructor}
 
 The quickest database to get started with was SQLite, as it meant that I could develop locally and wouldn't have to install other programs, such as MySQL or PHPMyAdmin. It exists simply as a file on the system, and its contents can be viewed and edited through a program such as DB Browser for SQLite.~\cite{sqlitebrowser}
 
@@ -153,7 +153,7 @@ add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
 
 The first argument is the event to listen for, the second argument is the custom function to execute, and the third argument is an integer denoting the priority of our subscription, where a higher integer means our custom function is executed before subscribing functions of a lower-priority. SmartResolution fires hooks which can be subscribed to in the same way as the WordPress function above.
 
-F3's routing API [REF] can extend this route-handling concept further:~\cite{f3:routing}
+F3's routing API can extend this route-handling concept further:~\cite{f3:routing}
 
 \begin{lstlisting}
 $f3->route('GET /some-route' => 'MyClass->handler');
@@ -290,7 +290,7 @@ When the agents have answered all of the relevant questions, the following happe
 
 \begin{itemize}
     \item The answers are compared to make sure they tally. If one agent says both vessels were damaged and the other agent says only their vessel was damaged, the answers do not correspond and a conclusion cannot be reached. The module cannot be expected to cope with conflicting information. The module would inform the agents of this.
-    \item Provided both answers correlate, the module's \lstinline{ResultsCalculator} class calls the \lstinline{deduceSummary} method [REF], which contains the hard-coded maritime law logic. A resolution is then presented to the agents.
+    \item Provided both answers correlate, the module's \lstinline{ResultsCalculator} class calls the \lstinline{deduceSummary} method, which contains the hard-coded maritime law logic. A resolution is then presented to the agents.
 \end{itemize}
 
 Due to the lack of time, the resulting module is a little simplistic. The resolution suggested by the module is deduced through an ugly but simple series of if/else statements, and probably doesn't tell lawyers anything about maritime law that they don't already know.

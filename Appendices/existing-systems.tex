@@ -1,6 +1,4 @@
-\chapter{Choosing a Framework}\label{appendix:choosingAFramework}
-
-% BELOW CONTENT IS TAKEN FROM http://ashton.codes/blog/building-shoulders-giants/
+\chapter{Building upon existing systems}\label{appendix:buildingUponExistingSystems}
 
 There is definitely a trade-off to be considered when using existing software. On the one hand, there is a learning curve: it takes a long time to find your way around the codebase and learn the purpose of each file.
 
@@ -16,23 +14,21 @@ In comparison, it is tempting to build software from scratch because of the lowe
 
 Building from scratch is certainly more time-consuming. If a software system takes 100 hours to build from scratch, it is better to spend 10 hours learning an existing system and modifying it for your own uses. It is also likely to be better engineered, since it is likely to have had more developer hours invested in refining it.
 
-\subsubsection{Building upon existing platforms}
+Early on in my investigations I discovered Emcod; ``an innovative project which aims to broaden Access to justice through use of Online dispute resolution". It is an open-source tool designed for a LAMP server (Apache, MySQL, PHP).
 
-Early on in my investigations I discovered Emcod; "an innovative project which aims to broaden Access to justice through use of Online dispute resolution". It is an open-source tool designed for a LAMP server (Apache, MySQL, PHP).
+I had hoped to use it as a basis for my Major Project, but on closer inspection it was very unclear what the code actually does! According to the website, Emcod ``allows providers of Online dispute resolution to measure the costs and quality of their services". How it does this is unclear, but it does suggest that the software does not actually provide the online dispute resolution process itself.
 
-I had hoped to use it as a basis for my Major Project, but on closer inspection it was very unclear what the code actually does! According to the website, Emcod "allows providers of Online dispute resolution to measure the costs and quality of their services". How it does this is unclear, but it does suggest that the software does not actually provide the online dispute resolution process itself.
+The website itself is poor. Though there are some installation instructions and a download to the source code, there are two items of text that look like links (and presumably were intended to become links one day) – these are `User manual' and `Watch video'. I thought it would be a worthy investment of time to at least try and get the software up and running (as I have access to my own cloud LAMP server) to see if it would meet my needs.
 
-The website itself is poor. Though there are some installation instructions and a download to the source code, there are two items of text that look like links (and presumably were intended to become links one day) – these are 'User manual' and 'Watch video'. I thought it would be a worthy investment of time to at least try and get the software up and running (as I have access to my own cloud LAMP server) to see if it would meet my needs.
+An alternative open source framework to begin with is HumHub – a ``Flexible, Open Source Social Network Kit". ODR platforms aren't social networks, but there are aspects of social activity such as dispute timelines, private communication, `groups' of Agents in the same network (their Law Firm), and so on. Also, additional functionality such as file upload facilities and user authorisation would be useful modules to reuse.
 
-An alternative open source framework to begin with is HumHub – a "Flexible, Open Source Social Network Kit". ODR platforms aren't social networks, but there are aspects of social activity such as dispute timelines, private communication, "groups" of Agents in the same network (their Law Firm), and so on. Also, additional functionality such as file upload facilities and user authorisation would be useful modules to reuse.
-
-One of the pluses of HumHub, according to its website, is its flexibility. "With a powerful module system you can extend HumHub by using third party tools, writing your own or connect existing software", so it should be possible to plug in all manner of functionality.
+One of the pluses of HumHub, according to its website, is its flexibility. ``With a powerful module system you can extend HumHub by using third party tools, writing your own or connect existing software", so it should be possible to plug in all manner of functionality.
 
 Emcod was nice and easy to install, and handled login nicely. However, sure enough, this didn't look like online dispute resolution software.
 
 It is madness that I had to install the software to actually find out what it does. It was a long shot, but unfortunately this was not a suitable framework to build upon.
 
-HumHub, again, was nice and easy to install. It has a concept of "spaces", effectively groups where there is a central board everyone in the space can write to. This could be the basic underpinning of dispute communication, if I could programmatically generate spaces.
+HumHub, again, was nice and easy to install. It has a concept of `spaces', effectively groups where there is a central board everyone in the space can write to. This could be the basic underpinning of dispute communication, if I could programmatically generate spaces.
 
 HumHub has a modular system such that you can install and uninstall modules freely, and develop your own. I may be able to hook into rendering functions and so on, and add disputes as a function.
 
@@ -70,3 +66,7 @@ HumHub – Disadvantages:
 \end{itemize}
 
 After exploring the options, I thought that perhaps I didn't need a full system to base my project on. Perhaps I could delegate parts of my system to different libraries, taking care to write accessor classes using the Decorator pattern, giving me the freedom to swap out for different modules if necessary.
+
+\rule{\textwidth}{1pt}
+
+\emph{This extract has been reproduced directly from my blog.~\cite{appendix:choosingAFramework} It follows on to my exploration of PHP frameworks and eventually my decision to use Fat-Free Framework.}
