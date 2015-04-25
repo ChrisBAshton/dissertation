@@ -26,7 +26,7 @@ Although it is the maritime collision AI that has never been attempted in ODR be
 
 The market leader for online dispute resolution is Modria, who claim to have resolved over 400,000,000 disputes to date. It is a cloud-based platform built by the team that created the world's largest online dispute resolution systems at eBay and PayPal.~\cite{modria:about}
 
-Modria is proprietary software as a service (SAAS), existing only on Modria's own cloud-based servers to those willing to pay for its services (hereafter referred to as their `subscribers'). It is marketed towards high-volume, low-value disputes such as those that arise in e-commerce, as this sector is closely related to Modria's historical area of expertise. Having said that, Modria claims to be able to resolve disputes of ``any type and volume" and its platform has been utilised to resolve divorce cases and property tax assessment appeals.~\cite{modria:interview}
+Modria is proprietary software as a service (SaaS), existing only on Modria's own cloud-based servers to those willing to pay for its services (hereafter referred to as their `subscribers'). It is marketed towards high-volume, low-value disputes such as those that arise in e-commerce, as this sector is closely related to Modria's historical area of expertise. Having said that, Modria claims to be able to resolve disputes of ``any type and volume" and its platform has been utilised to resolve divorce cases and property tax assessment appeals.~\cite{modria:interview}
 
 Subscribers can sign into the hosted interface to view all disputes against their organisation and also to define automated rules. For example, a customer orders a \$500 item from the subscriber's website and complains that it arrived lightly damaged. Through gathering information from the customer, Modria detects that this is a high-value customer who has purchased 3 items from the website and has had no previous disputes, so automatically offers a partial refund of \$50 according to the subscriber's resolution rules.
 
@@ -38,7 +38,7 @@ Modria is ideally suited to e-commerce companies beginning to feel the financial
 
 \subsubsection{Examining Modria's Resolutions Console}
 
-Subscribers decide rules through their `Resolutions Console', an example of which is on Modria's website:~\cite{modria:product}
+Subscribers decide rules through their `Resolutions Console', an example of which is on Modria's website:
 
 \begin{lstlisting}
 If (Customer is Low Risk) and (Dispute Amount is less than $10) and (Customer Disputes Filed Account Lifetime is 0) then (Authorize Full Refund) and (Close Case).
@@ -70,9 +70,9 @@ Some time was spent examining different maritime law documents. Maritime law dif
 
 In my research, I identified two key maritime conventions which could be implemented in the module. The first and most comprehensive of these was the Convention on the International Regulations for Preventing Collisions at Sea~\cite{law:long}, split into five large sections and comprising a total of 38 overarching rules. This would be a good candidate for implementing in the module, but would require very thorough testing and perhaps quite an advanced logic mechanism, such as a neural network, due to its size and complexity.
 
-On the other hand, the Convention for the Unification of Certain Rules of Law with respect to Collisions between Vessels~\cite{law:short} describes a relatively simple, condensed maritime law totalling 17 short articles, each of which looking fairly straightforward to translate into code. On the advice of Dr Constantina Sampani (hereafter referred to as `the client'), this was used as the basis for the business logic in the module.
+On the other hand, the Convention for the Unification of Certain Rules of Law with respect to Collisions between Vessels~\cite{law:short} describes a relatively simple, condensed maritime law totalling 17 short articles, each of which looking fairly straightforward to translate into code. On the advice of Dr. Constantina Sampani (hereafter referred to as `the client'), this was used as the basis for the business logic in the module.
 
-Additionally, some time was spent gathering around 150 historical maritime collision cases from various sources for possible inclusion in the module. \cite{cases1}\cite{cases2}\cite{cases3}
+A few days were spent reading publications in the field of ODR. Some of these were useful for describing existing ODR systems \cite{br:cyberMediation} and discussing where ODR systems might be heading; \cite{br:generations}  others raised interesting legal questions in terms of AI not being able to encode justice \cite{br:gameTheory} or EU law not encompassing the recent rise in legitimate disputes concerning free SaaS. \cite{br:cloudComputing} Additionally, some time was spent gathering around 150 historical maritime collision cases from various sources for possible inclusion in the module. \cite{cases1}\cite{cases2}\cite{cases3}
 
 \section{Objectives}
 
