@@ -45,7 +45,3 @@ end
 I see nothing wrong with highlighting the fact that my application and my BDD testing framework are independent of each other by using different languages for each. As a software engineer, I'm simply using the best tools possible for both jobs. As a bonus, using Ruby \& Cucumber for BDD discourages coupling: if I were to use Behat, it would be possible to come up with awkward hacks like directly including PHP classes from my application as part of the integration tests, which is just plain wrong. And it certainly doesn't hurt that I've already got quite a bit of Cucumber experience, albeit in a Rails assignment at university.
 
 With my decision justified, I've started writing my Cucumber integration tests, yesterday getting my first one to pass locally. Hooking up to Travis is proving to be a bit of an issue, as the Cucumber tests require a PHP server to be running so that the application can be rendered and tested (but Travis only supports one shell window at a time). I'm hoping to crack that today, then work through the step definitions for the rest of my features.
-
-\rule{\textwidth}{1pt}
-
-\emph{This extract has been reproduced directly from my blog.~\cite{appendix:choosingABddFramework}}

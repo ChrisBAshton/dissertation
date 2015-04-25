@@ -31,7 +31,7 @@ Occasionally, features were too cumbersome to implement in a BDD manner, as they
 
 Cucumber regression tests are end-to-end and use a headless browser to emulate the browser environment, clicking buttons and filling in forms, then querying the state of the HTML to validate that an element of functionality worked as expected.
 
-To accomplish this, the driver (in our case, Poltergeist~\cite{github:poltergeist}) needs to be able to access the server. However, our tests rely on the database having certain fixture-data. Moreover, our tests will be making persistent changes to the database - so it's essential that the tests use a test database, rather than the production database.
+To accomplish this, the driver (in our case, Poltergeist) needs to be able to access the server. However, our tests rely on the database having certain fixture-data. Moreover, our tests will be making persistent changes to the database - so it's essential that the tests use a test database, rather than the production database.
 
 As far as the server is concerned, Poltergeist sends a HTTP request, just like any genuine user on a normal browser. Poltergeist needed to be able to send a flag, to explicitly inform the application that the request is coming from a test suite and, thus, should be using a test database.
 
@@ -95,7 +95,7 @@ This exception was usually raised after testing a part of my application that sh
 
 Early on, this wasn't too much of an issue: I was able to run the `clear database' command between any unit tests that raised this exception, as removing and re-creating the database would naturally clear any outstanding transactions. This was a bit of a hack, but felt justified as the test and production environments are very different. In the test environment, hundreds of transactions are initiated when running the unit tests and all tests are hooking into the same database connection. In the production environment this would not happen: if an exception is raised, an error page is triggered and the user is faced with an error message relating to the exception. Once PHP delivers the error page to the user's browser, the database connection is no longer open and thus a new transaction can begin.
 
-For several weeks, I was happy with this solution, but it did mean that my tests were quite slow to run. You can see in a Travis build around that time that it took almost a minute to run 90 unit tests~\cite{travis:slow}, violating James Shore's principle that unit tests should run almost instantly.
+For several weeks, I was happy with this solution, but it did mean that my tests were quite slow to run. You can see in a Travis build around that time that it took almost a minute to run 90 unit tests\footnote{A build on 15th April, before refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/58603809}}, violating James Shore's principle that unit tests should run almost instantly.
 
 Eventually, I decided to spend some time investigating the issue. I deduced that the transaction was not being committed because an exception was being raised before it could be committed. What I did not realise was that transactions were not being automatically rolled back when an exception was raised - it was something that needed to be handled manually in each exception.
 
@@ -140,7 +140,7 @@ This seemed laborious, error-prone and messy. Instead, I defined a custom except
 \end{lstlisting}
 \end{minipage}
 
-Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in just 34 seconds~\cite{travis:fast}. This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation.
+Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in just 34 seconds. \footnote{A build on 17th April, after refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/58932345}} This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation.
 
 I still needed to clear the database between each test \emph{suite}, as the tests would still alter the state of the database. But now, by and large, most of the tests \emph{within} those suites did not need to run on a new database connection.
 
@@ -194,7 +194,7 @@ $dispute = new Dispute($disputeDetails);
 
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57~\cite{travis:fastest}. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
+I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
 
 \subsubsection{Further refactoring}
 
@@ -235,7 +235,7 @@ Cucumber features test the expected end-to-end functionality of the system as a 
 
 Every Cucumber feature has a corresponding step definition. It's worth noting that, though it is not required to give the step definition file the same name as the corresponding feature file, this is the Cucumber convention and is regarded as best practice.
 
-A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework~\cite{github:capybara}. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless.
+A Ruby step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless.
 
 As I began filling out my step definitions, I found that more and more steps were relying on methods and variables defined in other step definition files. In cases such as this, it was clear that a common helper class should be created. For example, step definitions have access to a `Session' helper class which provides methods to log in with specific credentials, or log into account types (e.g. \lstinline{Session.login_as_agent}). Figure~\ref{uml:cucumber} demonstrates the relationship between a Cucumber feature, its step definition, and the helper classes.
 
@@ -284,11 +284,11 @@ Travis CI ran all unit and functional tests on every pushed commit or pull reque
 
 The most difficult aspect to setting up Travis was getting the PHP server running, since Travis only supports one terminal window. The PHP server had to be set up as a background process so that Travis could continue to run the other commands required to run the tests.
 
-Travis wasn't the only tool that performed a service on every pushed commit. Just as important as ensuring that all tests continue to pass is ensuring that dependencies remain up-to-date. Gemnasium periodically checks the status of SmartResolution's dependencies and warns via the embedded SVG in the project README whether or not a newer version is available.~\cite{smartresolution:gemnasium}
+Travis wasn't the only tool that performed a service on every pushed commit. Just as important as ensuring that all tests continue to pass is ensuring that dependencies remain up-to-date. Gemnasium periodically checks the status of SmartResolution's dependencies and warns via the embedded SVG in the project README whether or not a newer version is available.
 
 Dependency tracking is important, as newer versions of dependencies fix bugs and vulnerabilities discovered in older versions. By not updating SmartResolution's dependencies regularly I would risk crackers being able to exploit unpatched vulnerabilities. This is especially relevant since SmartResolution is open-source and anybody can see which version of which third-party library SmartResolution is using.
 
-Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate.~\cite{smartresolution:codeclimate} Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable.
+Another important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate. Whenever I push a commit to SmartResolution, CodeClimate queues another scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable.
 
 \section{User Testing}
 

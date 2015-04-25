@@ -60,7 +60,7 @@ As this will be the basis of all the other components, it should also be the mos
 
 \subsection{Maritime collision module}
 
-This module is separate from the core platform and lives in its own repository~\cite{repo:module}. It can be installed to any SmartResolution installation simply by being copied to the \lstinline{modules} directory; no further configuration is required.
+This module is separate from the core platform and lives in its own repository\footnote{\url{https://github.com/ChrisBAshton/smartresolution-module-maritime-collision}}. It can be installed to any SmartResolution installation simply by being copied to the \lstinline{modules} directory; no further configuration is required.
 
 As discussed in the background and initial requirements, it was intended for this to be a feature-rich module that could find similar historic cases, cross-check agents' answers with maritime law, and approximate the likelihood of an agent's success in court.
 
@@ -114,7 +114,7 @@ OODBMSs gives an advantage to those companies that are geared towards multimedia
 
 My next decision was which RDBMS to go for. The market leader is MySQL, but many alternatives exist, such as PostgreSQL, MSSQL, Oracle and SQLite. F3 supports all of these and more.~\cite{f3:sqlConstructor}
 
-The quickest database to get started with was SQLite, as it meant that I could develop locally and wouldn't have to install other programs, such as MySQL or PHPMyAdmin. It exists simply as a file on the system, and its contents can be viewed and edited through a program such as DB Browser for SQLite.~\cite{sqlitebrowser}
+The quickest database to get started with was SQLite, as it meant that I could develop locally and wouldn't have to install other programs, such as MySQL or PHPMyAdmin. It exists simply as a file on the system, and its contents can be viewed and edited through a program such as DB Browser for SQLite.
 
 The fact that SQLite databases exist as files on the system makes having multiple databases trivial, so my system can easily switch between test and production databases depending on the context in which the application is accessed.
 
@@ -145,7 +145,7 @@ This section of work is separate from the maritime collision module work, and is
 
 Taking inspiration from WordPress' Plugin API, the project uses the concept of `hooks'. WordPress fires events at various points throughout the normal running of a WordPress installation; these events can be subscribed to and a custom function executed to achieve some arbitrary purpose.
 
-For example, below is the \lstinline{add_filter} function:~\cite{wordpress:addFilter} 
+For example, below is the \lstinline{add_filter} function: 
 
 \begin{lstlisting}
 add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
@@ -187,7 +187,7 @@ array_unshift($dashboardActions, $item);
 
 However, this encourages tight coupling between the module and the underlying platform, locking the core platform into a particular design and risking breaking backwards compatibility should SmartResolution be refactored in the future. For example, if the \lstinline{$dashboardActions} global variable was removed from the core platform, or the dashboard actions represented with something other than an array, it could break any existing modules relying on that specific implementation.
 
-Again, WordPress provided inspiration for the design. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post.~\cite{wordpress:getTheId} In this style, SmartResolution exposes a number of global functions.~\cite{smartresolution:moduleDocs} One could now manipulate the rendering of the dashboard like this:
+Again, WordPress provided inspiration for the design. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post. In this style, SmartResolution exposes a number of global functions. One could now manipulate the rendering of the dashboard like this:
 
 \begin{lstlisting}
 dashboard_add_item(array(
@@ -205,7 +205,7 @@ This was the most difficult area to tackle, as it raises important security issu
 
 If the system allowed arbitrary SQL queries and an uncareful developer accidentally executed a \lstinline{DROP TABLE} statement, all manner of data could be lost. This isn't so important on a small demo site with three or four registered users, but if SmartResolution were ever used on a large-scale website, the result could be catastrophic.
 
-On the one hand, the system has to trust developers. Regardless of the database access explicitly exposed, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function~\cite{php:shellExec} and executing any command they wish. Also, in terms of the database interaction, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open source and the developer can easily find out what system-level classes are available.
+On the one hand, the system has to trust developers. Regardless of the database access explicitly exposed, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function and executing any command they wish. Also, in terms of the database interaction, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open source and the developer can easily find out what system-level classes are available.
 
 The system should trust developers, but it should not trust developers to write perfect code. Though most developers would use an SQL-execution ability only for querying the database for a legitimate reason, they may expose a vulnerability if not thoroughly tested. For example, if they're writing a search engine module which takes a user input and if they do not sanitise the query, then they're letting the \emph{end user} run arbitrary SQL.
 
@@ -229,7 +229,7 @@ Most modules will require some sort of persistence layer to be useful, but devel
 
 Early versions of SmartResolution used a PHP array to describe which modules were installed and which were active. A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution instance, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
 
-To accomplish this, there is a JSON feed of featured modules on smartresolution.org.~\cite{smartresolution:marketplaceFeed} This feed is pulled in and converted to HTML, both directly on the marketplace itself~\cite{smartresolution:marketplace} and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its modules (which are viewable both through your own installation of WordPress and on WordPress itself~\cite{wordpress:pluginDirectory}).
+To accomplish this, there is a JSON feed of featured modules on smartresolution.org\footnote{The JSON feed is viewable at \url{http://smartresolution.org/marketplace/feed}}. This feed is pulled in and converted to HTML, both directly on the marketplace itself\footnote{The human-friendly marketplace is available at \url{http://smartresolution.org/marketplace}} and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its plugins.\footnote{WordPress' plugin directory can be viewed both directly online (at \url{https://wordpress.org/plugins/}) and indirectly through one's own installation of WordPress}.
 
 From the admin dashboard on SmartResolution, the modules JSON feed is converted into a HTML page, and server-side logic detects whether or not the module is already installed on the instance. If not, an option is rendered to download and install the module in one button press.
 
