@@ -1,16 +1,144 @@
 \chapter{Third-Party Code and Libraries}
 
-@TODO - complete this!!!
+I will begin by listing the third-party code, libraries, frameworks and images used by the three components of this dissertation. The full description for each dependency can be found at the end of this appendix, in alphabetical order.
 
-If you have made use of any third party code or software libraries, i.e. any code that you have not designed and written yourself, then you must include this appendix. 
+\section{SmartResolution website}
 
-As has been said in lectures, it is acceptable and likely that you will make use of third-party code and software libraries. The key requirement is that we understand what is your original work and what work is based on that of other people. 
+smartresolution.org uses a number of third-party frameworks and services:
 
-Therefore, you need to clearly state what you have used and where the original material can be found. Also, if you have made any changes to the original versions, you must explain what you have changed. 
+\begin{itemize}
+\item Bootstrap: this is used for the front-end styling and as a UI framework.
+\item Fat-Free Framework: this powers the back-end, allowing me to define HTTP routes and their handlers.
+\item phpDocumentor: this is used to generate API documentation from the Docblock comments in the core SmartResolution software.
+\end{itemize}
 
-As an example, you might include a definition such as: 
+It is worth noting that the design and creation of the installation icons at \url{http://smartresolution.org/documentation} were outsourced to a friend of mine. It is also worth explaining that, though smartresolution.org is hosted on AWS, it is server-agnostic and no AWS-specific assets exist in the repository. Therefore, I will not be discussing the use of AWS here.
 
-Apache POI library
-The project has been used to read and write Microsoft Excel files (XLS) as part of the interaction with the client�s existing system for processing data. Version 3.10-FINAL was used. The library is open source and it is available from the Apache Software Foundation 
-CITE. The library is released using the Apache License 
-CITE.. This library was used without modification. 
+\section{SmartResolution}
+
+As SmartResolution is more substantial than the website which hosts it, it is necessary to split its dependencies into certain categories.
+
+\subsection{Front-end}
+
+\begin{itemize}
+\item Bootstrap: for front-end styling and as a UI framework.
+\item jQuery Date and Time picker: for a user-friendly way of negotiating dispute lifespans.
+\item jQuery: a dependency required by the plugin above.
+\item The dashboard icons used in the core platform are designed by Freepik.
+\end{itemize}
+
+\subsection{Back-end}
+
+\begin{itemize}
+\item Fat-Free Framework: routes HTTP requests to controllers and also handles database interaction and password encryption.
+\item SQLite: the RDBMS used by SmartResolution for persistence.
+\end{itemize}
+
+\subsection{Development dependencies}
+
+\begin{itemize}
+\item Rubygems: for handling Ruby dependencies.
+\item Composer: for handling PHP dependencies.
+\item Cucumber: the BDD framework in use for end-to-end testing.
+\item RSpec, Capybara and Poltergeist as the Cucumber drivers.
+\item PHPUnit: for providing methods for (and subsequently executing) PHP unit tests.
+\item Symfony's YAML component: for handling PHP's parsing of YAML files, used by SmartResolution's PHP unit tests.
+\end{itemize}
+
+\section{Maritime collision module}
+
+No third-party libraries were used in the development of the module. All code is native PHP/HTML and all assets (such as the anchor image) were taken from the public domain (in this case, pixabay.org).
+
+\section{Descriptions}
+
+All of the following were used without modification.
+
+\textbf{Bootstrap} - MIT - ``Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.".
+
+\begin{itemize}
+\item Project URL: \url{http://getbootstrap.com/}
+\end{itemize}
+
+\textbf{Capybara} - MIT - ``Capybara helps you test web applications by simulating how a real user would interact with your app. It is agnostic about the driver running your tests and comes with Rack::Test and Selenium support built in. WebKit is supported through an external gem.". 
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/jnicklas/capybara}
+\end{itemize}
+
+\textbf{Cucumber} - MIT - ``Cucumber is a tool for running automated tests written in plain language. Because they're written in plain language, they can be read by anyone on your team. Because they can be read by anyone, you can use them to help improve communication, collaboration and trust on your team."
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/cucumber/cucumber}
+\end{itemize}
+
+\textbf{Dashboard icons} - Freepik license - @TODO. The Freepik license requires that the phrase ``designed by Freepik" is displayed on the webpage that uses the icons.
+
+\begin{itemize}
+\item Images available at: \url{http://www.flaticon.com/packs/web-pictograms}
+\item License URL: \url{http://cdn.flaticon.com/license/license.pdf}
+\end{itemize}
+
+\textbf{Fat-Free Framework} - GPLv3 - ``Condensed in a single ~65KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way."
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/bcosca/fatfree}
+\end{itemize}
+
+\textbf{jQuery} - MIT - ``@TODO".
+
+\begin{itemize}
+\item Project URL: \url{https://jquery.org/}
+\item License URL: \url{https://jquery.org/license/}
+\end{itemize}
+
+\textbf{jQuery Date and Time picker (plugin for jQuery)} - MIT - @TODO.
+
+\begin{itemize}
+\item Project URL: \url{https://plugins.jquery.com/datetimepicker/}
+\end{itemize}
+
+\textbf{phpDocumentor} - MIT - ``phpDocumentor an application that is capable of analyzing your PHP source code and DocBlock comments to generate a complete set of API Documentation.
+
+Inspired by phpDocumentor 1 and JavaDoc it continues to innovate and is up to date with the latest technologies and PHP language features".
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/phpDocumentor/phpDocumentor2}
+\end{itemize}
+
+\textbf{PHPUnit} - BSD 3-Clause - ``PHPUnit is a programmer-oriented testing framework for PHP. It is an instance of the xUnit architecture for unit testing frameworks.".
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/sebastianbergmann/phpunit/}
+\item BSD license information: \url{http://opensource.org/licenses/BSD-3-Clause}
+\end{itemize}
+
+\textbf{Poltergeist} - MIT - ``Poltergeist is a driver for Capybara. It allows you to run your Capybara tests on a headless WebKit browser, provided by PhantomJS.".
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/teampoltergeist/poltergeist}
+\end{itemize}
+
+\textbf{RSpec} - MIT - RSpec is used for defining assertions.
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/rspec/rspec/}
+\end{itemize}
+
+\textbf{Rubygems} - MIT - ``RubyGems is a package management framework for Ruby."
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/rubygems/rubygems}
+\end{itemize}
+
+\textbf{SQLite} - Public domain - @TODO.
+
+\begin{itemize}
+\item Project URL: \url{http://www.sqlite.org/}
+\item Copyright information: \url{http://www.sqlite.org/copyright.html}
+\end{itemize}
+
+\textbf{Symfony's YAML component} - MIT - @TODO.
+
+\begin{itemize}
+\item Project URL: \url{https://github.com/symfony/Yaml}
+\end{itemize}
