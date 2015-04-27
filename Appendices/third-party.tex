@@ -14,6 +14,8 @@ smartresolution.org uses a number of third-party frameworks and services:
 \item jQuery: a dependency for the plugin above.
 \end{itemize}
 
+In addition to the SmartResolution website, I developed a demo video showing the workings of the SmartResolution software and the maritime collision module. This video is hosted on YouTube and makes use of YouTube's annotation facility to give useful commentary throughout the video. Finally, I overlayed a music track\footnote{The track is entitled `GAME MENU\_v001' and is available at \url{http://soundimage.org/looping-music/}} by Eric Matyas, which is free under the Creative Commons by Attribution license version 4.0\footnote{Licensing is discussed on the provider's website at \url{http://soundimage.org/}}. This video is embedded on the homepage of the SmartResolution website.
+
 It is worth noting that the design and creation of the installation icons at \url{http://smartresolution.org/documentation} were outsourced to a friend of mine. It is also worth explaining that, though smartresolution.org is hosted on AWS, it is server-agnostic and no AWS-specific assets exist in the repository. Therefore, I will not be discussing the use of AWS here.
 
 \section{SmartResolution}
@@ -75,35 +77,33 @@ All of the following were used without modification.
 \item Project URL: \url{https://github.com/cucumber/cucumber}
 \end{itemize}
 
-\textbf{Dashboard icons} - Freepik license - @TODO. The Freepik license requires that the phrase ``designed by Freepik" is displayed on the webpage that uses the icons.
+\textbf{Dashboard icons} - Freepik license - These icons are free for use but the Freepik license requires that the phrase ``designed by Freepik" is displayed on the webpage that uses the icons. I have fulfilled this by putting an attribution to them in the footer of the SmartResolution software.
 
 \begin{itemize}
 \item Images available at: \url{http://www.flaticon.com/packs/web-pictograms}
 \item License URL: \url{http://cdn.flaticon.com/license/license.pdf}
 \end{itemize}
 
-\textbf{Fat-Free Framework} - GPLv3 - ``Condensed in a single ~65KB file, F3 (as we fondly call it) gives you solid foundation, a mature code base, and a no-nonsense approach to writing Web applications. Under the hood is an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way."
+\textbf{Fat-Free Framework} - GPLv3 - F3 provides a solid foundation including ``an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way."
 
 \begin{itemize}
 \item Project URL: \url{https://github.com/bcosca/fatfree}
 \end{itemize}
 
-\textbf{jQuery} - MIT - ``@TODO".
+\textbf{jQuery} - MIT - jQuery is the most popular JavaScript library in the world, providing useful methods on DOM elements in a cross-browser and backwards-compatible way. Many JavaScript libraries and plugins require jQuery as a dependency, such is its ubiquity.
 
 \begin{itemize}
 \item Project URL: \url{https://jquery.org/}
 \item License URL: \url{https://jquery.org/license/}
 \end{itemize}
 
-\textbf{jQuery Date and Time picker (plugin for jQuery)} - MIT - @TODO.
+\textbf{jQuery Date and Time picker (plugin for jQuery)} - MIT - a user-friendly date and time picker, used by the SmartResolution core software to make it easier for agents to propose start and end dates for their disputes.
 
 \begin{itemize}
 \item Project URL: \url{https://plugins.jquery.com/datetimepicker/}
 \end{itemize}
 
-\textbf{phpDocumentor} - MIT - ``phpDocumentor an application that is capable of analyzing your PHP source code and DocBlock comments to generate a complete set of API Documentation.
-
-Inspired by phpDocumentor 1 and JavaDoc it continues to innovate and is up to date with the latest technologies and PHP language features".
+\textbf{phpDocumentor} - MIT - ``phpDocumentor is an application that is capable of analyzing your PHP source code and DocBlock comments to generate a complete set of API Documentation".
 
 \begin{itemize}
 \item Project URL: \url{https://github.com/phpDocumentor/phpDocumentor2}
@@ -116,7 +116,7 @@ Inspired by phpDocumentor 1 and JavaDoc it continues to innovate and is up to da
 \item BSD license information: \url{http://opensource.org/licenses/BSD-3-Clause}
 \end{itemize}
 
-\textbf{Poltergeist} - MIT - ``Poltergeist is a driver for Capybara. It allows you to run your Capybara tests on a headless WebKit browser, provided by PhantomJS.".
+\textbf{Poltergeist} - MIT - ``Poltergeist is a driver for Capybara. It allows you to run your Capybara tests on a headless WebKit browser, provided by PhantomJS".
 
 \begin{itemize}
 \item Project URL: \url{https://github.com/teampoltergeist/poltergeist}
@@ -128,26 +128,26 @@ Inspired by phpDocumentor 1 and JavaDoc it continues to innovate and is up to da
 \item Project URL: \url{https://github.com/rspec/rspec/}
 \end{itemize}
 
-\textbf{Rubygems} - MIT - ``RubyGems is a package management framework for Ruby."
+\textbf{Rubygems} - MIT - RubyGems is a package management framework for Ruby.
 
 \begin{itemize}
 \item Project URL: \url{https://github.com/rubygems/rubygems}
 \end{itemize}
 
-\textbf{SlickNav} - MIT - @TODO.
+\textbf{SlickNav} - MIT - Duplicates a given menu and styles it in a mobile-friendly (i.e. dropdown) style. The application using it simply has to add a media query to their CSS to hide the `mobile' menu and show the `desktop' menu when an arbitrary breakpoint is reached.
 
 \begin{itemize}
 \item Project URL: \url{http://slicknav.com/}
 \end{itemize}
 
-\textbf{SQLite} - Public domain - @TODO.
+\textbf{SQLite} - Public domain - a simple, fast relational database management system. It is important to note that this choice of RDBMS is not particularly important, as another RDBMS can be swapped into SmartResolution with relative ease.
 
 \begin{itemize}
 \item Project URL: \url{http://www.sqlite.org/}
 \item Copyright information: \url{http://www.sqlite.org/copyright.html}
 \end{itemize}
 
-\textbf{Symfony's YAML component} - MIT - @TODO.
+\textbf{Symfony's YAML component} - MIT - Parses a string containing YAML-formatted data. YAML (a recursive acronym, standing for ``YAML Ain't Markup Language") is a terse way of representing structured data, and has gained popularity for use with languages such as Ruby and Python. PHP has no built-in YAML parser, so I used Symfony's YAML component, which is an industry-standard YAML parser for PHP.
 
 \begin{itemize}
 \item Project URL: \url{https://github.com/symfony/Yaml}

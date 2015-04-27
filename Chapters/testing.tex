@@ -1,7 +1,5 @@
 \chapter{Testing} 
 
-@TODO add table showing improvements in test time?
-
 SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
 
 In an ideal world, the same principles would be applied to the Maritime Collision module and to the SmartResolution website and marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the evaluation section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
@@ -196,7 +194,7 @@ $dispute = new Dispute($disputeDetails);
 
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
+I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. This information is summarised in comparison table @TODO.
 
 \subsubsection{Further refactoring}
 
@@ -309,7 +307,7 @@ Where feedback was lacking from the customer, I turned to friends, family and th
 \begin{itemize}
 \item Smaller icons. My early designs used dashboard icons around 3 times larger than the final design. I was trying to emulate clear and minimalist dashboards such as the one on DigitalOcean (see figure~\ref{screenshot:digitalOcean} but my implementation was something consistently questioned in the feedback I received.
 \item Larger font size. Bootstrap's default font was too small given the sparseness of the design as a whole. I increased the base font size - since all of my CSS font sizes are defined in ems, font sizes across the site increased in size proportionally.
-\item Responsive improvements. It was never a requirement to make the website fully responsive: the fact that Bootstrap supports responsiveness by default was just an added bonus. However, some of my design decisions - such as absolutely positioning the lifespan status at the right hand side of the dispute - made for a poor experience on mobile. When this was pointed out in the feedback, I added a media query so that the positioning would only apply on devices of a minimum screen width. @TODO show design of dispute page on desktop and mobile
+\item Responsive improvements. It was never a requirement to make the SmartResolution software fully responsive: the fact that Bootstrap supports responsiveness by default was just an added bonus. However, some of my design decisions - such as absolutely positioning the lifespan status at the right hand side of the dispute - made for a poor experience on mobile. When this was pointed out in the feedback, I added a media query so that the positioning would only apply on devices of a minimum screen width.
 \end{itemize}
 
 \begin{figure}[h!]
