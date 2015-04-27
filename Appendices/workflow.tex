@@ -4,38 +4,67 @@ Online Dispute Resolution is aimed at lawyers (hereafter known as Agents), repre
 
 \section{Roles in the system}
 
-%![Roles in the system](/view/images/roles.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.7\textwidth]{workflow/roles}
+    \fi
+    \caption{Roles in the system}
+  \label{workflow:roles}
+\end{figure}
 
-From left to right, we have:
+In figure~\ref{workflow:roles}, from left to right, we have:
 
-* Law Firm - an Organisation account.
-* Agent - an Individual account, belonging to a Law Firm.
-* Mediation Centre - an Organisation account.
-* Mediator - an Individual account, belonging to a Mediation Centre.
+\begin{itemize}
+\item Law Firm - an Organisation account.
+\item Agent - an Individual account, belonging to a Law Firm.
+\item Mediation Centre - an Organisation account.
+\item Mediator - an Individual account, belonging to a Mediation Centre.
+\end{itemize}
 
 \section{Setting up}
 
 Before a dispute can be opened on SmartResolution, both Agents must be registered to the system. For each Agent to be registered, their Law Firm must also be registered.
 
-1. Law Firm A registers an account and logs in.
-2. Law Firm A creates an account for Agent A.
-3. Law Firm B registers an account and logs in.
-4. Law Firm B creates an account for Agent B.
+\begin{enumerate}
+\item Law Firm A registers an account and logs in.
+\item Law Firm A creates an account for Agent A.
+\item Law Firm B registers an account and logs in.
+\item Law Firm B creates an account for Agent B.
+\end{enumerate}
 
 \section{Creating a dispute}
 
 \subsection{Assigning the dispute to the relevant parties}
 
-%![Creating a dispute](/view/images/dispute_creation.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.5\textwidth]{workflow/dispute_creation}
+    \fi
+    \caption{Creating a dispute}
+  \label{workflow:disputeCreation}
+\end{figure}
 
-* Law Firm A creates a dispute, assigning it to Agent A.
-* Agent A fills in their summary for the dispute and opens the dispute against Law Firm B.
-* Law Firm B assigns the dispute to Agent B.
-* Agent B fills in their summary to accept the dispute.
+Figure~\ref{workflow:disputeCreation} demonstrates:
+
+\begin{itemize}
+\item Law Firm A creates a dispute, assigning it to Agent A.
+\item Agent A fills in their summary for the dispute and opens the dispute against Law Firm B.
+\item Law Firm B assigns the dispute to Agent B.
+\item Agent B fills in their summary to accept the dispute.
+\end{itemize}
 
 \subsection{Negotiating a lifespan}
 
-![Negotiating lifespan](/view/images/lifespan.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.6\textwidth]{workflow/lifespan}
+    \fi
+    \caption{Negotiating a lifespan}
+  \label{workflow:lifespan}
+\end{figure}
 
 The agents need to agree on a start and end time for the dispute. A dispute can last for hours, weeks or months, depending on the preferences of the agents involved.
 
@@ -43,7 +72,14 @@ A lifespan can be re-negotiated at any point in the dispute process.
 
 \subsection{The dispute begins}
 
-%![Dispute](/view/images/dispute.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.6\textwidth]{workflow/dispute}
+    \fi
+    \caption{The dispute begins}
+  \label{workflow:dispute}
+\end{figure}
 
 With a lifespan negotiated and a dispute fully assigned, the agents are now able to communicate through the SmartResolution chat facility and upload documents as evidence.
 
@@ -51,25 +87,41 @@ With a lifespan negotiated and a dispute fully assigned, the agents are now able
 
 Sometimes, disputes may not be solved without the aid of an independent mediator. SmartResolution supports Mediation Centres and Mediators: at any point in an active dispute, either agent can propose mediation.
 
-%![Proposing mediation](/view/images/mediation_creation.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.5\textwidth]{workflow/mediation_creation}
+    \fi
+    \caption{Mediation}
+  \label{workflow:mediation}
+\end{figure}
 
-* An agent proposes to use Mediation Centre 'MC' to mediate the dispute.
-* The other agent accepts. 'MC' is notified that they are now the Mediation Centre of the dispute.
-* 'MC' provides a list of all available Mediators.
-* The agents are free to peruse the profiles of the Mediators, reading their CVs and contacting them externally if necessary.
-* An agent proposes to use Mediator M to mediate the dispute.
-* The other agent agrees. The dispute is now in mediation.
+\begin{itemize}
+\item An agent proposes to use Mediation Centre `MC' to mediate the dispute.
+\item The other agent accepts. `MC' is notified that they are now the Mediation Centre of the dispute.
+\item `MC' provides a list of all available Mediators.
+\item The agents are free to peruse the profiles of the Mediators, reading their CVs and contacting them externally if necessary.
+\item An agent proposes to use Mediator M to mediate the dispute.
+\item The other agent agrees. The dispute is now in mediation.
+\end{itemize}
 
-%![Mediation in action](/view/images/mediation.jpg)
+\begin{figure}[ht!]
+  \centering
+    \ifimages
+    \includegraphics[width=0.6\textwidth]{workflow/mediation}
+    \fi
+    \caption{Mediation in action}
+  \label{workflow:mediationAction}
+\end{figure}
 
-With the dispute in mediation, all communication is done through the mediator, unless the mediator proposes "Round-Table Communication" and both agents accept. In this case, a three-person chat is unlocked. At any time, either agent can revoke Round-Table Communication.
+With the dispute in mediation, all communication is done through the mediator, unless the mediator proposes ``Round-Table Communication" and both agents accept. In this case, a three-person chat is unlocked. At any time, either agent can revoke Round-Table Communication.
 
 \section{Modules}
 
 If there is a relevant SmartResolution Module installed to the system, that may help the Agents to reach a resolution.
 
-For example, let's say we have a 'Maritime Collision' module. This adds a 'Maritime Collision' dispute type to the dispute-creation screen.
+For example, let's say we have a `Maritime Collision' module. This adds a 'Maritime Collision' dispute type to the dispute-creation screen.
 
-With the dispute type set to 'Maritime Collision', an additional option is unlocked: Agents are able to let the module ask them structured, maritime-law-specific questions. The module then interprets their answers according to the law, and automatically suggests a resolution.
+With the dispute type set to `Maritime Collision', an additional option is unlocked: Agents are able to let the module ask them structured, maritime-law-specific questions. The module then interprets their answers according to the law, and automatically suggests a resolution.
 
-Modules can help to cut out mediators altogether, if they act as 'mediator AI' - saving everyone valuable time and money. This is what sets SmartResolution apart from the competition.
+Modules can help to cut out mediators altogether, if they act as `mediator AI' - saving everyone valuable time and money. This is what sets SmartResolution apart from the competition.
