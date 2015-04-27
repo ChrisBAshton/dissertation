@@ -194,7 +194,22 @@ $dispute = new Dispute($disputeDetails);
 
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. This information is summarised in comparison table @TODO.
+I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. This information is summarised in comparison table~\ref{table:testTimes}.
+
+
+\begin{table}[h!]
+\label{table:testTimes} 
+\begin{center}
+\begin{tabular}{ l | r | r | r | r | r}
+  Stage in project & Unit tests & Assertions & Time taken (s) & UTPS & APS \\
+  \hline
+  Pre-refactor & 90 & 221 & 57.70 & 1.58 & 3.83\\
+  Fixed database transactions & 112 & 263 & 34.24 & 3.29 & 7.68\\
+  Refactored to use only pure models & 109 & 309 & 12.72 & 8.57 & 24.29
+\end{tabular}
+\end{center}
+\caption {Table showing the unit test times after various refactoring steps}
+\end{table}
 
 \subsubsection{Further refactoring}
 
