@@ -2,7 +2,7 @@
 
 SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
 
-In an ideal world, the same principles would be applied to the Maritime Collision module and to the SmartResolution website and marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the evaluation section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
+In an ideal world, the same principles would have been applied to the Maritime Collision module and to the SmartResolution website and marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the evaluation section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
 
 As previously mentioned, the project was developed in an agile way from mid-way through the design stage onwards. As such, the principles of business-driven development (BDD) and continuous integration (CI) were applied throughout the implementation. This section discusses the testing strategy that was applied during the implementation.
 
@@ -35,7 +35,7 @@ To accomplish this, the driver (in our case, Poltergeist) needs to be able to ac
 
 As far as the server is concerned, Poltergeist sends a HTTP request, just like any genuine user on a normal browser. Poltergeist needed to be able to send a flag, to explicitly inform the application that the request is coming from a test suite and, thus, should be using a test database.
 
-Poltergeist allows you to override the HTTP headers sent with each request, so my Cucumber tests modify the User-Agent property to be either `Poltergeist' or `Poltergeist--clear'. Both headers inform the application that it should use the test database, but the latter provides an additional instruction that the database should be cleared and re-populated with test data before processing the request. This is demonstrated in figure~\ref{uml:headers}.
+Poltergeist allows you to override the HTTP headers sent with each request, so my Cucumber tests modify the User-Agent property to be either \lstinline{Poltergeist} or \lstinline{Poltergeist--clear}. Both headers inform the application that it should use the test database, but the latter provides an additional instruction that the database should be cleared and re-populated with test data before processing the request. This is demonstrated in figure~\ref{uml:headers}.
 
 The process of clearing the database involves removing the SQLite database entirely, creating a new SQLite database, executing the table-setup SQL (all performed via shell commands through PHP's \lstinline{shell_exec} function) and then seeding the database with fixture data. This fixture data is defined in \lstinline{data/fixtures/fixture_data.yml} and the mapping of YAML data to SQL tables is defined in \lstinline{data/fixtures/seed.php}.
 
@@ -140,7 +140,7 @@ This seemed laborious, error-prone and messy. Instead, I defined a custom except
 \end{lstlisting}
 \end{minipage}
 
-Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in just 34 seconds. \footnote{A build on 17th April, after refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/58932345}} This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation.
+Now that the root of the problem had been fixed, unit tests could be run without clearing the database in between each test. This led to big improvements in test speed: at this stage, I could now run 112 unit tests in 34 seconds.\footnote{A build on 17th April, after refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/58932345}} This is 3.29 unit tests per second (UTPS), compared with 1.58 UTPS before the optimisation.
 
 I still needed to clear the database between each test \emph{suite}, as the tests would still alter the state of the database. But now, by and large, most of the tests \emph{within} those suites did not need to run on a new database connection.
 
@@ -194,8 +194,7 @@ $dispute = new Dispute($disputeDetails);
 
 The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
-I stated earlier that I managed to run 112 unit tests in 34 seconds (3.29 UTPS) as a result of minimising the number of times I had to clear the database in between each test or test suite. Changing object constructors to take arrays rather than database record IDs meant I could cut down this figure even further. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57. \footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds. This information is summarised in comparison table~\ref{table:testTimes}.
-
+Changing object constructors to take arrays rather than database record IDs meant I could cut down test times significantly. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57.\footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} This information is summarised in comparison table~\ref{table:testTimes}. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
 
 \begin{table}[h!]
 \label{table:testTimes} 
@@ -234,13 +233,11 @@ $update->dispute($dispute);
 
 Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. 
 
-This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party system.
+This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party.
 
 \section{Functional Testing}
 
-Every feature of the SmartResolution core software is defined as a Cucumber feature, associated with step definitions, to make each feature executable and automatically verify that the system is working as expected.
-
-As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}, and the justification for the choice of Ruby and Cucumber as the BDD framework is in appendix~\ref{appendix:bdd}.
+Every feature of the SmartResolution core software is defined as a Cucumber feature, associated with step definitions, to make each feature executable and automatically verify that the system is working as expected. As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}, and the justification for the choice of Ruby and Cucumber as the BDD framework is in appendix~\ref{appendix:bdd}.
 
 Unit tests are tightly coupled to the specific implementation of the code, making refactoring difficult if you wish to move methods, rename classes and the like. A necessary principle of unit tests is that the tests will break if the code changes its external API. These tests are highly valuable but do not offer complete code coverage, since there are no tests to verify that the classes the unit tests are testing are even being used by the core system at all!
 
@@ -269,9 +266,9 @@ Finally, there are also numerous steps which are repeated across different featu
 
 There is a trade-off between having a verbose Cucumber feature and a verbose step-definition. The former bogs the feature down in detail and risks devaluing it, whereas the latter can make maintenance more difficult.
 
-I argued this same internal battle in the \emph{Developing Internet-Based Applications} assignment, and discussed the pros and cons of each in some detail. That section of the report is included here in appendix~\ref{appendix:cucumber}.
+I argued this same internal battle in the \emph{Developing Internet-Based Applications} assignment, discussing the pros and cons of each in some detail. The relevant extract of that report is included here in appendix~\ref{appendix:cucumber}.
 
-My conclusion was that, though the two need to be balanced, it isn't detrimental to specify specific fields and error messages in the Cucumber feature itself. On the other hand, abstracting that information away in the step definition can make it difficult to maintain state throughout the scenario. Following this conclusion, some of the Cucumber features decided upon in the initial requirements were later reworded to fit in with this philosophy, though their purpose and relevance remained the same.
+My conclusion was that, though the two need to be balanced, it isn't detrimental to specify specific fields and error messages in the Cucumber feature itself. The alternative - abstracting that information away in the step definition - can make it difficult to maintain state throughout the scenario. Following this conclusion, some of the Cucumber features decided upon in the initial requirements were later reworded to fit in with this philosophy, though their purpose and relevance remained the same.
 
 For example, this was an original `lifespan negotiation' scenario:
 
@@ -317,11 +314,13 @@ Mid-way through the project, I deployed SmartResolution to smartresolution.org a
 
 Throughout development I adhered to the agile principle of regular releases, pushing the latest stable version of SmartResolution to the website on a daily basis so that the customer would be able to feel the benefit and experience a more feature-complete demo.
 
+Later on in the project I made it even easier to demo the software, by producing a short video demonstrating the software and the maritime collision module. This is embedded on the homepage of smartresolution.org and enables users to see what the system is capable of without having to manually log in and out of demo accounts representing different user roles.
+
 Where feedback was lacking from the customer, I turned to friends, family and the Twitter community to try out the demo and give me constructive comments to work on. These comments were fed back directly into my design, leading to the following improvements:
 
 \begin{itemize}
-\item Smaller icons. My early designs used dashboard icons around 3 times larger than the final design. I was trying to emulate clear and minimalist dashboards such as the one on DigitalOcean (see figure~\ref{screenshot:digitalOcean} but my implementation was something consistently questioned in the feedback I received.
-\item Larger font size. Bootstrap's default font was too small given the sparseness of the design as a whole. I increased the base font size - since all of my CSS font sizes are defined in ems, font sizes across the site increased in size proportionally.
+\item Smaller icons. My early designs used dashboard icons around 3 times larger than the final design. I was trying to emulate clear and minimalist dashboards such as the one on DigitalOcean (see figure~\ref{screenshot:digitalOcean}) but my implementation was something consistently questioned in the feedback I received.
+\item Larger font size. Bootstrap's default font was too small given the sparseness of the design as a whole. I increased the base font size; all font sizes across the site increased in size proportionally, as my CSS defined fonts in terms of \lstinline{em}.
 \item Responsive improvements. It was never a requirement to make the SmartResolution software fully responsive: the fact that Bootstrap supports responsiveness by default was just an added bonus. However, some of my design decisions - such as absolutely positioning the lifespan status at the right hand side of the dispute - made for a poor experience on mobile. When this was pointed out in the feedback, I added a media query so that the positioning would only apply on devices of a minimum screen width.
 \end{itemize}
 
@@ -336,4 +335,4 @@ Where feedback was lacking from the customer, I turned to friends, family and th
 
 Feedback regarding the workflow of a dispute had to be treated differently, since the customer was the law expert and the people giving feedback were not law experts. However, their comments were collected and fed back to the law expert for trying to negotiate simpler dispute workflows.
 
-For example, one of the original requirements was for a formal resolution-offering process. An agent would be able to make an offer by filling in a HTML form denoting offer details, damages awarded, and so on. This was simplified in light of the feedback: agents are human beings and can reach that kind of resolution through the communication option alone. They can then close the dispute successfully, with no need to officially form a structured offer that SmartResolution understands. Removing these artificial constraints made for a more user-friendly workflow and reduced the development overheads significantly.
+One of the original requirements was for a formal resolution-offering process. An agent would be able to make an offer by filling in a HTML form denoting offer details, damages awarded, and so on. I was able to simplify this in light of the feedback: agents are human beings and can reach that kind of resolution through the communication option alone. They can then close the dispute successfully, with no need to officially form a structured offer that SmartResolution understands. Removing these artificial constraints made for a more user-friendly workflow and reduced the development overheads significantly.

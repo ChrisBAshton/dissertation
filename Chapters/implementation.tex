@@ -1,15 +1,10 @@
 \chapter{Implementation}
 
-@TODO - describe in detail the models, data mappers and controller objects.
-@TODO - improve SmartResolution developer instructions on Wiki, pull in as an appendix
-
 \section{Dependency management}
 
-Early on in the project implementation, a few days were spent setting up and utilising third-party services to cut down the labour costs of maintenance further on in the project's lifecycle.
+Early on in the project implementation, a few days were spent setting up and utilising third-party services to cut down the labour costs of maintenance further on in the project's lifecycle. Even in the very early stages when SmartResolution had just one or two unit tests, time was spent configuring a Travis file so that the tests would automatically be run on Travis' CI platform after every pushed commit.
 
-Even in the very early stages, where SmartResolution had just one or two unit tests, time was spent configuring a Travis file so that the tests would automatically be run on Travis' CI platform after every pushed commit.
-
-Dependencies such as F3 and PHPUnit were important for the implementation of the project, but they should not exist in the project repository. They also should not bog down the installation instructions, as developers shouldn't have to manually fulfil each project dependency. For these reasons, I utilised Composer: a dependency manager for PHP which makes it easy for me to specify the project dependencies whilst also making it easy for other developers to install those dependencies. For the same reasons, I utilised RubyGems to specify the Ruby dependencies for the Ruby and Cucumber tests.
+Dependencies such as F3 and PHPUnit were important for the implementation of the project, but they should not exist in the project repository. They also should not add unnecessary complexity to the installation instructions, as developers shouldn't have to manually fulfil each project dependency. For these reasons, I utilised Composer: a dependency manager for PHP which makes it easy for me to specify the project dependencies whilst also making it easy for other developers to install those dependencies. For the same reasons, I utilised RubyGems to specify the Ruby dependencies for the Ruby and Cucumber tests.
 
 \section{SmartResolution directory structure}
 
@@ -51,7 +46,7 @@ As the implementation followed an agile methodology, the design evolved over tim
 
 \lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern. The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory and \lstinline{webapp/routes.php} defines the routing component. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
 
-Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing, rather than being responsible for the relational database to object mapping. This is discussed in detail later on in this section.
+Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing but not be responsible for the relational database to object mapping. This is discussed in detail later on in this section.
 
 This folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
 
@@ -89,7 +84,7 @@ Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and rend
   \label{uml:class}
 \end{figure}
 
-The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute. The class diagram in figure~\ref{uml:class} shows mainly the classes in the \lstinline{webapp/core/model} directory, which encapsulate the business logic of the application.
+The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute. The class diagram in figure~\ref{uml:class} shows mainly the classes in the \lstinline{webapp/core/model} directory, as these models encapsulate the business logic of the application. The following subsections describe the class diagram in more detail.
 
 \subsection{Accounts}
 
@@ -101,7 +96,7 @@ The \lstinline{Organisation} and \lstinline{Individual} account types implement 
 
 \subsection{Disputes}
 
-Every fully instantiated dispute has two dispute parties which is comprised of a law firm, an agent and a dispute summary. A dispute can have zero-to-many items of evidence (uploaded by the agents) associated with it and zero-to-many messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
+Every fully instantiated dispute has two dispute parties, each of which is comprised of a law firm, an agent and a dispute summary. A dispute can have infinite items of evidence (uploaded by the agents) associated with it and infinite messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
 
 A dispute's type denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', which adds nothing to the core functionality of the system. However, with the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
 
@@ -132,7 +127,7 @@ The `latest' lifespan ignores whether or not a lifespan has been accepted and re
 
 Separately from the `mediation state' is the higher level dispute state. A dispute is in a different state depending on whether or not all agents have been assigned, a lifespan has been negotiated, and so on. The state of the dispute dictates what actions are available to the parties involved.
 
-In early versions of the project, the codebase began to get quite messy because classes throughout the system would examine a dispute's state to decide whether or not they could perform some action. This led to complicated \lstinline{if} statements, like the one below:
+In early versions of the project, the codebase began to get quite messy because classes throughout the system would manually determine a dispute's state to decide whether or not they could perform some action. This led to complicated \lstinline{if} statements, like the one below:
 
 \begin{lstlisting}
 if ($dispute->state() === 'Open' || $dispute->state() === 'InMediation' || $dispute->state() === 'NegotiatingLifespan') {
@@ -194,7 +189,7 @@ The module declaration function is defined in \lstinline{api.php} and in turn ca
 
 The module definition function contains calls to the module API. Some of these are top-level, such as defining custom routes: these are executed immediately.
 
-The most interesting API call is the publish-subscribe function \lstinline{on}. This function calls the \lstinline{ModuleController->subscribe} function, which adds the callback function to an internal array of subscriptions. The position at which the subscription is added to the array is denoted by the priority of the subscription.
+The most interesting API call is the publish-subscribe function \lstinline{on}, first discussed in the design section. This function calls the \lstinline{ModuleController->subscribe} function, which adds the callback function to an internal array of subscriptions. The position at which the subscription is added to the array is denoted by the priority of the subscription.
 
 If and when an event is emitted by a class in the SmartResolution core platform, any subscriptions to that event are retrieved. They are then iterated through and the following check is performed (demonstrated here in pseudocode):
 
@@ -259,7 +254,7 @@ The SmartResolution website was developed locally using many of the same technol
 
 \subsection{Choosing a server}
 
-A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and upfront expense when so many alternatives exist.
+A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and up front expense when so many alternatives exist.
 
 Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth~\cite{article:AWS}. AWS is being utilised by companies including the BBC~\cite{article:bbcAws}, its popularity down to its speed and scalability, as well as the low cost to market.
 
@@ -297,43 +292,6 @@ Though continuous integration is important for ensuring that the codebase remain
 I wrote a bash script specific to the SmartResolution vendor site which clears the html and html-demo folders outlined in figure~\ref{uml:serverConfig}, then re-downloads and installs the website and the software from the website repository and the software repository respectively. The script calls PHPDoc to generate the SmartResolution core API documentation and module documentation, and the script also strips out unnecessary files such as tests and Travis configuration before zipping up the file as a production-ready download.
 
 In an ideal world, this script would be triggered via a Git web hook so that the website, demo and download file are all updated whenever an update is pushed to either the website or software repository. However, triggering this bash script through PHP is a security issue and is made very difficult to accomplish through AWS' default Apache and PHP configuration. After some failed attempts and with time pressing on, it was decided that manually signing into the EC2 instance and running the update script was not too much of an inconvenience.
-
-\begin{figure}[h!]
-  \centering
-    \ifimages
-    \includegraphics[width=\textwidth]{smartresolution--desktop}
-    \fi
-  \caption{Screenshot of SmartResolution vendor website in `desktop' view}
-  \label{screenshot:smartresolutionOrg:desktop}
-\end{figure}
-
-Figure~\ref{screenshot:smartresolutionOrg:desktop} shows the landing page of the finished website.
-
-\begin{figure}[h!]
-  \centering
-    \ifimages
-    \includegraphics[width=\textwidth]{smartresolution--tablet}
-    \fi
-  \caption{Screenshot of SmartResolution vendor website in `tablet' view}
-  \label{screenshot:smartresolutionOrg:tablet}
-\end{figure}
-
-\begin{figure}[h!]
-  \centering
-    \ifimages
-    \includegraphics[width=0.5\textwidth]{smartresolution--mobile}
-    \fi
-  \caption{Screenshot of SmartResolution vendor website in `mobile' view}
-  \label{screenshot:smartresolutionOrg:mobile}
-\end{figure}
-
-Figures~\ref{screenshot:smartresolutionOrg:tablet} and ~\ref{screenshot:smartresolutionOrg:mobile} show the SmartResolution website responding to the viewport width, indicating how the website would look on a tablet and a mobile device respectively.
-
-Though responsiveness was not a requirement of the core SmartResolution software, I felt it was important to make the vendor website responsive. The website fulfils a different need and is likely to be stumbled upon by someone browsing on their phone, whereas lawyers using the SmartResolution \emph{software} are likely to be accessing it on a desktop or laptop at work.
-
-smartresolution.org is an information resource for the SmartResolution software, and thus I decided it should be made fully responsive, using the SlickNav JavaScript library to create the mobile navigation.
-
-The same effort was not made with the core software because the size of the software would mean additional testing time that cannot be afforded on an aspect which is not a core requirement. Moreover, it was hoped that SmartResolution would eventually be able to support swappable themes: development effort would be better expended on that facility than on making sure the default theme is responsive.
 
 \section{Documentation}
 

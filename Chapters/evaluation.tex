@@ -14,11 +14,11 @@ As a reminder, the original requirements were identified as the following, to be
     
     \item The maritime collision module should be able to retrieve the most similar historical cases
 
-    \item The details of these historical cases should be fed back into the details of the current dispute, thereby influencing the ``court simulation"
+    \item The details of these historical cases should be fed back into the details of the current dispute, thereby influencing the court simulation
 
 \end{enumerate}
 
-The scope of these deliverables could have been different had there been an existing ODR platform which I could use as a basis for the project. The fact that the platform had to be designed and developed from scratch was a considerable burden on time and resources, even before applying the original concept requirements of extending the platform and developing a maritime collision module for it.
+The scope of these deliverables could have been different had there been an existing ODR platform which I could use as a basis for the project. The fact that the platform had to be designed and developed from scratch was a considerable burden on time and resources, even before applying the concepts of extending the platform and developing a maritime collision module for it.
 
 The first three of these were the core requirements, but I distinctly remember that the fourth and fifth requirements were my own idea. The thought of making use of historical maritime collision cases excited me at the time and felt like a logical progression for the module. Both my supervisor and the client were happy to agree to make this a part of the requirements specification.
 
@@ -34,7 +34,7 @@ It was important that the core platform offered enough hooks and an expansive-en
 
 If I had foregone the SmartResolution marketplace component entirely, I could have invested around a fortnight of extra development time in the maritime collision module, and perhaps accomplished something more exciting and groundbreaking in the AI. However, without a centralised means of browsing and installing modules, and indeed a centralised means of downloading the core platform itself, then this may very well have died off as a forgotten university project. I like to think that, with the platform built and the documentation plentiful, developers are empowered to develop their own modules for this sector which has recently been gaining in popularity and public awareness.
 
-In essence, the minimum requirements were a working ODR platform and a maritime collision module prototype. Anything beyond that in terms of delivery was my own prerogative, whether that is a SmartResolution Marketplace or a maritime collision module that is influenced by historical cases. In that respect, the core software and the basic maritime collision module satisfy the original needs of the client.
+In essence, the minimum requirements were a working ODR platform and a maritime collision module prototype. Anything beyond that in terms of delivery was my own prerogative, whether that is a SmartResolution Marketplace or a maritime collision module that is influenced by historical cases. In that respect, the core software and the basic maritime collision module satisfy the original needs of the customer.
 
 To summarise, the software deliverables evolved from an extensible ODR platform and a sophisticated maritime collision module, into the following:
 
@@ -50,11 +50,11 @@ To summarise, the software deliverables evolved from an extensible ODR platform 
 
 At the beginning of this report, I identified Modria as the market leader for online dispute resolutions. I'd like to take this opportunity now to highlight the differences between the two and the pros and cons of each.
 
-Modria is well suited to low-value e-commerce disputes. It provides a hosted platform which online retailers can become subscribers to, after which they can sign into their hosted area and view the disputes against their organisation. No developer knowledge is required and there is minimal setup.
+Modria is well suited to low-value e-commerce disputes. It provides a hosted platform which online retailers can become subscribers to, after which they can sign into their hosted area and view the disputes against their organisation. No developer knowledge is required and setup is minimal.
 
 Subscribers are able to set resolution rules to automate the results of disputes as much as possible, thereby cutting costs and freeing up staff for other duties. In that respect, Modria has encoded some artificial intelligence into its system, which the subscriber is able to configure to their own needs and desires.
 
-What Modria cannot offer at this stage is a platform that is capable of concepts beyond e-commerce disputes and e-commerce terminology. Disputes come in all shapes and sizes, and  automated resolution suggestions for all of these can only be possible with a modular architecture supporting domain-specific code.
+What Modria cannot offer at this stage is a platform that is capable of concepts beyond e-commerce disputes and terminology. Disputes come in all shapes and sizes, and  automated resolution suggestions for all of these can only be possible with a modular architecture supporting domain-specific code.
 
 SmartResolution provides this platform. Unlike Modria, it is not hosted: it is open-source and requires some basic developer knowledge to install and configure, though it does come with detailed installation instructions. That being said, it is perfectly feasible that SmartResolution could offer hosted solutions, perhaps on a commercial site. WordPress does this itself: \url{http://wordpress.org} is the platform site and \url{http://wordpress.com} offers both free and premium hosted blogging solutions.
 
@@ -76,11 +76,11 @@ The very deliverables of the project also changed as time went on: there was a l
 
 Finally, in the final stages of development, many of the tasks appear to overlap: this reflects the coupling between the various components of the project. You cannot create a maritime collision module without extending the underlying platform, but you don't necessarily know what is required of the underlying platform until you start developing the maritime collision module. You cannot create a SmartResolution Marketplace without having a finished module to host in that marketplace. You cannot create a maritime collision module without at least some understanding of maritime law. And so on.
 
-The fact that the two Gantt dimensions are so different raises an important question: was a Gantt chart ever going to be compatible with an agile implementation, even if the first half of the project was more plan-driven? In hindsight, perhaps it would have helped my planning if I had only used the Gantt chart to plan up until the early design stage, switching to agile sprints thereafter.
+The fact that the two Gantt dimensions are so different raises an important question: was a Gantt chart ever going to be compatible with an agile implementation, even if the first half of the project was plan-driven? In hindsight, perhaps it would have helped my planning if I had only used the Gantt chart to plan up until the early design stage, switching to agile sprints thereafter.
 
 \section{Speed of progression}
 
-The design and development of the ODR platform was a major project in itself. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of what the system is capable of.~\cite{eric:catB}
+The design and development of the ODR platform was a major project in itself. As a result, I only had a few short weeks to concentrate my efforts on the maritime collision module, so treated this module more as a prototype than a finished product. In the words of Eric Raymond, what I've created is a ``plausible promise" of a maritime collision module.~\cite{eric:catB}
 
 I had hoped to complete the core ODR platform around 3 weeks before I actually managed it. In general, I did find that progress was slower than anticipated, and I'd like to briefly examine the reasons why, especially as I actually managed to negotiate some simpler requirements (removing formal resolution ``offers", etc) to help reach my deadlines.
 
@@ -88,15 +88,13 @@ It is partly down to my busy schedule: company work and administration, travel, 
 
 Having to write integration and unit tests, being informed by Travis several minutes later that I've broken the build, having to go back and fix tests, having to refactor my unit tests when I refactor my codebase - these have all factored into a more drawn-out development process. I think I probably would have finished the core platform sooner had I not disciplined myself to write tests throughout.
 
-Of course, there's no way of knowing how much time I would have spent manually testing, and fixing complicated bugs that start at one point and proliferate throughout the system. It is very possible that, without tests, my development progress might have fallen further behind and even slowed to a halt. Regardless of time, I'm extremely satisfied to have this collection of tests that cover every aspect of my codebase, as they allow me to refactor hundreds of lines of code and automatically validate that everything still works. The development overhead on writing tests is easily worth it for the ability to refactor without anxiety.
+Of course, there's no way of knowing how much time I would have spent manually testing, and fixing complicated bugs that start at one point and proliferate throughout the system. It is very possible that, without tests, my development progress might have fallen further behind and even ground to a halt. Regardless of time, I'm extremely satisfied to have this collection of tests that cover every aspect of my codebase, as they allow me to refactor hundreds of lines of code and automatically validate that everything still works. The development overhead on writing tests is easily worth it for the ability to refactor without anxiety.
 
 TDD aside, ``requirements creep" set in over the course of the project with stakeholders clarifying new requirements such as a file upload facility, the ability to view user profiles, and so on. These were in addition to my own self-imposed requirements, such as automated AWS deployment. I'd estimate that each new requirement adds at least two days to the development phase: one day to build and test, and the equivalent of a day in ongoing maintenance when refactoring the code.
 
 Overall, I think I was just too ambitious in aiming to complete the core platform, in a fully test-driven way, to the Gantt schedule that I created. My only regret in terms of time management is that I spent too long preparing for the project, spending around 2-3 weeks clarifying requirements which have since evolved naturally anyway, as well as reading around the subject of maritime law and gathering historical cases: these ended up playing much less of a role in my project than the dissertation title might suggest.
 
 \section{Appropriateness of the design}
-
-%Were the design decisions correct? Could a more suitable set of tools have been chosen? If you were starting again, what would you do differently?
 
 \subsection{Choice of language and framework}
 
@@ -114,7 +112,7 @@ Figure~\ref{uml:class} contains the class diagram showing the object-oriented na
 
 For instance, the \lstinline{MediationState} class encapsulates a lot of business logic, representing the mediation state of a dispute right from mediation proposal, to choosing a mediation centre, to the mediation centre offering a list of available mediators, etc. The state pattern worked well for the dispute itself, and should maybe have been extended to incorporate this mediation logic too as it would have made state querying more consistent.
 
-I believe that, in hindsight, more time spent on an up-front design would have benefited the final design. It may also have meant I'd have side-stepped some of the difficult periods of the project, such as when I refactored all of the models to take an array of data instead of a database record ID in the constructor. More time spent on an up-front design may have meant I'd have spotted the database/model coupling sooner and implemented the system correctly in the first place.
+I believe that, in hindsight, more time spent on an up front design would have benefited the final design. It may also have meant I'd have side-stepped some of the difficult periods of the project, such as when I refactored all of the models to take an array of data instead of a database record ID in the constructor. More time spent on an up front design may have meant I'd have spotted the database/model coupling sooner and implemented the system correctly in the first place.
 
 At the higher level, I'm very pleased with the MVCR structure of the application. This compound design pattern made it easy to assign routes to different handlers and to separate the concerns of the model with the wider concerns of the controllers and the data-querying in the application itself.
 
@@ -128,7 +126,7 @@ Currently, there is nothing clever regarding putting modules on the SmartResolut
 
 This is something I would want to automate in the future, perhaps providing an upload interface which takes a GitHub repository URL and zips up the contents automatically. However, the manual process currently in place does at least give me the advantage of being able to check the code and make sure that there is nothing insidious about its contents before making it available on the marketplace.
 
-A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org (or if we're following WordPress' commercial model, smartresolution.com), where corporations pay a subscription for their SmartResolution instance to be accessible at their own subdomain of the SmartResolution website.
+A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org where corporations pay a subscription for their SmartResolution instance to be accessible at their own subdomain of the SmartResolution website.
 
 This would be ideally suited to corporations who want the benefits of a modular ODR platform, but who do not want the headache of having to install and configure the platform onto their own infrastructure.
 
@@ -136,17 +134,17 @@ This would be ideally suited to corporations who want the benefits of a modular 
 
 The admin dashboard feature was one of the last to be added. Figure~\ref{uml:databaseSchema} shows the \lstinline{administrators} table, which requires nothing more than the \lstinline{login_id} associated with an \lstinline{account_details} entry.
 
-Currently, the admin account must be created manually in the database. In future, this would be a part of an installation process. This installation process could have a nice GUI and prompt the user for information such as admin email and password, which kind of database to the installation should use (SQLite, MySQL, etc), the name and logo to be used to customise the installation, and so on.
+Currently, the admin account must be created manually in the database. In future, this would be a part of an installation process. This installation process could have a nice GUI to prompt the user for information such as admin email and password, which kind of database the installation should use (SQLite, MySQL, etc), and so on.
 
-With the admin account created, the admin can log into their account to be presented with three options: Marketplace, Modules and Customise. The latter option is a placeholder and contains no functionality. It is hoped that this might later allow the admin to customise their installation, e.g. by changing the SmartResolution logo, enabling/disabling mediation, etc.
+With the admin account created, the admin can log into their account to be presented with three options: Marketplace, Modules and Customise. The latter option is a placeholder and contains no functionality. It is hoped that this might later allow the admin to customise their installation by changing the SmartResolution logo or enabling/disabling mediation.
 
 There is one more admin feature I'd have liked to have added given more time: the ability to switch themes. WordPress allows bloggers to easily change the look and feel of their site by activating a new theme. This is something that is perfectly possible in SmartResolution too, thanks to its MVC architecture.
 
 \subsection{Maritime collision module}
 
-The original requirements suggested that the module could pull in similar historical cases, firstly as a useful reference for the lawyers but secondly as a heuristic that affects the module's suggested resolution itself. Naturally, this is something I'd have liked to have added if the time was available.
+The original requirements suggested that the module could pull in similar historical cases, firstly as a useful reference for the lawyers but secondly as a heuristic that directly affects the module's suggested resolution. Naturally, this is something I'd have liked to have added if the time was available.
 
-The current version of the module is somewhat limited and realistically is unlikely to tell the lawyers anything they do not already know. However, it is a good proof of concept, and if SmartResolution were ever expanded to be able to be used by the clients themselves rather than the lawyers, this module might be more purposeful.
+The current version of the module is somewhat limited and realistically is unlikely to tell the lawyers anything that they do not already know. However, it is a good proof of concept, and if SmartResolution were ever expanded to be able to be used by the clients themselves rather than the lawyers, this module might be more purposeful.
 
 It is worth reiterating also that maritime law is different depending on the geographical location of the collision. This module could either be expanded to apply different laws depending on the location of the collision, or else multiple different modules could be created and the choice of which module to use is made the responsibility of the agents.
 
@@ -179,7 +177,7 @@ At a higher level, I've utilised industry-standard tools and best practices to e
 At the highest level, I've used services to keep on top of my project management:
 
 \begin{itemize}
-\item GitHub - a version management system allowing me to develop branches and then merge into the master branch following a line-by-line code-review. GitHub also provides a place to log issues including bugs, possible enhancements, and so on. Finally, I used GitHub to group these issues into related milestones.
+\item GitHub - a version management system allowing me to develop branches and then merge into the master branch following a line-by-line code-review. GitHub also provides a place to log issues including bugs, possible enhancements, and so on. I used these in conjunction with GitHub's `milestone' feature, which allows me to group issues into related milestones.
 \item JIRA - I used my own installation of JIRA to plan out the project management aspects of the major project, including planning for the mid-project demonstration.
 \item Gantt chart - an industry-standard technique for planning and monitoring progress.
 \item PHPDoc - a tool to generate HTML documentation from my DocBlock comments, which has been a useful reference when refactoring.
@@ -187,14 +185,16 @@ At the highest level, I've used services to keep on top of my project management
 
 \section{Summary}
 
-SmartResolution has grown into quite a large platform, and I've coped with the challenges raised as part of that process by engineering the project in a disciplined, sustainable and maintainable way.
+SmartResolution has grown into quite a large platform, and I've coped with the challenges raised as part of that process by engineering the project in a disciplined and sustainable way.
 
 I believe that the platform developed in this project fulfils a real need, and though online dispute resolution doesn't have the wider appeal that blogging might have, it could easily form the basis of a successful ODR provider's platform in future.
 
-More than just offering a base to be built upon, SmartResolution is feature-complete and supports modular extensibility for any features that it does \emph{not} have. The core software would probably require modifying slightly to support events and global functions that were not required by the maritime collision module - it is impossible to know in advance what kind of API might be required by the developers of future modules - but the infrastructure is in place.
+More than just offering a base to build upon, SmartResolution is feature-complete and supports modular extensibility for any features that it does \emph{not} have. The core software would probably require modifying slightly to support events and global functions that were not required by the maritime collision module - it is impossible to know in advance what kind of API might be required by the developers of future modules - but the infrastructure is in place.
 
 The maritime collision module implementation is simple but well designed. It demonstrates what SmartResolution's modular build makes possible, providing a plausible promise indicating what could be developed given a little more time. To implement everything I originally wanted to implement would be another major project in itself, and is something worth considering for one of next year's students.
 
-Finally, I feel that the development of the SmartResolution website and the accompanying developer documentation has solidified in a tangible way what was just a collection of fragmented concepts. Building the platform website and encouraging developer activity through providing a marketplace has steered this ODR platform in a direction when otherwise it may have been lost at sea.
+Finally, I feel that the development of the SmartResolution website and the accompanying developer documentation has solidified in a tangible way what was just a collection of fragmented concepts. Building the platform website and encouraging developer activity through providing a marketplace has steered this ODR platform in a direction when otherwise it may have been lost at sea, if you can pardon the pun.
 
-10,000 lines of code, 20,000 words and 400 hours of effort later, and the project isn't really complete - this sort of thing never is - but it is ready to be deployed to production, used by people, and further enhanced according to their feedback. It will be really interesting to see what happens to it and I have high hopes for the future.
+10,000 lines of code, 20,000 words and 400 hours of effort later, and the project isn't really complete - this sort of thing never is - but it is ready to be deployed to production, used by people, and further enhanced according to their feedback. I was able to demo the final version of the software with the customer and they were pleased: all of the original requirements were fulfilled, and, in addition, the modular nature of the project was exemplified through the implementation of the SmartResolution marketplace. Dr. Constantina Sampani will be presenting what we've built at the Maritime Arbitrators' conference in Hong Kong in May 2015.
+
+There has already been some discussion regarding taking this project further, perhaps as a major project for one of next year's final-year students to make the maritime collision module more sophisticated. It will be really interesting to see what happens to SmartResolution in this field which is rapidly gaining significance and acceptance in the eyes of the law. I hope I've created a solid foundation to build upon.

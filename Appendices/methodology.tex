@@ -1,0 +1,25 @@
+\chapter{Choosing a Project Development Methodology}\label{appendix:methodology}
+
+The industry is moving towards an agile approach which stresses the importance of being able to embrace change. Agile is about ``deferring design decisions until the last possible moment so that they can be made in light of experience" gained through spike work, talking to the on-site customer, and so on.~\cite{learningAgile}
+
+The idea of agile is that the cost-of-change curve is made shallower. Customers are happy because it's never too late to tweak a feature, and developers are happy because they're not expending lots of effort into writing up requirements specifications, designing UML diagrams, and the like.
+
+Numerous high-profile examples exist of multi-million pound software systems going exponentially over budget or failing to deliver at all as a result of following the Waterfall model, which some consider to be antiquated and not suited to the world of software engineering. In comparison, there is this image of agile developers being able to nimbly build incredible systems without being held up by dull and costly processes such as documentation.
+
+We should be able to adapt our choice of methodology to the project at hand, not the project at hand to our choice of methodology. Looking at this project impartially, I had a few reasons to consider a plan-driven approach:
+
+\begin{itemize}
+
+    \item This project requires building an Online Dispute Resolution system. Systems like this have already been established, meaning that there is already a list of fairly straightforward features that can be formalised in advance to be taken into account in the design.
+    
+    \item In ODR, there is a heavy emphasis on law and following processes correctly. For example, the ODR platform cannot be allowed to give either party an unfair advantage through being able to exploit lifespan negotiation. It is absolutely critical that the platform does not violate any of the rules of ODR - and therefore it is essential to document these rules in the requirements specification, for traceability and accountability.
+    
+    \item This project's customer is very busy and has only been able to meet a couple of times over the course of the project. This is not nearly often enough to constitute as an `on-site customer' - one of the pre-requisites of an agile project - again suggesting that plan-driven is the best approach.
+    
+    \item Finally, the process of gathering requirements, creating a design, and implementing and testing a substantial software system is still somewhat new to the sole developer on this project. Having a design and a plan is a comforting safety net.
+
+\end{itemize}
+
+Of course, the above points don't disqualify agile practices from the project. Agile principles of TDD, continuous integration (CI), regular releases and merciless refactoring are all very worthwhile activities and are not necessarily mutually exclusive from the Waterfall model. However, they do not lend themselves particularly well to the traditional workflow of implementation and then testing.
+
+Thus, it was decided that the approach should be a hybrid one of Waterfall and Agile. The project should begin with a strong set of requirements and there should be some up front design for parts of the project that are unlikely to change, such as the database schema. At the implementation stage, the project should switch to a business-driven, test-driven approach that utilises the best of the agile processes.
