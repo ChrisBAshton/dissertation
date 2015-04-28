@@ -1,6 +1,6 @@
-\chapter{Testing} 
+\chapter{Testing}
 
-SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Clients need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
+SmartResolution is an open-source platform being marketed to those wanting to provide ODR services, and as such it is very important that the platform itself is thoroughly tested. Subscribers need to have confidence that the core platform works as it should, and module developers need to have confidence that the underlying system is robust enough to support their module. For these reasons, the core platform implementation was done alongside unit and integration tests throughout.
 
 In an ideal world, the same principles would have been applied to the Maritime Collision module and to the SmartResolution website and marketplace. However, developing the core platform in a test-driven way turned out to be quite a slow, methodical process - read more in the evaluation section - and I felt that doing the same for the lesser two components was a luxury I could not afford with an impeding deadline. Therefore, this section is mostly concerned with testing the core SmartResolution software.
 
@@ -191,7 +191,7 @@ The advantage of the refactored solution is that the models become pure: they no
 Changing object constructors to take arrays rather than database record IDs meant I could cut down test times significantly. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57.\footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} This information is summarised in comparison table~\ref{table:testTimes}. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
 
 \begin{table}[h!]
-\label{table:testTimes} 
+\label{table:testTimes}
 \begin{center}
 \begin{tabular}{ l | r | r | r | r | r}
   Stage in project & Unit tests & Assertions & Time taken (s) & UTPS & APS \\
@@ -225,7 +225,7 @@ $dispute->closeSuccessfully();
 $update->dispute($dispute);
 \end{lstlisting}
 
-Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. 
+Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record.
 
 This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party.
 
@@ -300,7 +300,7 @@ Another important thing to monitor with each commit is code quality, something t
 
 \section{User Testing}
 
-Whereas it is the software engineer's responsibility to ensure that the project is built right, it is the client's responsibility to ensure that the right project is built. Therefore, user testing with the client is critical.
+Whereas it is the software engineer's responsibility to ensure that the project is built right, it is the customer's responsibility to ensure that the right project is built. Therefore, user testing with the customer is critical.
 
 As has already been highlighted, the customer for this project was extremely busy and was unable to meet more than a couple of times. This made user-testing very difficult, but I tried my best to offer alternative options.
 

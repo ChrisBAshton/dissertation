@@ -7,18 +7,18 @@ As a reminder, the original requirements were identified as the following, to be
 \begin{enumerate}
 
     \item Find or build an Online Dispute Resolution platform
-    
+
     \item Tailor the platform towards maritime collision disputes
 
     \item Make the platform abstract, able to take a module of business logic
-    
+
     \item The maritime collision module should be able to retrieve the most similar historical cases
 
     \item The details of these historical cases should be fed back into the details of the current dispute, thereby influencing the court simulation
 
 \end{enumerate}
 
-The first three of these were the core requirements, but I distinctly remember that the fourth and fifth requirements were my own idea. The thought of making use of historical maritime collision cases excited me at the time and felt like a logical progression for the module. Both my supervisor and the client were happy to agree to make this a part of the requirements specification.
+The first three of these were the core requirements, but I distinctly remember that the fourth and fifth requirements were my own idea. The thought of making use of historical maritime collision cases excited me at the time and felt like a logical progression for the module. Both my supervisor and the customer were happy to agree to make this a part of the requirements specification.
 
 Over the course of the project, I was able to look beyond the specialised area of maritime law. The light bulb moment came when I considered the commercial viability of the project (see appendix~\ref{appendix:commercialViability}), particularly the comparison with WordPress' commercial model. It was then that I saw the big picture and realised that the success of the platform would depend entirely on its extensibility, its ease of use, its ease of development and its branding.
 
@@ -60,7 +60,7 @@ The important thing is not that SmartResolution is open-source, but that it is e
 
 The platform comes tightly integrated with the SmartResolution Marketplace, giving developers a public and legitimate means for distributing their modules. A large enough collection of quality modules - and a platform that supports the easy delivery of said modules - can be a catalyst for rapid growth, as demonstrated with Google's Android software, Apple's App Store, or indeed, WordPress' Plugin Directory.
 
-To summarise, I think that simple disputes between two people and almost all disputes related to e-commerce are well suited to Modria's hosted ODR platform. Specialised disputes, and any disputes that require the representation of clients through lawyers, are best suited to the SmartResolution ODR platform.
+To summarise, I think that simple disputes between two people and almost all disputes related to e-commerce are well suited to Modria's hosted ODR platform. Specialised disputes, and any disputes that require the representation of the aggrieved through lawyers, are best suited to the SmartResolution ODR platform.
 
 \section{Time management}
 
@@ -68,7 +68,7 @@ To recap, the Gantt chart in figure~\ref{uml:gantt} shows both the intended and 
 
 The most striking difference is probably the changing of the self-imposed deadline. Whereas the original plan had me working right up until the beginning of May, I realised later on in the project that the report would be a substantial effort of work and would also require time to print and bind, so aimed to be code-complete by the middle of April. This significantly reduced the number of weeks I'd planned to use for the development of the project.
 
-Another noticeable difference is the amount of time spent on the core platform. I had intended to complete the core platform in just one month, but it ended up taking about 50\% longer than expected. I put this down to being overly ambitious with my expectations, not being able to find an open source base to build upon, and disciplining myself to develop in a strictly TDD fashion. This is discussed in detail in the next section.
+Another noticeable difference is the amount of time spent on the core platform. I had intended to complete the core platform in just one month, but it ended up taking about 50\% longer than expected. I put this down to being overly ambitious with my expectations, not being able to find an open-source base to build upon, and disciplining myself to develop in a strictly TDD fashion. This is discussed in detail in the next section.
 
 The very deliverables of the project also changed as time went on: there was a lower emphasis on the maritime collision module itself and more emphasis on the platform surrounding and supporting the module.
 
@@ -124,7 +124,7 @@ Currently, there is nothing clever regarding putting modules on the SmartResolut
 
 This is something I would want to automate in the future, perhaps providing an upload interface which takes a GitHub repository URL and zips up the contents automatically. However, the manual process currently in place does at least give me the advantage of being able to check the code and make sure that there is nothing insidious about its contents before making it available on the marketplace.
 
-A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org where corporations pay a subscription for their SmartResolution instance to be accessible at their own subdomain of the SmartResolution website.
+A more exciting feature I would have liked to have added is inspired by Modria: hosted ODR. It is perfectly feasible to have a corporate ODR service hosted on smartresolution.org where corporations pay a subscription for their SmartResolution installation to be accessible at their own subdomain of the SmartResolution website.
 
 \subsection{SmartResolution}
 

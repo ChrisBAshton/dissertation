@@ -1,8 +1,8 @@
-\chapter{Design} % 
+\chapter{Design}
 
 To recap, this project used a hybrid approach of a plan-driven methodology followed by an agile implementation. The design stage is where the first methodology began to merge into the other.
 
-A lot of time was invested in clarifying requirements so that the common classes and methods could be established and fed into parts of the initial design. Certain aspects of the design, such as the database schema, were worth spending time creating and could be designed up front, since they were unlikely to change unless there was a change in requirements. Other aspects such as class diagrams would not be suitable for upfront design, since the code would be refactored throughout the process and would ultimately fall out of line with the documentation.
+A lot of time was invested in clarifying requirements so that the common classes and methods could be established and fed into parts of the initial design. Certain aspects of the design, such as the database schema, were worth spending time creating and could be designed up front, since they were unlikely to change unless there was a change in requirements. Other aspects such as class diagrams would not be suitable for up front design, since the code would be refactored throughout the process and would ultimately fall out of line with the documentation.
 
 \section{Development choices}
 
@@ -20,7 +20,7 @@ With my suite of Cucumber features, I needed a set of accompanying step definiti
 
 It was hoped that there would be an existing open-source ODR platform upon which to base the project. One would have been able to make the necessary modifications and extensions to support the maritime collision module without having to build the entire platform from scratch, thus allowing more time to be spent on the maritime collision module.
 
-Unfortunately, even after fairly extensive research (see appendix~\ref{appendix:buildingUponExistingSystems}), I was unable to find an existing ODR platform that was not proprietary. Most ODR providers, be they service or platform providers, charge a subscription or one-off fee and would be at a commercial disadvantage if they were to go open source.
+Unfortunately, even after fairly extensive research (see appendix~\ref{appendix:buildingUponExistingSystems}), I was unable to find an existing ODR platform that was not proprietary. Most ODR providers, be they service or platform providers, charge a subscription or one-off fee and would be at a commercial disadvantage if they were to go open-source.
 
 Without an existing ODR platform to base the project upon, there was no option but to develop the core platform from scratch.
 
@@ -44,9 +44,9 @@ The project can be broken down into three main components:
 
 \begin{enumerate}
     \item \textbf{Core platform}, AKA SmartResolution. The majority of the project was spent developing this ODR platform.
-    
+
     \item \textbf{Maritime collision module}. This is a module for the SmartResolution software that defines a `Maritime Collision' dispute type and offers custom actions and business logic for these specialised cases.
-    
+
     \item \textbf{SmartResolution Website}. The website should describe how to download and install the core platform. It should also offer a `marketplace' option to facilitate the download and installation of modules directly through a SmartResolution installation.
 \end{enumerate}
 
@@ -72,15 +72,15 @@ The commercial viability of the software (analysed in appendix~\ref{appendix:com
 
 \begin{enumerate}
     \item \textbf{WordPress platform}: blogging software that can be downloaded, installed and hosted on your own server.
-    
+
     \item \textbf{WordPress plugin}: a self-contained package that can be installed to a WordPress installation and augment the core installation with additional functionality.
-    
+
     \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website, accessible directly through your own WordPress installation, allowing the painless and automatic installation of plugins. This facility is tightly coupled to the administrative functions in the core software. Administrators are able to browse, download and install plugins from wordpress.org, from within the WordPress installation itself.
 \end{enumerate}
 
 These three tiers map to the SmartResolution core platform, the maritime collision module and the SmartResolution Marketplace respectively.
 
-Some developers can be quite narrow-minded about WordPress, but it is a platform that powers 23\% of the internet.~\cite{wordpressPopular} The reasons for this are that it is open source, customisable with a choice of thousands of themes and plugins, and the developer documentation is very good. The brand is reliable: people trust it. I will try to emulate all of this as much as possible in the development of SmartResolution.
+Some developers can be quite narrow-minded about WordPress, but it is a platform that powers 23\% of the internet.~\cite{wordpressPopular} The reasons for this are that it is open-source, customisable with a choice of thousands of themes and plugins, and the developer documentation is very good. The brand is reliable: people trust it. I will try to emulate all of this as much as possible in the development of SmartResolution.
 
 \section{Choice of Licenses}
 
@@ -96,7 +96,7 @@ WordPress and Drupal believe strongly that any plugins or themes are classed as 
 
 One of the four freedoms~\cite{fourFreedoms} enabled by the GPL is ``the freedom to redistribute copies", so anybody who purchases a premium WordPress plugin is able to redistribute the plugin for free. I found it difficult to understand how WordPress' premium plugins were able to be sold at all, given that they were bound to the terms of the GPL. Chris Lema suggested a number of explanations in his blog post~\cite{chrisLema}, mainly alluding to the fact that plugins which are bought legitimately tend to get free updates, bug fixes and support for a specific period of time.
 
-I have kept the source-code for smartresolution.org private and all of its contents are under my copyright. I saw no advantage in making the website open source, since I'm not encouraging anybody to download and re-use the website itself.
+I have kept the source-code for smartresolution.org private and all of its contents are under my copyright. I saw no advantage in making the website open-source, since I'm not encouraging anybody to download and re-use the website itself.
 
 \section{Design: SmartResolution}
 
@@ -141,7 +141,7 @@ This section of work is separate from the maritime collision module work, and is
 
 Taking inspiration from WordPress' Plugin API, the project uses the concept of `hooks'. WordPress fires events at various points throughout the normal running of a WordPress installation; these events can be subscribed to and a custom function executed to achieve some arbitrary purpose.
 
-For example, below is the \lstinline{add_filter} function: 
+For example, below is the \lstinline{add_filter} function:
 
 \begin{lstlisting}
 add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
@@ -199,11 +199,11 @@ Not only does this decouple the module/SmartResolution interaction, but this is 
 
 This was the most difficult area to tackle, as it raises important security issues. Hooking into events and changing the rendering may break aspects of the SmartResolution functionality if the developer is not careful, but these are usually temporary and reversible. Interacting with the database, however, introduces persistent changes and can do much more damage. If the system allowed arbitrary SQL queries and an uncareful developer accidentally executed a \lstinline{DROP TABLE} statement, all manner of data could be lost.
 
-On the one hand, the system has to trust developers. Regardless of the database access methods explicitly exposed by the underlying system, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open source and the developer can easily find out what system-level classes are available. At an even lower level, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function and executing any command they wish.
+On the one hand, the system has to trust developers. Regardless of the database access methods explicitly exposed by the underlying system, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open-source and the developer can easily find out what system-level classes are available. At an even lower level, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function and executing any command they wish.
 
 The system should trust developers, but it should not trust developers to write perfect code. Though most developers would use an SQL-execution ability only for querying the database for a legitimate reason, they may expose a vulnerability if not thoroughly tested. For example, if they're writing a search engine module which takes a user input, and if they do not sanitise the query, then they're letting the \emph{end user} run arbitrary SQL.
 
-With security in mind, it was decided that the global function definitions should be expanded to define functions supporting specific SQL interactions, e.g. creating tables, selecting rows, updating records, and so on. Early on it was tempting to allow table schema updates on the fly, creating columns as and when they were needed, but this felt dangerous and was tricky to implement. I settled on an up-front table design solution by way of a \lstinline{declare_table} function:
+With security in mind, it was decided that the global function definitions should be expanded to define functions supporting specific SQL interactions, e.g. creating tables, selecting rows, updating records, and so on. Early on it was tempting to allow table schema updates on the fly, creating columns as and when they were needed, but this felt dangerous and was tricky to implement. I settled on an up front table design solution by way of a \lstinline{declare_table} function:
 
 \begin{lstlisting}
 declare_table('my_table', array(
@@ -221,7 +221,7 @@ Most modules will require some sort of persistence layer to be useful, but devel
 
 \section{Design: SmartResolution Marketplace}
 
-Early versions of SmartResolution used a PHP array to describe which modules were installed and whether or not they were active. A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution instance, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
+Early versions of SmartResolution used a PHP array to describe which modules were installed and whether or not they were active. A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution installation, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
 
 To accomplish this, there is a JSON feed of featured modules on smartresolution.org\footnote{The JSON feed is viewable at \url{http://smartresolution.org/marketplace/feed}}. This feed is pulled in and converted to HTML, both directly on the marketplace itself\footnote{The human-friendly marketplace is available at \url{http://smartresolution.org/marketplace}} and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its plugins.\footnote{WordPress' plugin directory can be viewed both directly online (at \url{https://wordpress.org/plugins/}) and indirectly through one's own installation of WordPress.}.
 
@@ -229,7 +229,7 @@ From the admin dashboard on SmartResolution, the modules JSON feed is converted 
 
 In addition to the `Marketplace' admin option, there is a `Modules' option which lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution installation.
 
-The ability to define which modules to display externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution installations, irrespective of when the instance was installed. This presents a commercial opportunity, allowing smartresolution.org to categorise paid-for modules as `featured', as hinted by the ``Coming soon" modules for Divorce and Breach of Contract.
+The ability to define which modules to display externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution installations, irrespective of when SmartResolution was installed. This presents a commercial opportunity, allowing smartresolution.org to categorise paid-for modules as `featured', as hinted by the ``Coming soon" modules for Divorce and Breach of Contract.
 
 \section{Design: Maritime collision module}
 

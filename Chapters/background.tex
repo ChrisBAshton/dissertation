@@ -62,7 +62,7 @@ Again, this looks doable in theory, but how do we retrieve the most similar hist
 
 This and any other examples more complicated than simple e-commerce disputes highlight the void that still exists in the world of ODR. What seems to be missing is an ODR platform that allows developers to create and plug in arbitrary modules of logic. These could be custom built to be ideally suited to resolving a specific kind of dispute, in this case maritime collision disputes.
 
-Such a platform would probably also have to be open source, since the developer needs to be able to hook into events and/or functions exposed by the underlying platform. Modria is unlikely to ever offer plugin functionality as it would not make sense for it to go open-source. In the words of open-source advocate Eric Raymond, ``when the rent from secret bits is higher than the return from open source, it makes economic sense to be closed-source"~\cite{eric:catB}. It is unlikely that the return from independent peer-review would be more valuable than the subscriptions to Modria's closed-source platform on account of there being no alternative option. If Modria were open-source, subscribers would have the option instead to download and compile the source code onto their own servers, and Modria would lose out financially.
+Such a platform would probably also have to be open-source, since the developer needs to be able to hook into events and/or functions exposed by the underlying platform. Modria is unlikely to ever offer plugin functionality as it would not make sense for it to go open-source. In the words of open-source advocate Eric Raymond, ``when the rent from secret bits is higher than the return from open-source, it makes economic sense to be closed-source"~\cite{eric:catB}. It is unlikely that the return from independent peer-review would be more valuable than the subscriptions to Modria's closed-source platform on account of there being no alternative option. If Modria were open-source, subscribers would have the option instead to download and compile the source code onto their own servers, and Modria would lose out financially.
 
 \subsection{Maritime law}
 
@@ -81,7 +81,7 @@ These were the objectives clarified early on in the project, to be tackled incre
 \begin{enumerate}
 
     \item \textbf{To build an Online Dispute Resolution platform}. This is the minimum viable product, and is easily substantial enough to be a Major Project on its own, encompassing front-end development, back-end business logic and database integration.
-    
+
     \item For this Online Dispute Resolution to be \textbf{tailored to Maritime Collisions}, providing some sort of conclusion given the details of the dispute. As a worst-case scenario, this may mean hard-coding business logic, rules, database schemas, and so on, to fit with maritime collision properties.
 
     \item For this Online Dispute Resolution to be \textbf{an abstraction, able to take a module of business logic} (perhaps Maritime Collisions, perhaps something else). The aim was to bypass step 2 altogether to arrive at this stage, as it is important to keep the system abstract.

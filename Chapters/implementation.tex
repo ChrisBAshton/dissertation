@@ -8,7 +8,7 @@ Dependencies such as F3 and PHPUnit were important for the implementation of the
 
 \section{SmartResolution directory structure}
 
-As the implementation followed an agile methodology, the design evolved over time and thus, the directory structure could not be determined up-front. Most (but not all) of the key directories and folders are outlined below:
+As the implementation followed an agile methodology, the design evolved over time and thus, the directory structure could not be determined up front. Most (but not all) of the key directories and folders are outlined below:
 
 \begin{minipage}{\textwidth}
 \dirtree{%
@@ -106,7 +106,7 @@ Finally, disputes have a \emph{mediation state}: that is, a dispute may or may n
 
 Every dispute should have a lifespan. This becomes somewhat complicated, since a lifespan can be proposed by either party, must be agreed by both parties, must only be applied between the start and end points of a lifespan, and can be renegotiated at any time.
 
-With this in mind, every dispute can be said to have two lifespans: the `current' and `latest' lifespans. Figure~\ref{uml:lifespan} highlights the difference between the two. 
+With this in mind, every dispute can be said to have two lifespans: the `current' and `latest' lifespans. Figure~\ref{uml:lifespan} highlights the difference between the two.
 
 \begin{figure}[h!]
   \centering
@@ -196,13 +196,13 @@ If and when an event is emitted by a class in the SmartResolution core platform,
 \begin{lstlisting}
 	if the event is dispute-agnostic:
 	    call the subscribed function
-	
+
 	else if the event DOES rely on a dispute:
 	    if the subscribed function module name matches the current dispute's type:
 	        call the subscribed function
 \end{lstlisting}
 
-This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module"). 
+This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module").
 
 \section{Demonstration of module implementation}
 
