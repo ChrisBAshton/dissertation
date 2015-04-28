@@ -1,6 +1,6 @@
 \chapter{Building upon existing systems}\label{appendix:buildingUponExistingSystems}
 
-There is definitely a trade-off to be considered when using existing software. On the one hand, there is a learning curve: it takes a long time to find your way around the codebase and learn the purpose of each file.
+There is definitely a trade-off to be considered when using existing software. In using frameworks, there is a learning curve: it takes a long time to find your way around the codebase and learn the purpose of each file.
 
 In addition to a big learning curve, it can be difficult to place the blame if you encounter a bug:
 
@@ -18,27 +18,23 @@ Early on in my investigations I discovered Emcod; ``an innovative project which 
 
 I had hoped to use it as a basis for my Major Project, but on closer inspection it was very unclear what the code actually does! According to the website, Emcod ``allows providers of Online dispute resolution to measure the costs and quality of their services". How it does this is unclear, but it does suggest that the software does not actually provide the online dispute resolution process itself.
 
-The website itself is poor. Though there are some installation instructions and a download to the source code, there are two items of text that look like links (and presumably were intended to become links one day) – these are `User manual' and `Watch video'. I thought it would be a worthy investment of time to at least try and get the software up and running (as I have access to my own cloud LAMP server) to see if it would meet my needs.
+The website itself is poor. Though there are some installation instructions and a download to the source code, there are two items of text that look like links (and presumably were intended to become links one day) - these are `User manual' and `Watch video'. I thought it would be a worthy investment of time to at least try and get the software up and running (as I have access to my own cloud LAMP server) to see if it would meet my needs.
 
-An alternative open source framework to begin with is HumHub – a ``Flexible, Open Source Social Network Kit". ODR platforms aren't social networks, but there are aspects of social activity such as dispute timelines, private communication, `groups' of Agents in the same network (their Law Firm), and so on. Also, additional functionality such as file upload facilities and user authorisation would be useful modules to reuse.
+Emcod was nice and easy to install, and handled login nicely. However, sure enough, this didn't look like online dispute resolution software. It is madness that I had to install the software to actually find out what it does. It was a long shot, but unfortunately this was not a suitable framework to build upon.
+
+An alternative open source framework to begin with is HumHub; a ``Flexible, Open Source Social Network Kit". ODR platforms aren't social networks, but there are aspects of social activity such as dispute timelines, private communication, `groups' of Agents in the same network (their Law Firm), and so on. Also, additional functionality such as file upload facilities and user authorisation would be useful modules to reuse.
 
 One of the pluses of HumHub, according to its website, is its flexibility. ``With a powerful module system you can extend HumHub by using third party tools, writing your own or connect existing software", so it should be possible to plug in all manner of functionality.
 
-Emcod was nice and easy to install, and handled login nicely. However, sure enough, this didn't look like online dispute resolution software.
+HumHub, like Emcod, was nice and easy to install. It has a concept of `spaces': groups where there is a central board everyone in the space can write to. This could be the basic underpinning of dispute communication, if I could programmatically generate spaces.
 
-It is madness that I had to install the software to actually find out what it does. It was a long shot, but unfortunately this was not a suitable framework to build upon.
+HumHub has a modular system such that you can install and uninstall modules freely, and develop your own. It may be possible to hook into rendering functions and so on, and add disputes as a function.
 
-HumHub, again, was nice and easy to install. It has a concept of `spaces', effectively groups where there is a central board everyone in the space can write to. This could be the basic underpinning of dispute communication, if I could programmatically generate spaces.
+There's no getting around the fact that HumHub was not intended to be an ODR platform. But what it DOES do for us is handle authorisation, authentication, profile management, and so on, so could be worth considering further. Its repository is very active, and well documented, though there is a large backlog of issues.
 
-HumHub has a modular system such that you can install and uninstall modules freely, and develop your own. I may be able to hook into rendering functions and so on, and add disputes as a function.
+I needed to balance whether or not it is worth pursuing HumHub.
 
-There’s no getting around the fact that HumHub was not intended to be an ODR platform. But what it DOES do for us is handle authorisation, authentication, profile management, and so on, so could be worth considering further.
-
-Its repository is very active, and well documented, though there is a large backlog of issues.
-
-I need to balance whether or not it is worth pursuing HumHub.
-
-HumHub – Advantages:
+\textbf{HumHub - Advantages:}
 
 \begin{itemize}
     \item Actively maintained
@@ -54,14 +50,14 @@ HumHub – Advantages:
 \end{itemize}
 
 
-HumHub – Disadvantages:
+\textbf{HumHub - Disadvantages:}
 
 \begin{itemize}
-    \item A lot needs to be changed – e.g. "liking" evidence is not appropriate!
+    \item A lot needs to be changed – e.g. ``liking" evidence is not appropriate!
     \item Although developed modularly, it may not provide enough hooks for all the functionality I'll need to develop
     \item Large codebase to get to grips with, therefore a large learning curve
     \item No getting away from the fact that the purpose of this software is fundamentally different to ODR platforms.
-    \item We don't want to be locked into third-party consumerist bubble.
+    \item We don't want to be locked into a third-party consumerist bubble.
     \item Release under the AGPL license restricts what we can do with our codebase (i.e. we cannot stay closed-source).
 \end{itemize}
 
