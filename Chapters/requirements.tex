@@ -2,13 +2,13 @@
 
 \section{Project Development Methodology}
 
-Before delving into requirements analysis, it was important to decide upon a project development methodology, since the emphasis on the requirements (and the approach taken) differs according to the methodology chosen.
+Before delving into requirements analysis, it was important to decide upon a project development methodology, since the approach taken to gather the requirements differs according to the methodology chosen.
 
-After some consideration (discussed in appendix~\ref{appendix:methodology}), it was decided that the approach should be a hybrid one of Waterfall and Agile. The project should begin with a strong set of requirements and there should be some up front design for parts of the project that are unlikely to change, such as the database schema. At the implementation stage, the project should switch to a business-driven, test-driven approach that utilises the best of the agile processes.
+After some consideration (discussed in appendix~\ref{appendix:methodology}), it was decided that the approach should be a hybrid one of Waterfall and Agile. The project should begin with a strong set of requirements and there should be some up front design for parts of the project that are unlikely to change, such as the database schema. At the implementation stage, the project should switch to a test-driven approach that utilises the best of the agile processes.
 
 \section{Roles}
 
-Simple ODR platforms targeted towards e-commerce disputes typically involve just a buyer and a seller. Our ODR platform is intended to be applied to criminal law, thus having four main roles:
+Simple ODR platforms targeted towards e-commerce disputes typically involve just a buyer and a seller. Our ODR platform is intended to be applied to criminal law and thus has four main roles:
 
 \begin{itemize}
 \item \textbf{Law Firm} - registered to the system by an authorised individual (such as managing director). A Law Firm can have many Agents.
@@ -19,7 +19,7 @@ Simple ODR platforms targeted towards e-commerce disputes typically involve just
 
 \section{Use cases}
 
-A good place to begin was to create various use case diagrams representing the roles in the system and the actions they ought to be able to perform. By doing so, it would also be possible to derive common classes and actions by examining similar or duplicating use case scenarios. These use cases were derived from early meetings with the customer and other stakeholders, where the question of how the process of online dispute resolution should be applied was discussed in detail.
+A good place to begin was to create various use case diagrams representing the roles in the system and the actions they ought to be able to perform. By doing so, it would also be possible to derive common classes and actions by examining similar or duplicating use case scenarios. These use cases were derived from early meetings with the customer and other stakeholders.
 
 \subsection{Registration}
 
@@ -66,9 +66,7 @@ Should it be required, an agent can propose mediation, and there is a defined pr
   \label{uml:useCase:miscellaneous}
 \end{figure}
 
-Other, lesser elements of functionality are shown in the miscellaneous use case diagram in figure~\ref{uml:useCase:miscellaneous}. For example, agents should be able to peruse a mediator's CV before making a decision as to which mediator to opt for; this suggests the need for a ``view profile" facility with custom fields for the CV, which could be as simple as a HTML textarea or as complicated as an integrated PDF uploader and viewer.
-
-Given the tight deadline of the project and the scale of the system, coupled with the high priority of demonstrating some maritime collision logic, it was decided that these miscellaneous features should be kept as simple as possible.
+Other, lesser elements of functionality are shown in the miscellaneous use case diagram in figure~\ref{uml:useCase:miscellaneous}. For example, agents should be able to peruse a mediator's CV before making a decision as to which mediator to opt for; this suggests the need for a ``view profile" facility with custom fields for the CV, which could be as simple as a HTML textarea or as complicated as an integrated PDF uploader and viewer. Given the tight deadline of the project and the scale of the system, it was decided that these miscellaneous features should be kept as simple as possible.
 
 \section{Dispute process}
 
@@ -94,17 +92,15 @@ The activity diagram in figure~\ref{uml:activity:dispute} shows the creation of 
   \label{uml:activity:mediation}
 \end{figure}
 
-Through the requirements-gathering process it became clear that the end-to-end lifecycle of even a simple dispute is actually quite complicated. I later developed a webpage, ``How does SmartResolution work?", to help explain the process of a dispute. The complete workflow can be found in appendix~\ref{appendix:workflow}. If the process of creating a dispute or putting a dispute into mediation is still unclear, it is recommended that you read and understand the contents of appendix~\ref{appendix:workflow} before continuing.
+Through the requirements-gathering process it became clear that the end-to-end lifecycle of even a simple dispute is actually quite complicated. I later developed a webpage, ``How does SmartResolution work?", to help explain the process of a dispute. The complete workflow can be found in appendix~\ref{appendix:workflow}. If the dispute-creation or mediation process is still unclear, it is recommended that you read and understand the contents of appendix~\ref{appendix:workflow} before continuing.
 
 \section{Features}
 
-Following on from the use case diagrams, it was critical to explicitly define the project requirements in a textual way. In a traditional Waterfall model, a requirements specification is a key deliverable created at the beginning of the process, whereas in an agile model, features are represented as user stories which are then estimated, prioritised and tackled incrementally. My approach to textualising requirements is a compromise between plan-driven and agile approaches. In this project, I specified requirements in the form of Cucumber features.
+Following on from the use case diagrams, it was critical to explicitly define the project requirements in a textual way. In a traditional Waterfall model, a requirements specification is a key deliverable created at the beginning of the process, whereas in an agile model, features are represented as user stories which are then estimated, prioritised and tackled iteratively. My approach to textualising requirements is a compromise between plan-driven and agile approaches. In this project I specified requirements in the form of Cucumber features, which are executable in a BDD way that lends itself perfectly to the agile practices of TDD and CI.
 
-In agile approaches, user stories should be the simplest thing to make everyone in the room agree that there is a placeholder for something that needs to be done. In plan-driven approaches, requirements are specified by way of a fully comprehensive report in the form of a detailed requirements specification. Cucumber features are the middle ground: more detailed than user stories, but executable in a BDD approach that lends itself perfectly to the agile practices of TDD and CI.
+BDD, or business-driven development, allows you to write executable features in a human-readable way so that a business analyst is able to understand the requirements but does not need to know the technical implementation. The features follow a convention known as the Gherkin syntax so that each feature step can be matched to a corresponding step definition represented in code, allowing automated end-to-end testing.
 
-BDD, or business-driven development, allows you to write features in a human-readable way so that a business analyst is able to understand the requirements but does not need to know the technical implementation. The features follow a convention known as the Gherkin syntax so that each feature step can be matched to a corresponding step definition represented in code. This makes the features executable and allows automated end-to-end testing.
-
-Appendix~\ref{appendix:requirements} contains the full set of Cucumber features, which form the basis of the requirements specification. They're more useful than a traditional specification as they can be `run' to ensure that the requirements have been met. The nature of these being a part of the codebase means that they can evolve over time, which is simultaneously an advantage and a disadvantage. For this reason, appendix~\ref{appendix:requirements} contains the set of original signed-off features plus the final set of features as they now stand at the end of the project.
+Appendix~\ref{appendix:requirements} contains the full set of Cucumber features, which form the basis of the requirements specification. The nature of these being a part of the codebase means that they can evolve over time, which is simultaneously an advantage (for always being in line with the implementation) and a disadvantage (for allowing ``requirements creep"). Therefore, appendix~\ref{appendix:requirements} contains the set of original signed-off features plus the final set of features as they now stand at the end of the project.
 
 \section{Development Methodology versus Project Management}
 
@@ -121,12 +117,12 @@ Given that the first half of the project would be plan-driven and that significa
   \label{uml:gantt}
 \end{figure}
 
-The Gantt chart in figure~\ref{uml:gantt} shows two timelines. The time periods in blue represent the original Gantt chart I intended to follow for this project. The time periods in orange represent what actually happened over the course of the project. The reasons for the disparities between the two are discussed in the evaluation section.
+The Gantt chart in figure~\ref{uml:gantt} shows two timelines. The time periods in blue represent the original Gantt chart I intended to follow for this project. The time periods in orange represent what actually happened over the course of the project. The reasons for the disparities between the two are discussed in section~\ref{chapter:evaluation}.
 
 \section{SmartResolution}
 
-The report thus far has discussed the project in the form of two main components: the core ODR platform, and the maritime collision module. Realistically, a third component was required: a vendor website. At the very least, this website would host the core software and provide instructions on how to install it onto a server. Additionally, it should host the maritime collision module and provide instructions describing how to install it onto the core platform.
+The report thus far has discussed the project in the form of two main components: the core ODR platform and the maritime collision module. Realistically, a third component was required: a vendor website. This website would host the core software and provide instructions on how to install it onto a server.
 
 If developers were to be excited enough about ODR to develop modules of functionality like the maritime collision module, then this project would require a brand. I felt that the term `SmartResolution' embodied what the ODR platform was all about: online dispute resolutions done in a smart way by interpreting disputes using artificial intelligence to automatically suggest resolutions. SmartResolution is the term I'll use to refer to the core platform from this point onwards.
 
-Far from being just an information resource, I hoped that the SmartResolution website would also provide a facility to download and install SmartResolution modules directly through the SmartResolution installation itself, a little like downloading an app to an Android device directly through the Google Play store. Originally just an idea, this later fed into the revised requirements and was implemented towards the end of the project.
+Far from being just an information resource, the SmartResolution website would later provide a facility to download and install SmartResolution modules directly through the SmartResolution installation itself, a little like downloading an app to an Android device directly through the Google Play store. The `SmartResolution Marketplace' was implemented towards the end of the project.
