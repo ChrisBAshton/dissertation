@@ -6,7 +6,9 @@ Early on in the project implementation, a few days were spent setting up and uti
 
 Dependencies such as F3 and PHPUnit were important for the implementation of the project, but they should not exist in the project repository. They also should not add unnecessary complexity to the installation instructions, as developers shouldn't have to manually fulfil each project dependency. For these reasons, I utilised Composer: a dependency manager for PHP which makes it easy for me to specify the project dependencies whilst also making it easy for other developers to install those dependencies. For the same reasons, I utilised RubyGems to specify the Ruby dependencies for the Ruby and Cucumber tests.
 
-Finally, I utilised the CodeClimate code-monitoring service for an automated second opinion on my code, as well as the Gemnasium dependency-monitoring service to warn me whenever my project's dependencies were out of date. All of these third-party services were well worth spending time configuring and have ensured that the core software is always of a high quality.
+Dependency tracking is important, as newer versions of dependencies fix bugs and vulnerabilities discovered in older versions. By not updating SmartResolution's dependencies regularly I would risk crackers being able to exploit unpatched vulnerabilities. This is especially relevant since SmartResolution is open-source and anybody can see which version of which third-party library SmartResolution is using. For these reasons, I signed up to the Gemnasium dependency-monitoring service, which warns me whenever my project's dependencies are out of date.
+
+An important thing to monitor with each commit is code quality, something that CodeClimate is trying to automate. Whenever I push a commit to SmartResolution, CodeClimate queues a scan of the codebase and informs me on a level of 1-4 whether the quality of my codebase has improved or deteriorated, using metrics such as variable name length, code duplication, the number of possible paths through a block of code, and so on. Utilising this third-party service helped fight the temptation to hack a bit of functionality in, instead encouraging good engineering practice and providing suggestions as to how the codebase could be made more maintainable.
 
 \section{SmartResolution directory structure}
 
@@ -169,11 +171,13 @@ The early design had all models populated with an ID that corresponded to a row 
 
 The decision was made to implement the models like this to make life easier for the controllers. Let us examine this with some pseudo-code:
 
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language=php]
 // inside a controller
 $disputeID = getDisputeIDFromUrl();
 $dispute = new Dispute($disputeID);
 \end{lstlisting}
+\end{minipage}
 
 Inside the Dispute model, we had something like this:
 
@@ -193,6 +197,7 @@ The disadvantage of this implementation was that the models were made impure. Th
 
 Database querying was not restricted to the constructors; any side-effect functions\footnote{These are functions which perform some side-effect when called. The internal state of the object changes as a direct result of calling the function.} were also tightly coupled to the database. For example:
 
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language=php]
 // inside the Dispute model
 function closeSuccessfully) {
@@ -200,6 +205,7 @@ function closeSuccessfully) {
     $this->closed = true;
 }
 \end{lstlisting}
+\end{minipage}
 
 Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. The model was tightly coupled to the underlying table representation, and functions had to know how to update individual fields related to the object.
 
@@ -249,6 +255,8 @@ This large refactoring task perhaps hints at a broader problem: object-relationa
 
 \section{Controllers}
 
+Controllers can be split into two main types: handlers and database middleware. The handler in figure~\ref{uml:routing} is deduced by the routing file and is likely to be a controller in \lstinline{core/controller}. Handlers simply implement the behaviour seen in the use case diagrams in chapter~\ref{chapter:requirements} and, as such, a fully comprehensive class diagram was not deemed necessary. However, a demonstration of how these controllers work can be seen in figure~\ref{uml:controllers}.
+
 \begin{figure}[h!]
   \centering
     \ifimages
@@ -258,9 +266,6 @@ This large refactoring task perhaps hints at a broader problem: object-relationa
   \label{uml:controllers}
 \end{figure}
 
-Controllers can be split into two main types: handlers and database middleware. The handler in figure~\ref{uml:routing} is deduced by the routing file and is likely to be a controller in \lstinline{core/controller}. Handlers simply implement the behaviour seen in the use case diagrams in chapter~\ref{chapter:requirements} and, as such, a fully comprehensive class diagram was not deemed necessary. However, a demonstration of how these controllers work can be seen in figure~\ref{uml:controllers}.
-
-\begin{minipage}{\textwidth}
 Database middleware classes live in \lstinline{core/db} and handle the mapping between the models and the database. Each class fulfils a distinct database-querying need:
 
 \begin{itemize}
@@ -268,9 +273,8 @@ Database middleware classes live in \lstinline{core/db} and handle the mapping b
 \item \textbf{DBCreate.php} - responsible for creating the necessary rows in the database for a given object type.
 \item \textbf{DBGet.php} - retrieves array values from the database, given a row ID.
 \item \textbf{DBUpdate.php} - given an object, it finds the corresponding database entry and updates the values. Used for making object changes persistent.
-\item \textbf{DBQuery.php} - defines miscellaneous queries that would not be efficient or cohesive if encapsulated elsewhere. For example, \lstinline{getAllDisputes()} retrieves all disputes associated with a given account.
+\item \textbf{DBQuery.php} - defines miscellaneous queries that would not be efficient or cohesive if encapsulated elsewhere.
 \end{itemize}
-\end{minipage}
 
 \section{Module API implementation}
 
