@@ -4,7 +4,7 @@ My plan was always to use behaviour-driven development in my project, and I beli
 
 These are the original requirements, agreed and signed off by all of the project's stakeholders. % https://github.com/ChrisBAshton/smartresolution/tree/bac098fc049ab0654e242bc43040d7e11cf6c2c4/features
 
-\subsection{Account Creation}
+\section{Account Creation}
 
 \begin{lstlisting}
 Feature: Account Creation
@@ -56,7 +56,7 @@ Feature: Account Creation
   Scenario: Create Mediator account
 \end{lstlisting}
 
-\subsection{Dispute Creation}
+\section{Dispute Creation}
 
 \begin{lstlisting}
 Feature: Dispute creation
@@ -90,7 +90,7 @@ Feature: Dispute creation
     Then I should be able to allocate the Agent to the Dispute
 \end{lstlisting}
 
-\subsection{Dispute}
+\section{Dispute}
 
 \begin{lstlisting}
 Feature: Dispute (pre-Mediation)
@@ -128,7 +128,7 @@ Feature: Dispute (pre-Mediation)
   # I can also propose Mediation. See dispute_independent.feature "Start the Mediation Process"
 \end{lstlisting}
 
-\subsection{Dispute-Independent Features}
+\section{Dispute-Independent Features}
 
 \begin{lstlisting}
 Feature: Processes relevant to the Dispute but that are not dependent on the current state of the Dispute
@@ -145,7 +145,7 @@ Feature: Processes relevant to the Dispute but that are not dependent on the cur
     And the Dispute should close unsuccessfully
 \end{lstlisting}
 
-\subsection{Dispute Lifespan Negotiation}
+\section{Dispute Lifespan Negotiation}
 
 \begin{lstlisting}
 Feature: Negotiating a Dispute lifespan
@@ -174,7 +174,7 @@ Feature: Negotiating a Dispute lifespan
     And the Dispute should continue normally despite the renegotiation offer
 \end{lstlisting}
 
-\subsection{Putting a Dispute into Mediation}
+\section{Putting a Dispute into Mediation}
 
 \begin{lstlisting}
 Feature: Mediation
@@ -248,7 +248,7 @@ Feature: Mediation
     Then the Dispute should now be in Mediation Mode
 \end{lstlisting}
 
-\subsection{Dispute in Mediation}
+\section{Dispute in Mediation}
 
 \begin{lstlisting}
 Feature: Dispute (under Mediation)
