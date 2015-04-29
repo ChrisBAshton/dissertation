@@ -203,7 +203,7 @@ function closeSuccessfully) {
 
 Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. The model was tightly coupled to the underlying table representation, and functions had to know how to update individual fields related to the object.
 
-\subsection{Refactored solution}
+\subsection{Refactored solution}\label{subsection:refactoredSolution}
 
 The decision was made to change models to take an array of data rather than a database row ID, fully decoupling them from the database. The array of data may or may not have come from a database: the models have no concept of persistence.
 
