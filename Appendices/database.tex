@@ -18,7 +18,7 @@ I could have opted for an even more finely granulated table structure and separa
 
 This has the advantage of allowing more account types in future, by adding another allowed option to the CHECK constraint. All of my production-code queries, such as \lstinline{"SELECT * FROM individuals WHERE some condition AND account_type = :account_type"}, should still work right out of the box. If I'd gone for separate tables, however, I might have to go through all of my production code and add additional queries, e.g.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=python]
 
     if type == "mediator"
     

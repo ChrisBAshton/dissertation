@@ -143,7 +143,7 @@ Taking inspiration from WordPress' Plugin API, the project uses the concept of `
 
 For example, below is the \lstinline{add_filter} function:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 add_filter('img_caption_shortcode', 'my_img_caption_shortcode_filter',10);
 \end{lstlisting}
 
@@ -151,7 +151,7 @@ The first argument is the event to listen for, the second argument is the custom
 
 F3's routing API can extend this route-handling concept further:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 $f3->route('GET /some-route' => 'MyClass->handler');
 \end{lstlisting}
 
@@ -159,7 +159,7 @@ F3's routing allows the developer to assign handling to a public method of a cla
 
 These principles formed the basis for the design of the module support:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 on('event', 'function_to_call', 'priority');
 \end{lstlisting}
 
@@ -171,7 +171,7 @@ An event-subscription mechanism can only get you so far. One needs to be able to
 
 This could be accomplished by interacting with the core platform, as in the example below.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 global $dashboardActions;
 $item =  array(
     'title' => 'Some Action',
@@ -185,7 +185,7 @@ However, this encourages tight coupling between the module and the underlying pl
 
 Again, WordPress provided inspiration for the design. WordPress exposes a number of global functions, e.g. \lstinline{get_the_id}, which gets the ID of the current post. In this style, SmartResolution exposes a number of global functions. One could now manipulate the rendering of the dashboard like this:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 dashboard_add_item(array(
     'title' => 'Some Action',
     'image' => get_module_url() . '/images/icon.png',
@@ -205,7 +205,7 @@ The system should trust developers, but it should not trust developers to write 
 
 With security in mind, it was decided that the global function definitions should be expanded to define functions supporting specific SQL interactions, e.g. creating tables, selecting rows, updating records, and so on. Early on it was tempting to allow table schema updates on the fly, creating columns as and when they were needed, but this felt dangerous and was tricky to implement. I settled on an up front table design solution by way of a \lstinline{declare_table} function:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 declare_table('my_table', array(
     'a_text_field' => 'TEXT NOT NULL',
     'an_int_field' => 'INTEGER DEFAULT 0',

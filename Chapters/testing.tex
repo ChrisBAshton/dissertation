@@ -64,7 +64,7 @@ Often, we want to accomplish several things in one `transaction', for example, d
 
 Transactions are supported in PDO (PHP Data Objects) and in F3's wrapper for PDO, where we are able to define the start and end points of a transaction. The above example could be represented in code as follows, and if either query in the transaction fails, neither would be applied:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 $db->begin();
 $acc1->debit(400);
 $acc2->credit(400);
@@ -96,7 +96,7 @@ Eventually, I decided to spend some time investigating the issue. I deduced that
 Handling the transaction rollback in each raised exception would mean writing code like this:
 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 $db->begin();
 
 // several lines of code and database queries
@@ -120,7 +120,7 @@ $db->commit();
 This seemed laborious, error-prone and messy. Instead, I defined a custom exception function which throws an exception, but also rolls back any existing transactions.
 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
     public function throwException($message) {
         try {
             Database::instance()->rollback();
@@ -146,7 +146,7 @@ For example, the \lstinline{Message} class expected to be passed an ID to its co
 
 The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 // inside a controller
 $disputeID = getDisputeIDFromUrl();
 $dispute = new Dispute($disputeID);
@@ -155,7 +155,7 @@ $dispute = new Dispute($disputeID);
 Inside the Dispute model, we had something like this:
 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 function __construct($disputeID) {
     $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
     $this->title = $disputeDetails['title'];
@@ -170,7 +170,7 @@ Though the model was made a little impure due to the database connection object,
 
 Refactoring constructors to take arrays of data rather than IDs took some significant effort and meant extracting the database querying out of the models:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 // inside the Dispute model
 function __construct($disputeDetails) {
     $this->title = $disputeDetails['title'];
@@ -180,7 +180,7 @@ function __construct($disputeDetails) {
 
 The database query instead had to be moved to the controller;
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 $disputeID = getDisputeIDFromUrl();
 $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
 $dispute = new Dispute($disputeDetails);
@@ -210,7 +210,7 @@ Extracting the database retrieval out of the model also meant extracting the dat
 
 Beforehand, I had code like this inside my models:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 // inside the Dispute model
 function closeSuccessfully) {
     SomeDatabaseConnector::updateField('disputes', 'status', 'resolved', $this->disputeID);
@@ -219,7 +219,7 @@ function closeSuccessfully) {
 
 This was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 // inside the Dispute controller
 $dispute->closeSuccessfully();
 $update->dispute($dispute);

@@ -21,7 +21,7 @@ Matthew Daly's blog post~\cite{matthewDaly} about testing PHP web applications w
 I looked into Behat and found that, for me, the biggest reason to stay away was its syntax. Behat requires that you define your step definition as a concatenated function name. You also need to comment above the function declaration with metadata. This is the example in the Behat quick introduction:
 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 /**
 * @Given /^I am in a directory "([^"]*)"$/
 */
@@ -35,7 +35,7 @@ throw new PendingException();
 This just isn't as clean as Cucumber and Ruby:
 
 \begin{minipage}{\textwidth}
-\begin{lstlisting}
+\begin{lstlisting}[language=ruby]
 Given(/^I am in a directory (.+)$/) do |argument|
 # pending
 end

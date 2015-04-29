@@ -129,7 +129,7 @@ Separately from the `mediation state' is the higher level dispute state. A dispu
 
 In early versions of the project, the codebase began to get quite messy because classes throughout the system would manually determine a dispute's state to decide whether or not they could perform some action. This led to complicated \lstinline{if} statements, like the one below:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 if ($dispute->state() === 'Open' || $dispute->state() === 'InMediation' || $dispute->state() === 'NegotiatingLifespan') {
     doSomething();
 }
@@ -146,7 +146,7 @@ if ($dispute->state() === 'Open' || $dispute->state() === 'InMediation' || $disp
 
 Figure~\ref{uml:states} shows how the state pattern was adopted to overcome problems like this. Classes throughout SmartResolution could now query the dispute's state directly, as the responsibility of whether or not an action could be performed was encapsulated inside the state itself. The above example could thus be rewritten as follows:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=php]
 if ($dispute->state()->canDoSomething()) {
     doSomething();
 }
@@ -193,12 +193,12 @@ The most interesting API call is the publish-subscribe function \lstinline{on}, 
 
 If and when an event is emitted by a class in the SmartResolution core platform, any subscriptions to that event are retrieved. They are then iterated through and the following check is performed (demonstrated here in pseudocode):
 
-\begin{lstlisting}
+\begin{lstlisting}[language=python]
 	if the event is dispute-agnostic:
 	    call the subscribed function
 
 	else if the event DOES rely on a dispute:
-	    if the subscribed function module name matches the current dispute's type:
+	    if the subscribed function module name matches the type of the current dispute:
 	        call the subscribed function
 \end{lstlisting}
 
