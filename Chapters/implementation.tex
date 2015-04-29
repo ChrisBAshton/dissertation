@@ -1,10 +1,12 @@
 \chapter{Implementation}
 
-\section{Dependency management}
+\section{Third-party service configuration}
 
-Early on in the project implementation, a few days were spent setting up and utilising third-party services to cut down the labour costs of maintenance further on in the project's lifecycle. Even in the very early stages when SmartResolution had just one or two unit tests, time was spent configuring a Travis file so that the tests would automatically be run on Travis' CI platform after every pushed commit.
+Early on in the project implementation, a few days were spent setting up and utilising third-party services to cut down the costs of maintenance further on in the project's lifecycle. Even in the very early stages when SmartResolution had just one or two unit tests, time was spent configuring a Travis file so that the tests would automatically be run on Travis' CI platform after every pushed commit.
 
 Dependencies such as F3 and PHPUnit were important for the implementation of the project, but they should not exist in the project repository. They also should not add unnecessary complexity to the installation instructions, as developers shouldn't have to manually fulfil each project dependency. For these reasons, I utilised Composer: a dependency manager for PHP which makes it easy for me to specify the project dependencies whilst also making it easy for other developers to install those dependencies. For the same reasons, I utilised RubyGems to specify the Ruby dependencies for the Ruby and Cucumber tests.
+
+Finally, I utilised the CodeClimate code-monitoring service for an automated second opinion on my code, as well as the Gemnasium dependency-monitoring service to warn me whenever my project's dependencies were out of date. All of these third-party services were well worth spending time configuring and have ensured that the core software is always of a high quality.
 
 \section{SmartResolution directory structure}
 
@@ -28,11 +30,9 @@ As the implementation followed an agile methodology, the design evolved over tim
 .3 other/.
 .3 config.json.
 .2 uploads/.
+.2 .htaccess.
 .2 index.php.
 .2 routes.php.
-.1 .travis.yml.
-.1 composer.json.
-.1 Gemfile.
 }
 \end{minipage}
 
@@ -52,13 +52,7 @@ This folder also contains an \lstinline{api} directory, which defines all of the
 
 Going back up a level, we have \lstinline{webapp/modules}, which contains any installed SmartResolution modules, such as the maritime collision module. A \lstinline{config.json} file (generated in a user-friendly way through the admin dashboard) denotes which modules are installed and whether or not they are active.
 
-Finally, at the top level we have a few interesting files:
-
-\lstinline{.travis.yml} - an instructions file for Travis CI, describing how to set up the project and run its tests.
-
-\lstinline{composer.json} - describes SmartResolution's dependencies. Developers can install all dependencies simply by running \lstinline{composer install}.
-
-\lstinline{Gemfile} - describes SmartResolution's Ruby dependencies. Required for the Cucumber and Ruby integration tests.
+Finally, the \lstinline{.htaccess} server configuration file ensures that all HTTP requests are routed to \lstinline{index.php}, which is the driver for the application.
 
 \section{Routing}
 
@@ -88,7 +82,7 @@ The system was developed in an agile way, hence these class diagrams are not in 
 
 \subsection{Accounts}
 
-Let's begin at the top of the class diagram. The \lstinline{AccountInterface} defines the core methods which all account types need to implement, whether the account is a law firm, a mediator or even an administrator. These methods include \lstinline{getEmail()}, \lstinline{getLoginId()}, \lstinline{__toString()} and so on.
+The \lstinline{AccountInterface} defines the core methods which all account types need to implement, whether the account is a law firm, a mediator or even an administrator. These methods include \lstinline{getEmail()}, \lstinline{getLoginId()}, \lstinline{__toString()} and so on.
 
 Many of the methods in the interface will have the same implementation regardless of the account type. In these cases, the abstract class \lstinline{Account} defines the common implementations, but it does not implement the \lstinline{AccountInterface} interface since it cannot implement all of the methods for every account type.
 
@@ -96,11 +90,11 @@ The \lstinline{Organisation} and \lstinline{Individual} account types implement 
 
 \subsection{Disputes}
 
-Every fully instantiated dispute has two dispute parties, each of which is comprised of a law firm, an agent and a dispute summary. A dispute can have infinite items of evidence (uploaded by the agents) associated with it and infinite messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
+Every fully instantiated dispute has two dispute parties, each of which is comprised of a law firm, an agent and a dispute summary. A dispute can be associated with infinite items of evidence (uploaded by the agents) and infinite messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
 
 A dispute's type denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', which adds nothing to the core functionality of the system. However, with the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
 
-Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation. A dispute may also be somewhere in between, e.g. the agents have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the \lstinline{MediationState} class.
+Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation, or it may be somewhere in between. For example, the agents may have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the \lstinline{MediationState} class.
 
 \subsection{Lifespans}
 
@@ -121,13 +115,13 @@ The `current' lifespan is the most recent accepted Lifespan that has been attrib
 
 For most purposes, the `current' lifespan is what is required. This is the lifespan that has generally been agreed by both parties and is used for checking if a dispute is still ongoing before allowing an agent to send a message, for example.
 
-The `latest' lifespan ignores whether or not a lifespan has been accepted and retrieves the very latest lifespan proposal. This is required in special cases, such as in the rendering of the lifespan on the dispute dashboard, to highlight the fact that a new lifespan has been proposed and it needs to be accepted or declined.
+The `latest' lifespan ignores whether or not a lifespan has been accepted and retrieves the very latest lifespan proposal. This is required in special cases, such as in the rendering of the lifespan on the dispute dashboard, to highlight the fact that a new lifespan has been proposed and needs to be accepted or declined.
 
 \subsection{Dispute State}
 
 Separately from the `mediation state' is the higher level dispute state. A dispute is in a different state depending on whether or not all agents have been assigned, a lifespan has been negotiated, and so on. The state of the dispute dictates what actions are available to the parties involved.
 
-In early versions of the project, the codebase began to get quite messy because classes throughout the system would manually determine a dispute's state to decide whether or not they could perform some action. This led to complicated \lstinline{if} statements, like the one below:
+Early versions of the project began to get quite complicated because classes throughout the system would manually determine a dispute's state when deciding whether or not they could perform some action. This led to complicated queries like the one below:
 
 \begin{lstlisting}[language=php]
 if ($dispute->state() === 'Open' || $dispute->state() === 'InMediation' || $dispute->state() === 'NegotiatingLifespan') {
@@ -171,9 +165,9 @@ As can be seen in the class diagram in figure~\ref{uml:class}, most of these sta
 
 \subsection{Problem with original design}
 
-The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model. This behaviour is demonstrated in the routing visualisation in figure~\ref{uml:routing}.
+The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} constructor expected to be passed an ID corresponding to the database field \lstinline{messages.message_id}. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving the class-specific data (such as message content, author ID, etc) from the database. The returned array was then used to populate the model. This behaviour is suggested in the routing visualisation in figure~\ref{uml:routing}.
 
-The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
+The decision was made to implement the models like this to make life easier for the controllers. Let us examine this with some pseudo-code:
 
 \begin{lstlisting}[language=php]
 // inside a controller
@@ -193,11 +187,11 @@ function __construct($disputeID) {
 \end{lstlisting}
 \end{minipage}
 
-On the one hand, I could write simple code in the controllers that only had to worry about getting an object's ID, meaning I could chain method calls together; I could query objects and pass returned IDs into subsequent constructors to quickly and easily get the objects I needed.
+This implementation was advantageous insofar as I could write simple code in the controllers that only had to worry about getting an object's ID. This meant that I could chain method calls together, passing returned IDs into subsequent constructors to quickly and easily get the objects I needed.
 
-On the other hand, the models were made impure due to the database connection object. Though the models were somewhat decoupled from the database - all SQL queries were encapsulated in the intermediary database querying objects - they still had to know about the existence of the database and could not exist independently of a persistence layer. The original design also made the models quite difficult and slow to test.
+The disadvantage of this implementation was that the models were made impure. Though the models were somewhat decoupled from the database - all SQL queries were encapsulated in the intermediary database querying objects - they still had to know about the existence of the database, and they could not exist independently of a persistence layer.
 
-Database querying was not restricted to the constructors; any side-effect functions were also tightly coupled to the database. For example:
+Database querying was not restricted to the constructors; any side-effect functions\footnote{These are functions which perform some side-effect when called. The internal state of the object changes as a direct result of calling the function.} were also tightly coupled to the database. For example:
 
 \begin{lstlisting}[language=php]
 // inside the Dispute model
@@ -207,14 +201,15 @@ function closeSuccessfully) {
 }
 \end{lstlisting}
 
-Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. It was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields: functions had to know how to update individual fields related to the object.
+Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. The model was tightly coupled to the underlying table representation, and functions had to know how to update individual fields related to the object.
 
 \subsection{Refactored solution}
 
-The decision was made to change models to take an array of data rather than a database row ID, fully decoupling them from the database. The array of data may or may not have come from a database and the models have no concept of persistence.
+The decision was made to change models to take an array of data rather than a database row ID, fully decoupling them from the database. The array of data may or may not have come from a database: the models have no concept of persistence.
 
 Our earlier pseudocode examples can now be rewritten as:
 
+\begin{minipage}{\textwidth}
 \begin{lstlisting}[language=php]
 // inside the Dispute model
 function __construct($disputeDetails) {
@@ -227,14 +222,7 @@ $disputeID = getDisputeIDFromUrl();
 $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
 $dispute = new Dispute($disputeDetails);
 \end{lstlisting}
-
-Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
-
-\begin{lstlisting}[language=php]
-// inside the Dispute controller
-$dispute->closeSuccessfully();
-$update->dispute($dispute);
-\end{lstlisting}
+\end{minipage}
 
 \begin{figure}[h!]
   \centering
@@ -244,6 +232,16 @@ $update->dispute($dispute);
   \caption{Demonstration of how changes to the model are made persistent}
   \label{uml:modelUpdate}
 \end{figure}
+
+After extracting the database array retrieval out of the model, I extracted the database updating out of the model. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=php]
+// inside the Dispute controller
+$dispute->closeSuccessfully();
+DBUpdate::instance()->dispute($dispute);
+\end{lstlisting}
+\end{minipage}
 
 Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. This behaviour is demonstrated in figure~\ref{uml:modelUpdate}.
 
@@ -260,9 +258,9 @@ This large refactoring task perhaps hints at a broader problem: object-relationa
   \label{uml:controllers}
 \end{figure}
 
-Controllers can be split into two main types: handlers and database middleware. The `Handler' in figure~\ref{uml:routing} is deduced by the routing file and is likely to be a controller in \lstinline{core/controller}. Handlers simply implement the behaviour seen in the use case diagrams in chapter~\ref{chapter:requirements} and, as such, a fully comprehensive class diagram was not deemed necessary. However, a demonstration of how these controllers work can be seen in figure~\ref{uml:controllers}.
+Controllers can be split into two main types: handlers and database middleware. The handler in figure~\ref{uml:routing} is deduced by the routing file and is likely to be a controller in \lstinline{core/controller}. Handlers simply implement the behaviour seen in the use case diagrams in chapter~\ref{chapter:requirements} and, as such, a fully comprehensive class diagram was not deemed necessary. However, a demonstration of how these controllers work can be seen in figure~\ref{uml:controllers}.
 
-
+\begin{minipage}{\textwidth}
 Database middleware classes live in \lstinline{core/db} and handle the mapping between the models and the database. Each class fulfils a distinct database-querying need:
 
 \begin{itemize}
@@ -270,8 +268,9 @@ Database middleware classes live in \lstinline{core/db} and handle the mapping b
 \item \textbf{DBCreate.php} - responsible for creating the necessary rows in the database for a given object type.
 \item \textbf{DBGet.php} - retrieves array values from the database, given a row ID.
 \item \textbf{DBUpdate.php} - given an object, it finds the corresponding database entry and updates the values. Used for making object changes persistent.
-\item \textbf{DBQuery.php} - defines miscellaneous queries that would not be efficient or cohesive if encapsulated elsewhere, such as \lstinline{getAllDisputes()}, which retrieves all disputes associated with a given account.
+\item \textbf{DBQuery.php} - defines miscellaneous queries that would not be efficient or cohesive if encapsulated elsewhere. For example, \lstinline{getAllDisputes()} retrieves all disputes associated with a given account.
 \end{itemize}
+\end{minipage}
 
 \section{Module API implementation}
 
@@ -288,7 +287,9 @@ The design for the module API was discussed in the design section. This section 
 
 The configuration JSON file is edited through the admin dashboard using a user-friendly GUI: administrators can activate or deactive modules at the press of a button. This file maintains a list of all known modules in the installation and whether or not they are active.
 
-On every page load, \lstinline{config.php} is called. This iterates through the modules described in \lstinline{config.json} and loads the module's \lstinline{index.php} file, which contains the module declaration. All modules are pulled in regardless of their activity state, since the system still needs to know about them for the purposes of the admin dashboard. The activity state refers to whether or not the module definition function is executed: note that this is different to the module declaration function.
+On every page load, \lstinline{config.php} is called. This iterates through the modules described in \lstinline{config.json} and loads the module's \lstinline{index.php} file, which contains the module declaration. All modules are pulled in regardless of their activity state, since the system still needs to know about them for the purposes of the admin dashboard.
+
+Note that the module declaration function is different to the module definition function. The former is always executed, as it declares the module to the system. It \emph{contains} the module definition as an anonymous function which is only executed if the module is `active'.
 
 The module declaration function is defined in \lstinline{api.php} and in turn calls the \lstinline{registerModule} function in the \lstinline{ModuleController}. That function instantiates a new \lstinline{Module} object representing the module and then queries its activity state. If the module is active, its module definition function is called and the module is now hooked into all of the necessary events and global functions.
 
@@ -296,7 +297,7 @@ The module declaration function is defined in \lstinline{api.php} and in turn ca
 
 The module definition function contains calls to the module API. Some of these are top-level, such as defining custom routes: these are executed immediately.
 
-The most interesting API call is the publish-subscribe function \lstinline{on}, first discussed in the design section. This function calls the \lstinline{ModuleController->subscribe} function, which adds the callback function to an internal array of subscriptions. The position at which the subscription is added to the array is denoted by the priority of the subscription.
+The most interesting API call is the publish-subscribe function \lstinline{on}, first discussed in subsection~\ref{subsection:moduleSupport}. This function calls the \lstinline{ModuleController->subscribe} function, which adds the callback function to an internal array of subscriptions. The position at which the subscription is added to the array is denoted by the priority of the subscription.
 
 If and when an event is emitted by a class in the SmartResolution core platform, any subscriptions to that event are retrieved. They are then iterated through and the following check is performed (demonstrated here in pseudocode):
 
@@ -309,7 +310,7 @@ If and when an event is emitted by a class in the SmartResolution core platform,
 	        call the subscribed function
 \end{lstlisting}
 
-This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module").
+This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module"). An example of a dispute-dependent hook is described in the next subsection.
 
 \subsection{Demonstration of module implementation}
 
@@ -331,7 +332,7 @@ This means that SmartResolution supports both dispute-independent hooks (i.e. ``
   \label{screenshot:disputeMaritime}
 \end{figure}
 
-Figure~\ref{screenshot:dispute} is a screenshot of a dispute populated with fixture data. Contrast this with figure~\ref{screenshot:disputeMaritime}, which shows the same dispute but with the dispute type changed from `Other' to `Maritime Collision'. By doing so, when the dispute-dependent \lstinline{dispute_dashboard} event was fired, the maritime collision subscribed function was executed. Inside that function the \lstinline{dashboard_add_item} function was called, specifying the maritime collision icon, title and link.
+Figure~\ref{screenshot:dispute} is a screenshot of an example dispute. Contrast this with figure~\ref{screenshot:disputeMaritime}, which shows the same dispute but with the dispute type changed from `Other' to `Maritime Collision'. By doing so, when the dispute-dependent \lstinline{dispute_dashboard} event was fired, the maritime collision subscribed function was executed. Inside that function, the \lstinline{dashboard_add_item} function was called, specifying the maritime collision icon, title and link.
 
 \begin{figure}[h!]
   \centering
@@ -353,7 +354,7 @@ The dashboard item links through to the maritime collision landing page which di
   \label{screenshot:moduleMaritimeResults}
 \end{figure}
 
-When all of the questions have been answered, the module's AI interprets the answers to the questions according to maritime law and presents each agent with a personalised result, shown in figure~\ref{screenshot:moduleMaritimeResults}. Below the overall result is a summary of all of the questions asked and the answers provided by both agents.
+When all of the questions have been answered, the module's AI interprets the answers to the questions according to maritime law and presents each agent with a personalised result, shown in figure~\ref{screenshot:moduleMaritimeResults}. Underneath the overall result is a summary of all of the questions asked and the answers provided by both agents.
 
 \section{SmartResolution Marketplace}
 
@@ -367,9 +368,9 @@ Cloud computing as a web hosting service is becoming increasingly popular, Amazo
 
 AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia~\cite{aws:global}, making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
 
-Other alternatives exist, of course, such as Unlimited Web Hosting, which is a cloud web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
+Other alternatives exist, of course, such as Unlimited Web Hosting, which is a cloud-based web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
 
-Unlike Unlimited Web Hosting, AWS provides root access, and though other services also provide this facility (DigitalOcean, for example), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
+Unlike Unlimited Web Hosting, AWS provides shell access, and though other services also provide this facility (DigitalOcean, for example), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
 
 \subsection{Configuring the server}
 
@@ -386,7 +387,7 @@ At the point where an EC2 instance is started, a dynamic IP address is generated
 
 AWS offers an `Elastic IP' facility, which allows you to generate a permanent IP address and allocate it to an EC2 instance. This costs a little extra but is a necessary step to ensure the website is always locatable.
 
-Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address, so that browsers querying that domain name are redirected to the content at the IP address endpoint.
+Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address so that browsers querying that domain name are redirected to the content at the IP address endpoint.
 
 smartresolution.org was purchased through the domain registrar gandi.net and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux~\cite{aws:linux}, Apache, MySQL and PHP.
 
