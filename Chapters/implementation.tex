@@ -166,7 +166,10 @@ The list of possible states are as follows:
 
 As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions. Inheriting from this class means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
 
-\section{Problem with original design}
+\section{Refactoring to pure models}
+\label{section:refactoringToPureModels}
+
+\subsection{Problem with original design}
 
 The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model. This behaviour is demonstrated in the routing visualisation in figure~\ref{uml:routing}.
 
@@ -206,8 +209,7 @@ function closeSuccessfully) {
 
 Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. It was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields: functions had to know how to update individual fields related to the object.
 
-\section{Refactoring to pure models}
-\label{section:refactoringToPureModels}
+\subsection{Refactored solution}
 
 The decision was made to change models to take an array of data rather than a database row ID, fully decoupling them from the database. The array of data may or may not have come from a database and the models have no concept of persistence.
 
@@ -309,7 +311,7 @@ If and when an event is emitted by a class in the SmartResolution core platform,
 
 This means that SmartResolution supports both dispute-independent hooks (i.e. ``call this function when this event is emitted") and dispute-dependent hooks (i.e. ``call this function when this event is emitted, but only if the dispute emitting this event is the same type as the name of this module").
 
-\section{Demonstration of module implementation}
+\subsection{Demonstration of module implementation}
 
 \begin{figure}[h!]
   \centering
