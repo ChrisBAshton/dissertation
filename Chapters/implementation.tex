@@ -166,6 +166,78 @@ The list of possible states are as follows:
 
 As can be seen in the class diagram in figure~\ref{uml:class}, most of these states inherit from the DisputeStateDefaults class, which defines the default permissions regarding dispute actions. Inheriting from this class means we don't have to specify long lists of true/false values where only one or two items may have changed between states. The exception to this rule is the \lstinline{InRoundTableMediation} state, which is only very slightly different to the \lstinline{InMediation} state and thus extends that class rather than the default class.
 
+\section{Problem with original design}
+
+The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model.
+
+The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
+
+\begin{lstlisting}[language=php]
+// inside a controller
+$disputeID = getDisputeIDFromUrl();
+$dispute = new Dispute($disputeID);
+\end{lstlisting}
+
+Inside the Dispute model, we had something like this:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=php]
+function __construct($disputeID) {
+    $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
+    $this->title = $disputeDetails['title'];
+    // and so on
+}
+\end{lstlisting}
+\end{minipage}
+
+On the one hand, I could write nice code in the controllers that only had to worry about getting an object's ID. This meant that I could chain method calls together, passing returned IDs into subsequent constructors to quickly and easily get the objects I needed.
+
+On the other hand, the models were made impure due to the database connection object. Though the model was somewhat decoupled from the database - all SQL queries were encapsulated in the intermediary database querying objects - it still had to know about the existence of the database. It could not exist independently of a persistence layer. It also made the models quite difficult and slow to test.
+
+\section{Refactoring to pure models}
+\label{section:refactoringToPureModels}
+
+Refactoring constructors to take arrays of data rather than IDs took some significant effort and meant extracting the database querying out of the models:
+
+\begin{lstlisting}[language=php]
+// inside the Dispute model
+function __construct($disputeDetails) {
+    $this->title = $disputeDetails['title'];
+    // and so on
+}
+\end{lstlisting}
+
+The database query instead had to be moved to the controller;
+
+\begin{lstlisting}[language=php]
+$disputeID = getDisputeIDFromUrl();
+$disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
+$dispute = new Dispute($disputeDetails);
+\end{lstlisting}
+
+Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. I took the opportunity to refactor this behaviour too.
+
+Beforehand, I had code like this inside my models:
+
+\begin{lstlisting}[language=php]
+// inside the Dispute model
+function closeSuccessfully) {
+    SomeDatabaseConnector::updateField('disputes', 'status', 'resolved', $this->disputeID);
+}
+\end{lstlisting}
+
+This was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
+
+\begin{lstlisting}[language=php]
+// inside the Dispute controller
+$dispute->closeSuccessfully();
+$update->dispute($dispute);
+\end{lstlisting}
+
+Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. This behaviour is demonstrated in figure @TODO.
+
+This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party.
+
 \section{Module API implementation}
 
 The design for the module API was discussed in the design section. This section discusses how the module API was actually implemented, as demonstrated in figure~\ref{uml:moduleRegistration}.

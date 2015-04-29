@@ -140,53 +140,9 @@ I still needed to clear the database between each test \emph{suite}, as the test
 
 \subsection{Refactoring to pure unit tests}
 
-Earlier I described how `pure' unit tests should not query a database. An unfortunate consequence of the implementation of my code was that database querying was essential to unit test my classes, as my models were populated by an ID representing a row in the database, rather than populated with an array of data which may or may not have come from a database.
+Earlier I described how `pure' unit tests should not query a database. An unfortunate consequence of the implementation of my original code was that database querying was essential to unit test my classes, as my models were populated by an ID representing a row in the database, rather than populated with an array of data which may or may not have come from a database.
 
-For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model. This somewhat decoupled the model from the database - all SQL queries were encapsulated in the intermediary database querying objects - however, it made the models quite difficult and slow to test.
-
-The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
-
-\begin{lstlisting}[language=php]
-// inside a controller
-$disputeID = getDisputeIDFromUrl();
-$dispute = new Dispute($disputeID);
-\end{lstlisting}
-
-Inside the Dispute model, we had something like this:
-
-\begin{minipage}{\textwidth}
-\begin{lstlisting}[language=php]
-function __construct($disputeID) {
-    $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
-    $this->title = $disputeDetails['title'];
-    // and so on
-}
-\end{lstlisting}
-\end{minipage}
-
-Though the model was made a little impure due to the database connection object, I could write nice code in the controllers that only had to worry about getting an object's ID. This meant that I could chain method calls together, passing returned IDs into subsequent constructors to quickly and easily get the objects I needed.
-
-\subsubsection{Refactored solution}
-
-Refactoring constructors to take arrays of data rather than IDs took some significant effort and meant extracting the database querying out of the models:
-
-\begin{lstlisting}[language=php]
-// inside the Dispute model
-function __construct($disputeDetails) {
-    $this->title = $disputeDetails['title'];
-    // and so on
-}
-\end{lstlisting}
-
-The database query instead had to be moved to the controller;
-
-\begin{lstlisting}[language=php]
-$disputeID = getDisputeIDFromUrl();
-$disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
-$dispute = new Dispute($disputeDetails);
-\end{lstlisting}
-
-The advantage of the refactored solution is that the models become pure: they now have no concept of a persistence layer. We can now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
+Back in section~\ref{section:refactoringToPureModels} I discussed the late move to refactor my codebase to use only pure models, moving the database querying out of the models and into the controllers. The advantage of the refactored solution is that the models became pure: they now have no concept of a persistence layer. We could now test our models by passing arrays of hard-coded data, removing the need to retrieve from and write to a database.
 
 Changing object constructors to take arrays rather than database record IDs meant I could cut down test times significantly. After implementing the refactored solution, my test suite performed 109 unit tests in just 12.7 seconds: a UTPS of 8.57.\footnote{A build on 22nd April, after final refactor: \url{https://travis-ci.org/ChrisBAshton/smartresolution/builds/59532839}} This information is summarised in comparison table~\ref{table:testTimes}. It is worth noting that those are the results on Travis: on my MacBook Pro, the entire unit test suite runs in under six seconds.
 
@@ -203,31 +159,6 @@ Changing object constructors to take arrays rather than database record IDs mean
 \end{center}
 \caption {Table showing the unit test times after various refactoring steps}
 \end{table}
-
-\subsubsection{Further refactoring}
-
-Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. I took the opportunity to refactor this behaviour too.
-
-Beforehand, I had code like this inside my models:
-
-\begin{lstlisting}[language=php]
-// inside the Dispute model
-function closeSuccessfully) {
-    SomeDatabaseConnector::updateField('disputes', 'status', 'resolved', $this->disputeID);
-}
-\end{lstlisting}
-
-This was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
-
-\begin{lstlisting}[language=php]
-// inside the Dispute controller
-$dispute->closeSuccessfully();
-$update->dispute($dispute);
-\end{lstlisting}
-
-Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record.
-
-This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party.
 
 \section{Functional Testing}
 
