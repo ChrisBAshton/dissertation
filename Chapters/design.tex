@@ -14,7 +14,37 @@ PHP is currently the most popular server-side programming language worldwide~\ci
 
 Development experience aside, PHP being the most popular server-side language means that there is extensive support and documentation online: any problems faced during development have likely already been solved through other peoples' experiences. Moreover, if the project were to go open-source, it would be more likely to acquire a sizeable and active developer community than a lesser-known language. Finally, server-support for PHP is very common: by opting for PHP as the language of choice, SmartResolution is more likely to be able to be installed and used by more people.
 
-With my suite of Cucumber features, I needed a set of accompanying step definitions. The PHP de-facto standard implementation of BDD is Behat,  but after much lamenting on which BDD framework to use, I decided that the project should use Ruby and Cucumber as its BDD framework. This was primarily down to Ruby and Cucumber's cleaner syntax, as well as the fact that this decision forces decoupling between the core system and the end-to-end tests. A full justification for this decision can be found in appendix~\ref{appendix:bdd}. 
+\subsection{Choosing a BDD Framework}
+
+There are many options for parsing feature files. Cucumber was originally built for Ruby, but now there are other variants such as CucumberJS (for JavaScript) and Lettuce (for Python). The de facto standard BDD implementation for PHP is Behat.
+
+Personally, I dislike Behat because of its syntax: it requires that you define your step definition as a concatenated function name and write metadata above the function definition:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=php]
+/**
+* @Given /^I am in a directory "([^"]*)"$/
+*/
+public function iAmInADirectory($argument1)
+{
+throw new PendingException();
+}
+\end{lstlisting}
+\end{minipage}
+
+This just isn't as \emph{clean} as Cucumber and Ruby:
+
+\begin{minipage}{\textwidth}
+\begin{lstlisting}[language=ruby]
+Given(/^I am in a directory (.+)$/) do |argument|
+# pending
+end
+\end{lstlisting}
+\end{minipage}
+
+Syntactical disagreements aside, Matthew Daly's blog post about testing PHP web applications with Cucumber discusses the benefits of Ruby and Cucumber compared with Behat. He opts for the former because RubyGems makes it easy to install Cucumber's dependencies and the Cucumber community appears to be very active.~\cite{matthewDaly}
+
+Finally, by choosing a BDD framework whose language is different to that of my project, I'd be forcing decoupling between my application and its regression tests, making it impossible to do some hackish things like directly including application PHP classes inside the step definitions. For all of the reasons outlined above, I decided to opt for Ruby and Cucumber as my BDD framework.
 
 \subsection{Reusing open-source software}
 
