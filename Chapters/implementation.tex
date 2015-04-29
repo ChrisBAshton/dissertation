@@ -46,7 +46,7 @@ As the implementation followed an agile methodology, the design evolved over tim
 
 \lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern. The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory and \lstinline{webapp/routes.php} defines the routing component. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
 
-Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing but not be responsible for the relational database to object mapping. This is discussed in detail later on in this section.
+Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing but not be responsible for the relational database to object mapping. This is discussed in detail later on in this chapter.
 
 This folder also contains an \lstinline{api} directory, which defines all of the global functions available to modules. Having these in their own directory made generating module-specific API documentation easy.
 
@@ -84,7 +84,7 @@ Figure~\ref{uml:routing} shows how SmartResolution routes HTTP requests and rend
   \label{uml:class}
 \end{figure}
 
-The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. What evolved from the design was a state pattern representing the current state of a dispute. The class diagram in figure~\ref{uml:class} shows mainly the classes in the \lstinline{webapp/core/model} directory, as these models encapsulate the business logic of the application. The following subsections describe the class diagram in more detail.
+The system was developed in an agile way, hence these class diagrams are not in the design section but the implementation section. The class diagram in figure~\ref{uml:class} shows mainly the classes in the \lstinline{webapp/core/model} directory, as these models encapsulate the business logic of the application. The following subsections describe the class diagram in more detail.
 
 \subsection{Accounts}
 
@@ -168,7 +168,7 @@ As can be seen in the class diagram in figure~\ref{uml:class}, most of these sta
 
 \section{Problem with original design}
 
-The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model.
+The early design had all models populated with an ID that corresponded to a row of data in the database. For example, the \lstinline{Message} class expected to be passed an ID to its constructor. Inside the constructor, a function call was made to a data wrapper class which contained the business logic for retrieving from the database the class-specific data (such as message content, author ID, etc) corresponding to the given ID. The returned array was then used to populate the model. This behaviour is demonstrated in the routing visualisation in figure~\ref{uml:routing}.
 
 The decision to implement the models like this was to make life easier for the controllers. Let us examine this with some pseudo-code:
 
@@ -190,14 +190,28 @@ function __construct($disputeID) {
 \end{lstlisting}
 \end{minipage}
 
-On the one hand, I could write nice code in the controllers that only had to worry about getting an object's ID. This meant that I could chain method calls together, passing returned IDs into subsequent constructors to quickly and easily get the objects I needed.
+On the one hand, I could write simple code in the controllers that only had to worry about getting an object's ID, meaning I could chain method calls together; I could query objects and pass returned IDs into subsequent constructors to quickly and easily get the objects I needed.
 
-On the other hand, the models were made impure due to the database connection object. Though the model was somewhat decoupled from the database - all SQL queries were encapsulated in the intermediary database querying objects - it still had to know about the existence of the database. It could not exist independently of a persistence layer. It also made the models quite difficult and slow to test.
+On the other hand, the models were made impure due to the database connection object. Though the models were somewhat decoupled from the database - all SQL queries were encapsulated in the intermediary database querying objects - they still had to know about the existence of the database and could not exist independently of a persistence layer. The original design also made the models quite difficult and slow to test.
+
+Database querying was not restricted to the constructors; any side-effect functions were also tightly coupled to the database. For example:
+
+\begin{lstlisting}[language=php]
+// inside the Dispute model
+function closeSuccessfully) {
+    SomeDatabaseConnector::updateField('disputes', 'status', 'resolved', $this->disputeID);
+    $this->closed = true;
+}
+\end{lstlisting}
+
+Again, this muddled the responsibilities of the model and made it difficult to test and to maintain. It was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields: functions had to know how to update individual fields related to the object.
 
 \section{Refactoring to pure models}
 \label{section:refactoringToPureModels}
 
-Refactoring constructors to take arrays of data rather than IDs took some significant effort and meant extracting the database querying out of the models:
+The decision was made to change models to take an array of data rather than a database row ID, fully decoupling them from the database. The array of data may or may not have come from a database and the models have no concept of persistence.
+
+Our earlier pseudocode examples can now be rewritten as:
 
 \begin{lstlisting}[language=php]
 // inside the Dispute model
@@ -205,28 +219,14 @@ function __construct($disputeDetails) {
     $this->title = $disputeDetails['title'];
     // and so on
 }
-\end{lstlisting}
 
-The database query instead had to be moved to the controller;
-
-\begin{lstlisting}[language=php]
+// inside the controller
 $disputeID = getDisputeIDFromUrl();
 $disputeDetails = DisputeDatabaseConnector::getDisputeDetails($disputeID);
 $dispute = new Dispute($disputeDetails);
 \end{lstlisting}
 
-Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. I took the opportunity to refactor this behaviour too.
-
-Beforehand, I had code like this inside my models:
-
-\begin{lstlisting}[language=php]
-// inside the Dispute model
-function closeSuccessfully) {
-    SomeDatabaseConnector::updateField('disputes', 'status', 'resolved', $this->disputeID);
-}
-\end{lstlisting}
-
-This was tightly coupled to the underlying table representation, and became fiddly when having multiple functions that change different fields. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
+Extracting the database retrieval out of the model also meant extracting the database \emph{changes} out of the model. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
 
 \begin{lstlisting}[language=php]
 // inside the Dispute controller
@@ -234,9 +234,42 @@ $dispute->closeSuccessfully();
 $update->dispute($dispute);
 \end{lstlisting}
 
-Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. This behaviour is demonstrated in figure @TODO.
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{model_update}
+    \fi
+  \caption{Demonstration of how changes to the model are made persistent}
+  \label{uml:modelUpdate}
+\end{figure}
+
+Instead of updating an individual field value, I now pass the entire Dispute object to an update method which knows how to map the dispute object to its representation in the database. It calls the necessary methods on the dispute object (such as \lstinline{$dispute->getStatus()}) to collect all of the information it requires to update the record. This behaviour is demonstrated in figure~\ref{uml:modelUpdate}.
 
 This large refactoring task perhaps hints at a broader problem: object-relational mapping. It could be argued that at various points in my codebase I have not approached the problem in the object-oriented way I should have, because I've had to manually map the object to be in terms of its underlying relational database representation. Perhaps, in hindsight, an object-relational database would have been more appropriate than an RDBMS, to delegate the understanding of the object-relational mapping to a third-party.
+
+\section{Controllers}
+
+\begin{figure}[h!]
+  \centering
+    \ifimages
+    \includegraphics[width=\textwidth]{controllers}
+    \fi
+  \caption{Visualisation of HTTP requests being routed to controller method}
+  \label{uml:controllers}
+\end{figure}
+
+Controllers can be split into two main types: handlers and database middleware. The `Handler' in figure~\ref{uml:routing} is deduced by the routing file and is likely to be a controller in \lstinline{core/controller}. Handlers simply implement the behaviour seen in the use case diagrams in chapter~\ref{chapter:requirements} and, as such, a fully comprehensive class diagram was not deemed necessary. However, a demonstration of how these controllers work can be seen in figure~\ref{uml:controllers}.
+
+
+Database middleware classes live in \lstinline{core/db} and handle the mapping between the models and the database. Each class fulfils a distinct database-querying need:
+
+\begin{itemize}
+\item \textbf{Database.php} - links with F3 and provides the database connection.
+\item \textbf{DBCreate.php} - responsible for creating the necessary rows in the database for a given object type.
+\item \textbf{DBGet.php} - retrieves array values from the database, given a row ID.
+\item \textbf{DBUpdate.php} - given an object, it finds the corresponding database entry and updates the values. Used for making object changes persistent.
+\item \textbf{DBQuery.php} - defines miscellaneous queries that would not be efficient or cohesive if encapsulated elsewhere, such as \lstinline{getAllDisputes()}, which retrieves all disputes associated with a given account.
+\end{itemize}
 
 \section{Module API implementation}
 
