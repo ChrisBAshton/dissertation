@@ -30,7 +30,7 @@ Scenario: Logging in
 
 We now have a scenario that does not tie itself closely to the implementation. The credentials, the composition of the form or the welcome message might change, but the feature file would remain the same. This makes sense as the concept of `logging in' as a feature itself has not changed either. 
 
-The first example is written in an imperative style, whereas the second is written declaratively; the style is ``more aligned with User Stories in the agile sense, having more of the `token for conversation' feel to it"~\cite{appendix:cucumber:imperative}. Granted, the second example does not provide as much detail. However, in this example, I think Chris Parsons has the right approach.
+The first example is written in an imperative style, whereas the second is written declaratively; the style is ``more aligned with User Stories in the agile sense, having more of the `token for conversation' feel to it".~\cite{appendix:cucumber:imperative} Granted, the second example does not provide as much detail. However, in this example, I think Chris Parsons has the right approach.
 My difficulty in following the declarative style came when:
 
 \begin{enumerate}
@@ -63,6 +63,6 @@ Scenario Outline: Searching the users list on a browser without JavaScript
 
 I put the question to Twitter: if the choice is a verbose feature file or a verbose step definition, which is the lesser of two evils? A number of fully qualified testers and developers responded and argued the case for and against. I made a decision that moving the assertions to the feature file was probably the best decision, therefore merged my refactor branch. My reasoning was that the inputs and outputs don’t refer to implementation details: they require knowledge of the model, but not of the view.
 
-Steven Atherton, a Senior Web Developer at the BBC, made a good point about it being ``wrong [to] dip into the definition file to see WHAT'S being tested... it's just HOW"~\cite{appendix:cucumber:steven}. He is suggesting that verbose feature definitions provide more useful documentation from the developers' perspective.
+Steven Atherton, a Senior Web Developer at the BBC, made a good point about it being ``wrong [to] dip into the definition file to see WHAT'S being tested... it's just HOW".~\cite{appendix:cucumber:steven} He is suggesting that verbose feature definitions provide more useful documentation from the developers' perspective.
 
 A benefit of feature files is that they clarify requirements, at both a high level and, in this case, quite a low level. We can get business analysts to explicitly confirm the expected application behaviour, rather than leaving it open to interpretation.
