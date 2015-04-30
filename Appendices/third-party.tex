@@ -14,9 +14,11 @@ smartresolution.org uses a number of third-party frameworks and services:
 \item jQuery: a dependency for the plugin above.
 \end{itemize}
 
-In addition to the SmartResolution website, I developed a demo video showing the workings of the SmartResolution software and the maritime collision module. This video is hosted on YouTube and makes use of YouTube's annotation facility to give useful commentary throughout the video. Finally, I overlayed a music track\footnote{The track is entitled `GAME MENU\_v001' and is available at \url{http://soundimage.org/looping-music/}} by Eric Matyas, which is free under the Creative Commons by Attribution license version 4.0\footnote{Licensing is discussed on the provider's website at \url{http://soundimage.org/}}. This video is embedded on the homepage of the SmartResolution website.
+In addition to the SmartResolution website, I developed a demo video showing the workings of the SmartResolution software and the maritime collision module; this video is embedded on the homepage of the SmartResolution website. This video is hosted on YouTube and makes use of YouTube's annotation facility to give useful commentary throughout the video. I overlayed a music track by Eric Matyas, which is free under the Creative Commons by Attribution license\footnote{Licensing is discussed on the provider's website at \url{http://soundimage.org/}}. The track is entitled `GAME MENU\_v001' and is available at \url{http://soundimage.org/looping-music/}
 
-It is worth noting that the design and creation of the installation icons at \url{http://smartresolution.org/documentation} were outsourced to a friend of mine. It is also worth explaining that, though smartresolution.org is hosted on AWS, it is server-agnostic and no AWS-specific assets exist in the repository. Therefore, I will not be discussing the use of AWS here.
+The design and creation of the installation icons\footnote{Available at \url{http://smartresolution.org/documentation}} were outsourced to a friend of mine, Lani Cossins. The workflow images on the website\footnote{Available at \url{http://smartresolution.org/workflow}} and in appendix~\ref{appendix:workflow} were my own design, but were later digitised by Rosie Bettles. 
+
+It is worth explaining that, though smartresolution.org is hosted on AWS, it is server-agnostic and no AWS-specific assets exist in the repository. Therefore, I will not be discussing the use of AWS here.
 
 \section{SmartResolution}
 
@@ -57,96 +59,62 @@ No third-party libraries were used in the development of the module. All code is
 
 All of the following were used without modification.
 
-\textbf{Bootstrap} - MIT - ``Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.".
+\textbf{Bootstrap} (v3.2.2) - MIT - \url{http://getbootstrap.com/}
 
-\begin{itemize}
-\item Project URL: \url{http://getbootstrap.com/}
-\end{itemize}
+Bootstrap defines sensible browser defaults (instantly improving unstyled webpages), a responsive 12-column layout and all manner of useful component classes. These classes help represent standard program `states' such as success, error, new information, and so on. ``Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.". 
 
-\textbf{Capybara} - MIT - ``Capybara helps you test web applications by simulating how a real user would interact with your app. It is agnostic about the driver running your tests and comes with Rack::Test and Selenium support built in. WebKit is supported through an external gem.". 
+\textbf{Capybara} (v2.4.4) - MIT - \url{https://github.com/jnicklas/capybara}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/jnicklas/capybara}
-\end{itemize}
+Used in conjunction with Ruby and Cucumber, ``Capybara helps you test web applications by simulating how a real user would interact with your app. It is agnostic about the driver running your tests"; in our case, we use Poltergeist. 
 
-\textbf{Cucumber} - MIT - ``Cucumber is a tool for running automated tests written in plain language. Because they're written in plain language, they can be read by anyone on your team. Because they can be read by anyone, you can use them to help improve communication, collaboration and trust on your team."
+\textbf{Cucumber} (v2.0.0) - MIT - \url{https://github.com/cucumber/cucumber}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/cucumber/cucumber}
-\end{itemize}
+``Cucumber is a tool for running automated tests written in plain language." Cucumber features are the way I textualised my requirements at the beginning of the project. They're incredibly useful as they are written in plain language yet are linked to tests, so serve as tests and documentation all at once.
 
-\textbf{Dashboard icons} - Freepik license - These icons are free for use but the Freepik license requires that the phrase ``designed by Freepik" is displayed on the webpage that uses the icons. I have fulfilled this by putting an attribution to them in the footer of the SmartResolution software.
+\textbf{Dashboard icons} - Freepik license - \url{http://www.flaticon.com/packs/web-pictograms}
 
-\begin{itemize}
-\item Images available at: \url{http://www.flaticon.com/packs/web-pictograms}
-\item License URL: \url{http://cdn.flaticon.com/license/license.pdf}
-\end{itemize}
+These icons are free for use but the Freepik license requires that the phrase ``designed by Freepik" is displayed on the webpage that uses the icons. I have fulfilled this by putting an attribution to them in the footer of the SmartResolution software. License URL: \url{http://cdn.flaticon.com/license/license.pdf}
 
-\textbf{Fat-Free Framework} - GPLv3 - F3 provides a solid foundation including ``an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications. It's lightweight, easy-to-use, and fast. Most of all, it doesn't get in your way."
+\textbf{Fat-Free Framework} (v3.4) - GPLv3 - \url{https://github.com/bcosca/fatfree}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/bcosca/fatfree}
-\end{itemize}
+F3 provides a solid foundation including ``an easy-to-use Web development tool kit, a high-performance URL routing and cache engine, built-in code highlighting, and support for multilingual applications." I particularly found the database interaction and routing modules useful.
 
-\textbf{jQuery} - MIT - jQuery is the most popular JavaScript library in the world, providing useful methods on DOM elements in a cross-browser and backwards-compatible way. Many JavaScript libraries and plugins require jQuery as a dependency, such is its ubiquity.
+\textbf{jQuery} (v2.1.3) - MIT - \url{https://jquery.org/}
 
-\begin{itemize}
-\item Project URL: \url{https://jquery.org/}
-\item License URL: \url{https://jquery.org/license/}
-\end{itemize}
+jQuery is the most popular JavaScript library in the world, providing useful methods on DOM elements in a cross-browser and backwards-compatible way. Many JavaScript libraries and plugins require jQuery as a dependency, such is its ubiquity. License URL: \url{https://jquery.org/license/}
 
-\textbf{jQuery Date and Time picker (plugin for jQuery)} - MIT - a user-friendly date and time picker, used by the SmartResolution core software to make it easier for agents to propose start and end dates for their disputes.
+\textbf{jQuery Date and Time picker (plugin for jQuery)} (v2.4.1) - MIT - \url{https://plugins.jquery.com/datetimepicker/}
 
-\begin{itemize}
-\item Project URL: \url{https://plugins.jquery.com/datetimepicker/}
-\end{itemize}
+A user-friendly date and time picker, used by the SmartResolution core software to make it easier for agents to propose start and end dates for their disputes.
 
-\textbf{phpDocumentor} - MIT - ``phpDocumentor is an application that is capable of analyzing your PHP source code and DocBlock comments to generate a complete set of API Documentation".
+\textbf{phpDocumentor} (v2) - MIT - \url{https://github.com/phpDocumentor/phpDocumentor2}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/phpDocumentor/phpDocumentor2}
-\end{itemize}
+Having marked up SmartResolution with detailed, semantic comments, I needed a program to parse those comments and generate API documentation in HTML. phpDocumentor was exactly what I needed.
 
-\textbf{PHPUnit} - BSD 3-Clause - ``PHPUnit is a programmer-oriented testing framework for PHP. It is an instance of the xUnit architecture for unit testing frameworks.".
+\textbf{PHPUnit} (v4.6) - BSD 3-Clause - \url{https://github.com/sebastianbergmann/phpunit/}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/sebastianbergmann/phpunit/}
-\item BSD license information: \url{http://opensource.org/licenses/BSD-3-Clause}
-\end{itemize}
+``PHPUnit is a programmer-oriented testing framework for PHP". I use PHPUnit to unit-test the SmartResolution core software. BSD license information: \url{http://opensource.org/licenses/BSD-3-Clause}
 
-\textbf{Poltergeist} - MIT - ``Poltergeist is a driver for Capybara. It allows you to run your Capybara tests on a headless WebKit browser, provided by PhantomJS".
+\textbf{Poltergeist} (v1.6.0) - MIT - \url{https://github.com/teampoltergeist/poltergeist}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/teampoltergeist/poltergeist}
-\end{itemize}
+Poltergeist is a driver for Capybara which allows one to run Capybara tests on a headless WebKit browser (provided by PhantomJS). I chose it because it is quick to run and supports JavaScript, which is required by some SmartResolution features.
 
-\textbf{RSpec} - MIT - RSpec is used for defining assertions.
+\textbf{RSpec} (v3.2.0) - MIT - \url{https://github.com/rspec/rspec/}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/rspec/rspec/}
-\end{itemize}
+RSpec is used for defining assertions, exposing methods such as \lstinline{assert(some_condition)}. It provides the very foundation of my Cucumber feature tests.
 
-\textbf{Rubygems} - MIT - RubyGems is a package management framework for Ruby.
+\textbf{Rubygems} (v2.2.2) - MIT - \url{https://github.com/rubygems/rubygems}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/rubygems/rubygems}
-\end{itemize}
+RubyGems is a package management framework for Ruby. It can be used to automatically download all of SmartResolution's Ruby dependencies, including Cucumber, Capybara and RSpec.
 
-\textbf{SlickNav} - MIT - Duplicates a given menu and styles it in a mobile-friendly (i.e. dropdown) style. The application using it simply has to add a media query to their CSS to hide the `mobile' menu and show the `desktop' menu when an arbitrary breakpoint is reached.
+\textbf{SlickNav} (v1.0.3) - MIT - \url{http://slicknav.com/}
 
-\begin{itemize}
-\item Project URL: \url{http://slicknav.com/}
-\end{itemize}
+Duplicates a given menu and styles it in a mobile-friendly (i.e. dropdown) style. The application using it simply has to add a media query to their CSS to hide the `mobile' menu and show the `desktop' menu when an arbitrary breakpoint is reached.
 
-\textbf{SQLite} - Public domain - a simple, fast relational database management system. It is important to note that this choice of RDBMS is not particularly important, as another RDBMS can be swapped into SmartResolution with relative ease.
+\textbf{SQLite} (v3.7.13) - Public domain - \url{http://www.sqlite.org/}
 
-\begin{itemize}
-\item Project URL: \url{http://www.sqlite.org/}
-\item Copyright information: \url{http://www.sqlite.org/copyright.html}
-\end{itemize}
+A simple, fast relational database management system. It is important to note that this choice of RDBMS is not particularly important, as another RDBMS can be swapped into SmartResolution with relative ease. Copyright information: \url{http://www.sqlite.org/copyright.html}
 
-\textbf{Symfony's YAML component} - MIT - Parses a string containing YAML-formatted data. YAML (a recursive acronym, standing for ``YAML Ain't Markup Language") is a terse way of representing structured data, and has gained popularity for use with languages such as Ruby and Python. PHP has no built-in YAML parser, so I used Symfony's YAML component, which is an industry-standard YAML parser for PHP.
+\textbf{Symfony's YAML component} (v2.6) - MIT - \url{https://github.com/symfony/Yaml}
 
-\begin{itemize}
-\item Project URL: \url{https://github.com/symfony/Yaml}
-\end{itemize}
+Parses a string containing YAML-formatted data. YAML (a recursive acronym, standing for ``YAML Ain't Markup Language") is a terse way of representing structured data, and has gained popularity for use with languages such as Ruby and Python. PHP has no built-in YAML parser, so I used Symfony's YAML component, which is an industry-standard YAML parser for PHP.
