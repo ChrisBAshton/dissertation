@@ -4,11 +4,11 @@
 
 Before delving into requirements analysis, it was important to decide upon a project development methodology, since the approach taken to gather the requirements differs according to the methodology chosen.
 
-After some consideration (discussed in appendix~\ref{appendix:methodology}), it was decided that the approach should be a hybrid one of Waterfall and Agile. The project should begin with a strong set of requirements and there should be some up front design for parts of the project that are unlikely to change, such as the database schema. At the implementation stage, the project should switch to a test-driven approach that utilises the best of the agile processes.
+After some consideration (discussed in appendix~\ref{appendix:methodology}), it was decided that the approach should be a hybrid one of Waterfall and Agile. The project would begin with a strong set of requirements and there would be some up front design for parts of the project that are unlikely to change, such as the database schema. At the implementation stage, the project would switch to a test-driven approach that utilises the best of the agile processes.
 
 \section{Roles}
 
-Simple ODR platforms targeted towards e-commerce disputes typically involve just a buyer and a seller. Our ODR platform is intended to be applied to criminal law and thus has four main roles:
+Simple ODR platforms targeted towards e-commerce disputes typically involve just a buyer and a seller. Our ODR platform is intended to be applied to more serious cases and thus has four main roles:
 
 \begin{itemize}
 \item \textbf{Law Firm} - registered to the system by an authorised individual (such as managing director). A Law Firm can have many Agents.
@@ -100,11 +100,11 @@ Following on from the use case diagrams, it was critical to explicitly define th
 
 BDD, or business-driven development, allows you to write executable features in a human-readable way so that a business analyst is able to understand the requirements but does not need to know the technical implementation. The features follow a convention known as the Gherkin syntax so that each feature step can be matched to a corresponding step definition represented in code, allowing automated end-to-end testing.
 
-Appendix~\ref{appendix:requirements} contains the full set of Cucumber features, which form the basis of the requirements specification. The nature of these being a part of the codebase means that they can evolve over time, which is simultaneously an advantage (for always being in line with the implementation) and a disadvantage (for allowing ``requirements creep"). As a result, the Cucumber features at the end of the project are now markedly different to the original set of signed-off features. Though these current features could also have been included in the appendix, they only represent the features at the time of publication and are likely to change should this project be developed further in future. Given that there is little historical value in this, I have decided not to include the current set of Cucumber features in the appendix. For the most up-to-date Cucumber features, please refer to the technical hand-in or to the GitHub repository.
+Appendix~\ref{appendix:requirements} contains the full set of Cucumber features which were originally signed off; these features act as the requirements specification. The nature of these being a part of the codebase means that they can evolve over time, which is simultaneously an advantage (for always being in line with the implementation) and a disadvantage (for allowing ``requirements creep"). As a result, the Cucumber features at the end of the project are now markedly different to the original set of signed-off features. Though these current features could also have been included in the appendix, they only represent the features at the time of publication and are likely to change should this project be developed further in future. Given that there is little historical value in this, I have decided not to include the current set of Cucumber features in the appendix. For the most up-to-date Cucumber features, please refer to the technical hand-in or to the GitHub repository.
 
 \section{Development Methodology versus Project Management}
 
-Each of the development methodologies discussed has an associated project management approach. Waterfall projects tend to use Gantt charts to plan progress, whereas agile approaches tend to use sprints to plan individual iterations. As this project will be using a hybrid development methodology, the question was raised as to whether or not it should be using a hybrid project management approach.
+Each of the development methodologies discussed has an associated project management approach. Waterfall projects tend to use Gantt charts to plan progress, whereas agile approaches tend to use sprints to plan individual iterations. As this project would be using a hybrid development methodology, the question was raised as to whether or not it should be using a hybrid project management approach.
 
 Given that the first half of the project would be plan-driven and that significant efforts were made in the early stages of the project to clarify exact requirements, it made sense to adopt the plan-driven approach of creating a Gantt chart which plans out the implementation of the features.
 
@@ -117,12 +117,12 @@ Given that the first half of the project would be plan-driven and that significa
   \label{uml:gantt}
 \end{figure}
 
-The Gantt chart in figure~\ref{uml:gantt} shows two timelines. The time periods in blue represent the original Gantt chart I intended to follow for this project. The time periods in orange represent what actually happened over the course of the project. The reasons for the disparities between the two are discussed in section~\ref{chapter:evaluation}.
+The Gantt chart in figure~\ref{uml:gantt} shows two timelines. The time periods in blue represent the original Gantt chart I intended to follow for this project. The time periods in orange represent what actually happened over the course of the project. The reasons for the disparities between the two are discussed in section~\ref{section:timeManagement}.
 
 \section{SmartResolution}
 
 The report thus far has discussed the project in the form of two main components: the core ODR platform and the maritime collision module. Realistically, a third component was required: a vendor website. This website would host the core software and provide instructions on how to install it onto a server.
 
-If developers were to be excited enough about ODR to develop modules of functionality like the maritime collision module, then this project would require a brand. I felt that the term `SmartResolution' embodied what the ODR platform was all about: online dispute resolutions done in a smart way by interpreting disputes using artificial intelligence to automatically suggest resolutions. SmartResolution is the term I'll use to refer to the core platform from this point onwards.
+If developers were to be excited enough about ODR to develop modules of functionality like the maritime collision module, then this project would require a brand. I felt that the term `SmartResolution' embodied what the ODR platform was all about: online dispute resolutions done in a smart way, by interpreting disputes using artificial intelligence to automatically suggest resolutions. SmartResolution is the term I'll use to refer to the core platform from this point onwards.
 
 Far from being just an information resource, the SmartResolution website would later provide a facility to download and install SmartResolution modules directly through the SmartResolution installation itself, a little like downloading an app to an Android device directly through the Google Play store. The `SmartResolution Marketplace' was implemented towards the end of the project.

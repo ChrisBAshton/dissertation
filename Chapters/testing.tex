@@ -17,7 +17,7 @@ The project was developed in a business-driven way, as demonstrated in figure~\r
   \label{uml:bdd}
 \end{figure}
 
-To begin with, a Cucumber feature is selected and executed. It should fail. Now a unit test is written to describe a low-level implementation of the feature. The unit test is run and it should also fail. The next step is to write the simplest code possible to make the unit test pass.
+To begin with, a Cucumber feature is selected and executed. It should fail. Now a unit test is written to describe a partial implementation of the feature. The unit test is run and it should also fail. The next step is to write the simplest code possible to make the unit test pass.
 
 With the test passing, now is the opportunity to take a step back and look at the code in the context of the codebase as a whole. Can anything be refactored? If so, apply the refactoring step, then run the unit tests again to ensure that everything still works as correctly. Repeat this refactoring step until you are satisfied with the design of the code. Continue writing unit tests using this ``red, green, refactor" workflow until we have enough of the feature implemented to make a step of the feature pass. Repeat the above steps for each step of the feature until the feature as a whole is completed and passes the integration test.
 
@@ -25,7 +25,7 @@ Occasionally, features were too cumbersome to implement in a BDD manner, as they
 
 \section{Test database}
 
-Cucumber regression tests are end-to-end and use a headless browser (in our case, Poltergeist) to emulate the browser environment, allowing the driver to click buttons and fill in forms. Capybara can then query the state of the HTML and RSpec assertion methods are used to validate that an element of functionality worked as expected.
+Cucumber regression tests are end-to-end and use a headless browser to emulate the browser environment, allowing the driver (in our case, Poltergeist) to click buttons and fill in forms. Capybara can then query the state of the HTML and RSpec assertion methods are used to validate that an element of functionality worked as expected.
 
 To accomplish this, the driver accesses the server like a normal browser. However, our tests rely on the database having certain fixture-data and will also be making persistent changes to the database, so it's essential that the tests use a test database, rather than the production database.
 
@@ -158,11 +158,11 @@ Changing object constructors to take arrays rather than database record IDs mean
 
 \section{Functional Testing}
 
-The SmartResolution core software is described as a collection of Cucumber features, associated with step definitions. These features are executable and can automatically verify that the system is working as expected. As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}.
+The SmartResolution core software is described as a collection of Cucumber features, associated with step definitions. These features are executable and can automatically verify that the system is working as expected. As a reminder, the full list of tested features is outlined in appendix~\ref{appendix:requirements}, though these later evolved as the project was implemented.
 
 \subsection{Functional tests structure}
 
-Every Cucumber feature has a corresponding step definition, defined in a step definition file of the same name as the feature. Each step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework. Capybara requires a browser driver such as Poltergeist to request and then render the webpage. The browser can be headless (running as a background process, hidden from view) or a window browser. Poltergeist, as the name might suggest, is headless.
+Every Cucumber feature has a corresponding step definition, defined in a step definition file of the same name as the feature. Each step definition defines a step in a Cucumber scenario in terms of interacting with the page, through methods provided by the Capybara acceptance test framework. Capybara requires a browser driver such as Poltergeist to request the webpage, and a browser (in our case, PhantomJS, which is bundled with Poltergeist) to render the webpage. The browser can be headless\footnote{Headless browsers run as a background process, hidden from view. This is in contrast to most `normal' browsers, which open a window and have a user interface associated with them.} or a window browser. PhantomJS, as the name might suggest, is headless.
 
 In cases where step definitions were beginning to rely on methods defined in other step files, I extracted the methods out as a common helper class. For example, step definitions have access to a `Session' helper class which provides methods to log in with specific credentials, or log into account types (e.g. \lstinline{Session.login_as_agent}). Figure~\ref{uml:cucumber} demonstrates the relationship between a Cucumber feature, its step definition, and the helper classes.
 
@@ -179,7 +179,7 @@ Finally, there are also numerous steps which are repeated across different featu
 
 \subsection{Database-clearance optimisation}
 
-As already discussed, the process of clearing the database is slow and involves removing the SQLite database entirely, creating a new SQLite database, executing the table-setup SQL (all performed via shell commands through PHP's \lstinline{shell_exec} function) and then seeding the database with fixture data. This fixture data is defined in \lstinline{data/fixtures/fixture_data.yml} and the mapping of YAML data to SQL tables is defined in \lstinline{data/fixtures/seed.php}. This takes approximately one second even on a powerful machine.
+As already discussed, the process of clearing the database is slow and involves removing the SQLite database entirely, creating a new SQLite database, executing the table-setup SQL (all performed via shell commands through PHP's \lstinline{shell_exec} function) and then seeding the database with fixture data. This fixture data is defined in \lstinline{data/fixtures/fixture_data.yml} and the mapping of YAML data to SQL tables is defined in \lstinline{data/fixtures/seed.php}.
 
 Towards the end of the project, I refactored my unit tests to cut down the number of `clear database' instructions, but this was an optimisation I had in mind from the start when it came to my Cucumber features. Unlike unit tests, Cucumber features test the system from the user's perspective and by their very nature require interaction with the database. The database needs clearing and re-populating between some tests to prevent the actions of one test from corrupting the other, ensuring that every test has access to the same, consistent dataset.
 
@@ -217,7 +217,7 @@ The original and amended scenarios are very similar, but the latter is a little 
 
 Whereas it is the software engineer's responsibility to ensure that the project is built right, it is the customer's responsibility to ensure that the right project is built. Therefore, user testing with the customer is critical.
 
-As has already been highlighted, the customer for this project was extremely busy and was unable to meet more than a couple of times. This made user-testing very difficult, but I tried my best to offer alternative options.
+As has already been alluded to in the choice of project development methodology in appendix~\ref{appendix:methodology}, the customer for this project was extremely busy and was unable to meet more than a couple of times. This made user-testing very difficult, but I tried my best to offer alternative options.
 
 It was good that I spent so long clarifying requirements at the beginning of the project. In the absence of regular communication and feedback, this original set of features was invaluable in ensuring that the system contained all of the required functionality.
 

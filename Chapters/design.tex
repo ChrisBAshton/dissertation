@@ -14,11 +14,11 @@ PHP is currently the most popular server-side programming language worldwide~\ci
 
 Development experience aside, PHP being the most popular server-side language means that there is extensive support and documentation online: any problems faced during development have likely already been solved through other peoples' experiences. Moreover, if the project were to go open-source, it would be more likely to acquire a sizeable and active developer community than a lesser-known language. Finally, server-support for PHP is very common: by opting for PHP as the language of choice, SmartResolution is more likely to be able to be installed and used by more people.
 
-\subsection{Choosing a BDD Framework}
+\subsection{BDD Framework}
 
 There are many options for parsing feature files. Cucumber was originally built for Ruby, but now there are other variants such as CucumberJS (for JavaScript) and Lettuce (for Python). The de facto standard BDD implementation for PHP is Behat.
 
-Personally, I dislike Behat because of its syntax: it requires that you define your step definition as a concatenated function name and write metadata above the function definition:
+Personally, I dislike Behat because of its syntax. It requires that you define your step definition as a concatenated function name and write metadata above the function definition:
 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[language=php]
@@ -44,7 +44,7 @@ end
 
 Syntactical disagreements aside, Matthew Daly's blog post about testing PHP web applications with Cucumber discusses the benefits of Ruby and Cucumber compared with Behat. He opts for the former because RubyGems makes it easy to install Cucumber's dependencies and the Cucumber community appears to be very active.~\cite{matthewDaly}
 
-Finally, by choosing a BDD framework whose language is different to that of my project, I'd be forcing decoupling between my application and its regression tests, making it impossible to do some hackish things like directly including application PHP classes inside the step definitions. For all of the reasons outlined above, I decided to opt for Ruby and Cucumber as my BDD framework.
+Finally, by choosing a BDD framework whose language is different to that of my project, I'd be forcing decoupling between my application and its regression tests, making it impossible to make certain inappropriate testing choices such as directly including application PHP classes inside the step definitions. For all of the reasons outlined above, I decided to opt for Ruby and Cucumber as my BDD framework.
 
 \subsection{Reusing open-source software}
 
@@ -52,7 +52,7 @@ It was hoped that there would be an existing open-source ODR platform upon which
 
 Unfortunately, after fairly extensive research, I was unable to find an existing ODR platform that was not proprietary. Most ODR providers, be they service or platform providers, charge a subscription or one-off fee and would be at a commercial disadvantage if they were to go open-source. Without an existing ODR platform to base the project upon, there was no option but to develop the core platform from scratch.
 
-\subsection{Framework}\label{subsection:framework}
+\subsection{Project Framework}\label{subsection:framework}
 
 It makes sense to minimise development effort through the use of a framework, letting the combined efforts of hundreds of contributing developers do the heavy lifting so that we are free to implement the application-specific code. Dozens of PHP frameworks exist, so deciding on one can be difficult.
 
@@ -84,7 +84,7 @@ As discussed in the background and initial requirements, it was intended for thi
 
 \subsection{SmartResolution Marketplace}
 
-This is the vendor site for SmartResolution, explaining what SmartResolution is and offering a download link to a production-ready version. Its subdomain, demo.smartresolution.org, has a live demo of the SmartResolution software installed so that users can try out the software before they download. However, the main purpose for developing smartresolution.org was the creation of the `marketplace' facility.
+smartresolution.org is the vendor site for SmartResolution, explaining what SmartResolution is and offering a download link to a production-ready version. Its subdomain, demo.smartresolution.org, has a live demo of the SmartResolution software installed so that users can try out the software before they download. However, one of the main reasons for developing the website was the creation of the `marketplace' facility, discussed later in this chapter.
 
 \section{WordPress: a comparison}
 
@@ -95,7 +95,7 @@ The commercial viability of the software (analysed in appendix~\ref{appendix:com
 
     \item \textbf{WordPress plugin}: a self-contained package that can be installed to a WordPress installation and which augments the core installation with additional functionality.
 
-    \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website which links to thousands of available plugins. This facility is tightly coupled to the administrative functions in the core software, as administrators are able to browse, download and install plugins from wordpress.org, from within the WordPress installation itself.
+    \item \textbf{Plugin Directory}: a searchable area of the WordPress.org website which links to thousands of available plugins. This facility is tightly coupled to the administrative functions in the core software, as administrators are able to browse, download and install plugins from wordpress.org, within the WordPress installation itself.
 \end{enumerate}
 
 These three tiers map to the SmartResolution core platform, the maritime collision module and the SmartResolution Marketplace respectively.
@@ -110,13 +110,13 @@ I opted for the GPLv3 license for the core SmartResolution software. This is alm
 
 The benefits of a restrictive license is that nobody has the ability to download, modify and then sell the software without making the source available to all. Multinational corporations who can afford to compensate developers for their time are not able to use SmartResolution as a basis for closed-source software\footnote{This only applies if the company is \emph{distributing} the software. In-house software can remain closed-source.}. Any improvements they make to the software must be kept open-source, as it is a derivative work.
 
-On the other hand, the GPL allows for legitimate use-cases for SmartResolution. For instance, anyone can download the software and install it on their own server and start providing ODR services. They can even charge a subscription fee, and would owe nothing to the SmartResolution developers. The choice of GPLv3 for SmartResolution protects me from other people making money selling \emph{software} derived from this project. It doesn't stop people making money providing ODR as a service, and it won't infect their website ``like a cancer", to quote Steve Ballmer, ex-CEO of Microsoft.~\cite{linuxCancer}
+On the other hand, the GPL allows for legitimate use-cases for SmartResolution. For instance, anyone can download the software, install it on their own server and start providing ODR services. They can even charge a subscription fee, and would owe nothing to the SmartResolution developers. The choice of GPLv3 for SmartResolution protects me from other people making money selling \emph{software} derived from this project. It doesn't stop people making money providing ODR as a service, and it won't infect their website ``like a cancer", to quote Steve Ballmer, ex-CEO of Microsoft.~\cite{linuxCancer}
 
-Though I originally hoped to release the maritime collision module under the MIT license, WordPress and Drupal believe strongly that any plugins or themes are classed as derivative works and thus should be bound to a GPL-compliant license~\cite{wordpress:gpl}, stating ``The GPL on code applies [also] to code that interacts with that code". Any modules which call PHP functions defined by the core SmartResolution software must also be bound to the GPL license, therefore I have released the module under the GPLv3 license.
+Though I originally hoped to release the maritime collision module under the MIT license, WordPress and Drupal believe strongly that any plugins or themes for their CMS are classed as derivative works, stating: ``The GPL on code applies [also] to code that interacts with that code"~\cite{wordpress:gpl}. Thus, like the parent software, these derivatives should be bound to a GPL-compliant license. Any modules which call PHP functions defined by the core SmartResolution software must therefore also be bound to the GPL license, so I have released the module under the GPLv3 license.
 
-The fact that all distibuted modules are bound to the terms of the GPL shook my confidence in the commercial viability of creating proprietary modules for the system. I found it difficult to understand how WordPress' premium plugins were able to be sold at all, as one of the four freedoms~\cite{fourFreedoms} enabled by the GPL is ``the freedom to redistribute copies", meaning anybody who purchases a premium WordPress plugin is able to redistribute the plugin for free. Chris Lema suggested a number of explanations for the success of premium plugins in his blog post~\cite{chrisLema}, mainly alluding to the fact that only plugins which are bought legitimately get the latest updates, bug fixes and support for a specific period of time. The fact that so many plugins and themes \emph{are} able to be sold through WordPress indicates that the same market strategy could be applied to SmartResolution modules.
+The fact that all distibuted modules are bound to the terms of the GPL shook my confidence in the commercial viability of creating proprietary modules for the system. I found it difficult to understand how WordPress' premium plugins were able to be sold at all, as one of the four freedoms enabled by the GPL is ``the freedom to redistribute copies"~\cite{fourFreedoms}, meaning anybody who purchases a premium WordPress plugin is able to redistribute the plugin for free. Chris Lema suggested a number of explanations for the success of premium plugins in his blog post, mainly alluding to the fact that only plugins which are bought legitimately get the latest updates, bug fixes and support for a specific period of time~\cite{chrisLema}. The fact that so many plugins and themes \emph{are} able to be sold through WordPress indicates that the same business strategy could be applied to SmartResolution modules.
 
-I have kept the source-code for smartresolution.org private and all of its contents are under my copyright. I saw no advantage in making the website open-source, since I'm not encouraging anybody to download and re-use the website itself.
+I saw no advantage in making the SmartResolution website itself open-source, since I'm not encouraging anybody to download and re-use the website itself. I have kept the source-code for smartresolution.org private and all of its contents are under my copyright.
 
 \section{Design: SmartResolution}
 
@@ -130,7 +130,7 @@ OODBMSs gives an advantage to those companies that are geared towards multimedia
 
 My next decision was which RDBMS to go for. The market leader is MySQL, but many alternatives exist, such as PostgreSQL, MSSQL, Oracle and SQLite. F3 supports all of these and more.~\cite{f3:sqlConstructor} The quickest database to get started with was SQLite, as it meant that I could develop locally without having to worry about creating the database administrator accounts required by other RDBMSs, such as MySQL. SQLite databases exist simply as a file on the system, whose contents can be viewed and edited through a program such as DB Browser for SQLite. The fact that SQLite databases exist as files on the system makes having multiple databases trivial, so my system can easily switch between test and production databases depending on the context in which the application is accessed. For these reasons, I selected SQLite as the RDBMS of choice for the project.
 
-It is important to note that this can be swapped out for another RDBMS relatively easily, since all database interactions in SmartResolution go through one \lstinline{Database} class. This class calls F3's \lstinline{SQL} class, and as discussed above, F3 has implementations for all of the main RDBMSs. Indeed, if I had a SmartResolution installation that in the production environment which was being used by thousands of people, I would consider changing to a RDBMS such as MySQL. Even the SQLite developers suggest that SQLite is best suited as a stand-in for an enterprise RDBMS: ``SQLite is often used as a surrogate for an enterprise RDBMS for demonstration purposes or for testing".~\cite{sqliteFeatures}
+It is important to note that this can be swapped out for another RDBMS relatively easily, since all database interactions in SmartResolution go through one \lstinline{Database} class. This class calls F3's \lstinline{SQL} class, and as discussed above, F3 has implementations for all of the main RDBMSs. Indeed, if I had a SmartResolution installation in a production environment which was being used by thousands of people, I would consider changing to a RDBMS such as MySQL. Even the SQLite developers suggest that SQLite is best suited as a stand-in for an enterprise RDBMS: ``SQLite is often used as a surrogate for an enterprise RDBMS for demonstration purposes or for testing".~\cite{sqliteFeatures}
 
 \subsection{Database schema}
 
@@ -181,7 +181,7 @@ on('event', 'function_to_call', 'priority');
 
 One needs to be able to manipulate the rendered output of SmartResolution, e.g. when adding a menu item to the dashboard of a dispute.
 
-This could be accomplished by interacting directly with the core platform, as in the example below.
+This \emph{could} be accomplished by interacting directly with the core platform, as in the example below.
 
 \begin{lstlisting}[language=php]
 global $dashboardActions;
@@ -209,9 +209,7 @@ Not only does this decouple the module/SmartResolution interaction, but this is 
 
 \subsection{Module persistence}
 
-Persistence was the most difficult area to tackle, as it raises important security issues. Whereas hooking into events and changing the rendering could break aspects of the SmartResolution functionality if the developer is not careful, these effects are usually temporary and reversible. Interacting with the database, however, introduces persistent changes and can be much more harmful. If the system allowed arbitrary SQL queries and the developer was not careful, entire tables could be deleted or corrupted.
-
-On the one hand, the system has to trust developers. Regardless of the database access methods explicitly exposed by the underlying system, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open-source and the developer can easily find out what system-level classes are available. At an even lower level, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function and executing any command they wish.
+Persistence was the most difficult area to tackle, as interacting with the database introduces persistent changes which could be harmful if the developer is not careful. On the one hand, the system has to trust developers. Regardless of the database access methods explicitly exposed by the underlying system, there's nothing stopping developers from accessing the global \lstinline{Database} class used by the core platform, especially since SmartResolution is open-source and the developer can easily find out what system-level classes are available. At an even lower level, there's nothing stopping a developer from running PHP's \lstinline{shell_exec} function and executing any command they wish.
 
 The system should trust developers, but it should not trust developers to write perfect code. Though most developers would use an SQL-execution ability only for querying the database for a legitimate reason, they may expose a vulnerability if not thoroughly tested. For example, if they're writing a search engine module which takes a user input, and if they do not sanitise the query, then they're letting the \emph{end user} run arbitrary SQL.
 
@@ -230,18 +228,6 @@ The newly created table can then be inserted into and queried using specific, na
 In the above example, \lstinline{my_table} is not the name of the created table. Instead, it is namespaced as \lstinline{module__[module_name]__my_table}. The module developer doesn't need to know this, and can continue to refer to \lstinline{my_table} in all of their queries as if that is the name of the table. This means we have the advantage of namespacing our tables (preventing naming conflicts where different modules use common table names) but without the technical overhead of having to rememember to prefix table names with that namespace.
 
 Most modules will require some sort of persistence layer to be useful, but developers are not necessarily locked into this database setup. They could use PHP's \lstinline{file_put_contents} to save to a file, perhaps in conjunction with \lstinline{json_encode} to save a PHP array as a JSON file. They could even use PHP's \lstinline{shell_exec} command to create a new SQLite database in their module's directory, giving them complete freedom and the responsibility it comes with. The database functions offered by SmartResolution cut out some of the complexity of doing persistence from scratch, but are by no means the only way of storing data persistently.
-
-\section{Design: SmartResolution Marketplace}
-
-Early versions of SmartResolution used a PHP array to describe which modules were installed and whether or not they were active. A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution installation, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from SmartResolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
-
-To accomplish this, there is a JSON feed of featured modules on smartresolution.org\footnote{The JSON feed is viewable at \url{http://smartresolution.org/marketplace/feed}}. This feed is pulled in and converted to HTML, both directly on the marketplace itself\footnote{The human-friendly marketplace is available at \url{http://smartresolution.org/marketplace}} and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its plugins.
-
-From the admin dashboard on SmartResolution, the modules JSON feed is converted into a HTML page, and server-side logic detects whether or not the module is already installed. If not, a button is rendered which allows the downloading and installation of the module in one click.
-
-In addition to the `Marketplace' admin option, there is a `Modules' option which lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution installation.
-
-The ability to define which modules to display externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution installations, irrespective of the version of SmartResolution they have installed. This presents a commercial opportunity, allowing smartresolution.org to categorise paid-for modules as `featured', as hinted by the ``Coming soon" modules for Divorce and Breach of Contract.
 
 \section{Design: Maritime collision module}
 
@@ -302,6 +288,18 @@ When the agents have answered all of the relevant questions, the following happe
 Due to the lack of time, the resulting module is a little simplistic. The resolution suggested by the module is deduced through a simple series of if/else statements and probably doesn't tell lawyers anything about maritime law that they don't already know.
 
 However, over-examination of the maritime collision module would be missing the point, which is that the core platform supports any arbitrary module. Modules can be as big and complex as time allows. To go back to the WordPress analogy, on one end of the scale there are many single-file plugins that satisfy a lone developer's personal itch. On the other end, there are enterprise-level plugins that have taken months to engineer and which extend the WordPress platform to be a feature-rich online shop or forum. Given more time, the maritime collision module could be much more heavyweight than it is, encompassing many more aspects of maritime law.
+
+\section{Design: SmartResolution Marketplace}
+
+Early versions of SmartResolution used a PHP array to describe which modules were installed and whether or not they were active. A more user-friendly solution was the creation of an admin dashboard: the ability to sign into an administrator account on your SmartResolution installation, view the installed modules, and activate/deactivate them through a user interface. Following on from this is the ability to view a list of modules, pulled in from smartresolution.org, and download and install them directly through SmartResolution, like WordPress does with plugins.
+
+To accomplish this, there is a JSON feed of featured modules on smartresolution.org\footnote{The JSON feed is viewable at \url{http://smartresolution.org/marketplace/feed}}. This feed is pulled in and converted to HTML, both directly on the marketplace itself\footnote{The human-friendly marketplace is available at \url{http://smartresolution.org/marketplace}} and the SmartResolution admin marketplace dashboard option, emulating what WordPress does with its plugins.
+
+From the admin dashboard on SmartResolution, the modules JSON feed is converted into a HTML page, and server-side logic detects whether or not the module is already installed. If not, a button is rendered which allows the downloading and installation of the module in one click.
+
+In addition to the `Marketplace' admin option, there is a `Modules' option which lists all of the installed modules and whether or not they are active. From this screen, the admin can activate, deactivate or delete the module from their SmartResolution installation.
+
+The ability to define which modules to display externally on smartresolution.org gives the SmartResolution maintainers the freedom to change the contents of that JSON, and therefore change which modules are presented to administrators of SmartResolution installations, irrespective of the version of SmartResolution they have installed. This presents a commercial opportunity, allowing smartresolution.org to categorise paid-for modules as `featured', as hinted by the ``Coming soon" modules for Divorce and Breach of Contract.
 
 \section{User interface}
 

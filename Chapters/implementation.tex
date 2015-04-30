@@ -25,7 +25,6 @@ As the implementation followed an agile methodology, the design evolved over tim
 .3 api/.
 .3 controller/.
 .3 db/.
-.3 helpers/.
 .3 model/.
 .3 view/.
 .2 modules/.
@@ -46,7 +45,7 @@ As the implementation followed an agile methodology, the design evolved over tim
 
 \lstinline{vendor} is an automatically generated directory, created by Composer, containing all of SmartResolution's PHP dependencies.
 
-\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR compound design pattern. The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory and \lstinline{webapp/routes.php} defines the routing component. I felt the need to separate the \lstinline{controller} and \lstinline{helpers} directories: the former contains controllers used by the routing (i.e. linking HTTP methods to application actions) whereas the latter contains general helper controllers available to both the higher-level routing controllers and the lower-level models.
+\lstinline{webapp/core} contains the core ODR platform, which uses an MVCR composite design pattern. The \lstinline{model}, \lstinline{view} and \lstinline{controller} directories are self-explanatory and \lstinline{webapp/routes.php} defines the routing component.
 
 Also inside the core is the \lstinline{db} directory, which contains middleware classes connecting the model classes to the database, since models should encapsulate the concept of whatever it is they are representing but not be responsible for the relational database to object mapping. This is discussed in detail later on in this chapter.
 
@@ -94,6 +93,8 @@ The \lstinline{Organisation} and \lstinline{Individual} account types implement 
 
 Every fully instantiated dispute has two dispute parties, each of which is comprised of a law firm, an agent and a dispute summary. A dispute can be associated with infinite items of evidence (uploaded by the agents) and infinite messages sent back and forth between the agents. Every dispute should also have a lifespan: this is more complicated than it might first appear so is discussed in detail in the next subsection.
 
+Disputes have a \emph{state}, which roughly maps to the red box states indicated in figures~\ref{uml:activity:dispute} and~\ref{uml:activity:mediation}. This is discussed in detail in subsection~\ref{subsection:disputeState}.
+
 A dispute's type denotes whether or not a module is pulled in to expand the options available to it. By default, all disputes are of type `Other', which adds nothing to the core functionality of the system. However, with the maritime collision module activated, agents have the option to change the dispute type to `Maritime Collision', thereby unlocking the AI that the module offers.
 
 Finally, disputes have a \emph{mediation state}: that is, a dispute may or may not be in mediation, or it may be somewhere in between. For example, the agents may have decided upon a mediation centre but not yet chosen a mediator. This is all encapsulated in the \lstinline{MediationState} class.
@@ -119,7 +120,7 @@ For most purposes, the `current' lifespan is what is required. This is the lifes
 
 The `latest' lifespan ignores whether or not a lifespan has been accepted and retrieves the very latest lifespan proposal. This is required in special cases, such as in the rendering of the lifespan on the dispute dashboard, to highlight the fact that a new lifespan has been proposed and needs to be accepted or declined.
 
-\subsection{Dispute State}
+\subsection{Dispute State}\label{subsection:disputeState}
 
 Separately from the `mediation state' is the higher level dispute state. A dispute is in a different state depending on whether or not all agents have been assigned, a lifespan has been negotiated, and so on. The state of the dispute dictates what actions are available to the parties involved.
 
@@ -239,7 +240,7 @@ $dispute = new Dispute($disputeDetails);
   \label{uml:modelUpdate}
 \end{figure}
 
-After extracting the database array retrieval out of the model, I extracted the database updating out of the model. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
+After extracting the database array retrieval out of the model, I extracted the database \emph{updating} out of the model. When moving this behaviour into the controllers, I decided to encapsulate all updates inside one update method that corresponds to the model:
 
 \begin{minipage}{\textwidth}
 \begin{lstlisting}[language=php]
@@ -278,22 +279,22 @@ Database middleware classes live in \lstinline{core/db} and handle the mapping b
 
 \section{Module API implementation}
 
-The design for the module API was discussed in the design section. This section discusses how the module API was actually implemented, as demonstrated in figure~\ref{uml:moduleRegistration}.
-
 \begin{figure}[h!]
   \centering
     \ifimages
-    \includegraphics[width=\textwidth]{module_registration}
+    \includegraphics[width=\textwidth]{module_pubsub}
     \fi
   \caption{Visualisation showing how modules are registered to the system}
   \label{uml:moduleRegistration}
 \end{figure}
 
+The design for the module API was discussed in the design section. This section discusses how the module API was actually implemented, as demonstrated in figure~\ref{uml:moduleRegistration}.
+
 The configuration JSON file is edited through the admin dashboard using a user-friendly GUI: administrators can activate or deactive modules at the press of a button. This file maintains a list of all known modules in the installation and whether or not they are active.
 
-On every page load, \lstinline{config.php} is called. This iterates through the modules described in \lstinline{config.json} and loads the module's \lstinline{index.php} file, which contains the module declaration. All modules are pulled in regardless of their activity state, since the system still needs to know about them for the purposes of the admin dashboard.
+On every page load, \lstinline{config.php} is called. This iterates through the modules described in \lstinline{config.json} and loads the module's \lstinline{index.php} file, which contains the module declaration call. All modules are pulled in regardless of their activity state, since the system still needs to know about them for the purposes of the admin dashboard.
 
-Note that the module declaration function is different to the module definition function. The former is always executed, as it declares the module to the system. It \emph{contains} the module definition as an anonymous function which is only executed if the module is `active'.
+Note that the module declaration function call is different to the module definition function. The former is always executed, as it declares the module to the system. It \emph{contains} the module definition as an anonymous function which is only executed if the module is `active'.
 
 The module declaration function is defined in \lstinline{api.php} and in turn calls the \lstinline{registerModule} function in the \lstinline{ModuleController}. That function instantiates a new \lstinline{Module} object representing the module and then queries its activity state. If the module is active, its module definition function is called and the module is now hooked into all of the necessary events and global functions.
 
@@ -368,11 +369,11 @@ The SmartResolution website was developed locally using many of the same technol
 
 A locally configured, physical server would not be practical for hosting the SmartResolution marketplace, as it would not be able to cope with a spike in network traffic if there were large numbers of people downloading the software or browsing the documentation. Moreover, it is an unnecessary maintenance and up front expense when so many alternatives exist.
 
-Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth~\cite{article:AWS}. AWS is being utilised by companies including the BBC~\cite{article:bbcAws}, its popularity down to its speed and scalability, as well as the low cost to market.
+Cloud computing as a web hosting service is becoming increasingly popular, Amazon Web Services (AWS) chief amongst these in terms of exponential growth.~\cite{article:AWS} AWS is being utilised by companies including the BBC, its popularity down to its speed and scalability, as well as the low cost to market.~\cite{article:bbcAws}
 
-AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia~\cite{aws:global}, making it possible to make optimised regional sites or even content delivery networks (CDNs). It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
+AWS has server farms in 11 geographical regions including the US, Ireland, Tokyo and Australia, making it possible to make optimised regional sites or even content delivery networks (CDNs).~\cite{aws:global} It can be configured to automatically deploy additional EC2 (Amazon Elastic Compute Cloud) instances when there is a surge in website traffic, to cope with fluctuations in demand.
 
-Other alternatives exist, of course, such as Unlimited Web Hosting, which is a cloud-based web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process, in order to download dependencies through Composer, set up the SQLite database and so on.
+Other alternatives exist, of course, such as Unlimited Web Hosting, which is a cloud-based web hosting service I like to use for my personal projects. However, SmartResolution requires shell access for the installation process in order to download dependencies through Composer, set up the SQLite database and so on.
 
 Unlike Unlimited Web Hosting, AWS provides shell access, and though other services also provide this facility (DigitalOcean, for example), it made sense to invest time in configuring an infrastructure that would be able to cope with increases in traffic should SmartResolution ever require it.
 
@@ -393,7 +394,7 @@ AWS offers an `Elastic IP' facility, which allows you to generate a permanent IP
 
 Finally, Amazon's Route 53 service is a scalable DNS and allows you to link a domain/subdomain name to an IP address so that browsers querying that domain name are redirected to the content at the IP address endpoint.
 
-smartresolution.org was purchased through the domain registrar gandi.net and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux~\cite{aws:linux}, Apache, MySQL and PHP.
+smartresolution.org was purchased through the domain registrar gandi.net and the nameservers for Amazon's Route 53 service were specified as the DNS. On the server itself, the EC2 instance is automatically deployed as a LAMP server running Amazon's own flavour of Linux, Apache, MySQL and PHP.~\cite{aws:linux}
 
 The decision was made to separate the two concepts of the SmartResolution software and the SmartResolution website, so a live demo of the software should be available on a subdomain rather than the main site index. To accomplish this, a VirtualHost was specified in the Apache configuration to redirect any requests for demo.smartresolution.org to a specific demo folder containing the SmartResolution software, which could be easily updated independent of SmartResolution website updates. All of this is demonstrated in figure~\ref{uml:serverConfig}.
 
